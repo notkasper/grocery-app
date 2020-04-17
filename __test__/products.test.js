@@ -1,9 +1,11 @@
+const chalk = require('chalk');
 const request = require('superagent');
 const server = require('../src/back-end/server');
 
 const API_BASE_URL = 'localhost:5000/api/v1';
 
 beforeAll(async () => {
+  console.info(chalk.magenta.bold('Running test suite...'));
   await server.start();
 });
 
