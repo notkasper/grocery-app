@@ -1,8 +1,8 @@
 const express = require('express');
-const { getRooms } = require('../controllers/rooms');
+const { getProducts } = require('../controllers/products');
 
 const router = express.Router({ mergeParams: true });
 
-router.route('/').get(getRooms);
+router.route('/').get(getProducts);
 
 module.exports = router;

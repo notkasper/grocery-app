@@ -1,5 +1,7 @@
 {
   "trailingComma": "es5",
   "singleQuote": true,
-  "jsxSingleQuote": false
+  "jsxSingleQuote": false,
+  "printWidth": 128,
+  "endOfLine": "auto"
 }
