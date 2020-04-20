@@ -10,7 +10,8 @@
     "build:prod": "webpack -p --mode production",
     "dev": "concurrently \"npm run back-end:dev\" \"npm run build:dev\"",
     "test": "jest",
-    "lint": "eslint ./src/** --max-warnings 0"
+    "lint": "eslint ./src/** --max-warnings 0",
+    "scrapers": "node ./src/back-end/_scapers"
   },
   "husky": {
     "hooks": {
@@ -47,6 +48,7 @@
     "pm2": "^4.2.3",
     "prettier": "^2.0.4",
     "prop-types": "^15.7.2",
+    "puppeteer": "^3.0.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-hot-loader": "^4.12.20",
