@@ -94,6 +94,7 @@ const scrapeAlbertHeijn = async () => {
         availability,
         link,
         new_price: newPrice,
+        discounted: true,
       });
     }
     await categoryPage.close();

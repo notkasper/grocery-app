@@ -1,11 +1,12 @@
-const scrapeAlbertHeijn = require('./albertHeijn');
+// const scrapeAlbertHeijn = require('./albertHeijn');
+const scrapeJumbo = require('./jumbo');
 const models = require('../models');
-// const scrapeJumbo = require('./jumbo');
 
 const run = async () => {
   await models.umzug.up();
-  await scrapeAlbertHeijn();
-  // await scrapeJumbo();
+  // await scrapeAlbertHeijn();
+  await scrapeJumbo();
+  models.sequelize.close();
 };
 
 run();

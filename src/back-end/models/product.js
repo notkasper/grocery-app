@@ -11,9 +11,11 @@ module.exports = (sequelize, DataTypes) => {
       image: DataTypes.STRING,
       amount: DataTypes.STRING,
       discount_type: DataTypes.STRING,
-      availability: DataTypes.STRING,
-      link: DataTypes.STRING,
+      availability_from: DataTypes.DATE,
+      availability_till: DataTypes.DATE,
+      link: DataTypes.STRING(1000),
       new_price: DataTypes.NUMBER,
+      discounted: DataTypes.BOOLEAN,
     },
     {
       freezeTableName: true,

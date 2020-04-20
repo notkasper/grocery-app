@@ -15,9 +15,11 @@ module.exports = {
       image: Sequelize.STRING,
       amount: Sequelize.STRING,
       discount_type: Sequelize.STRING,
-      availability: Sequelize.STRING,
-      link: Sequelize.STRING,
+      availability_from: Sequelize.DATE,
+      availability_till: Sequelize.DATE,
+      link: Sequelize.STRING(1000),
       new_price: Sequelize.DOUBLE,
+      discounted: Sequelize.BOOLEAN,
       createdAt: Sequelize.DATE,
       updatedAt: Sequelize.DATE,
     });
