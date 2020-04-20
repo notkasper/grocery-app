@@ -1,7 +1,9 @@
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-await-in-loop */
 const puppeteer = require('puppeteer');
+const uuid = require('uuid');
 const { autoScroll } = require('./_utils');
+const db = require('../models');
 
 const scrapeAlbertHeijn = async () => {
   const browser = await puppeteer.launch({ headless: false });
@@ -18,6 +20,11 @@ const scrapeAlbertHeijn = async () => {
       .$('img.taxonomy-card_image__2W_2r')
       .then((e) => e.getProperty('src'))
       .then((e) => e.jsonValue());
+    await db.Category.create({
+      id: uuid.v4(),
+      label: categoryName,
+      image: imageSrc,
+    });
     const categoryHref = await categoryOverview
       .$('a.taxonomy-card_titleLink__1Dgai')
       .then((e) => e.getProperty('href'))
@@ -27,7 +34,7 @@ const scrapeAlbertHeijn = async () => {
     await autoScroll(categoryPage);
     const bonusProducts = await categoryPage.$$('article');
     for (const product of bonusProducts) {
-      const productName = await product
+      const label = await product
         .$('span.line-clamp')
         .then((e) => e.getProperty('textContent'))
         .then((e) => e.jsonValue());
@@ -55,8 +62,9 @@ const scrapeAlbertHeijn = async () => {
       await product
         .$$('div.price-amount_root__2jJz9')
         .then((es) => (es.length > 1 ? es[1] : es[0]))
-        .then((e) => e.$$('span'))
+        .then((e) => (e ? e.$$('span') : null))
         .then(async (es) => {
+          if (!es) return;
           for (const e of es) {
             const value = await e.getProperty('textContent').then((textContent) => textContent.jsonValue());
             newPrice = `${newPrice}${value}`;
@@ -76,16 +84,16 @@ const scrapeAlbertHeijn = async () => {
           }
         });
       newPrice = Number.parseFloat(newPrice);
-      console.info({
-        categoryName,
-        imageSrc,
-        productName,
-        productImageSrc,
+      await db.Product.create({
+        id: uuid.v4(),
+        category: uuid.v4(), // TODO
+        label,
+        image: productImageSrc,
         amount,
-        discountType,
+        discount_type: discountType,
         availability,
         link,
-        newPrice,
+        new_price: newPrice,
       });
     }
     await categoryPage.close();

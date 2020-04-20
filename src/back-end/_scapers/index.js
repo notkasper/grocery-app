@@ -1,9 +1,11 @@
-// const scrapeAlbertHeijn = require('./albertHeijn');
-const scrapeJumbo = require('./jumbo');
+const scrapeAlbertHeijn = require('./albertHeijn');
+const models = require('../models');
+// const scrapeJumbo = require('./jumbo');
 
 const run = async () => {
-  //   await scrapeAlbertHeijn();
-  await scrapeJumbo();
+  await models.umzug.up();
+  await scrapeAlbertHeijn();
+  // await scrapeJumbo();
 };
 
 run();

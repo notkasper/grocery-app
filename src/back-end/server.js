@@ -10,13 +10,15 @@ const xssClean = require('xss-clean');
 const hpp = require('hpp');
 const cors = require('cors');
 const chalk = require('chalk');
-require('./models');
 
+const db = require('./models');
 const products = require('./routes/products');
 
 let server;
 
-const start = () => {
+const start = async () => {
+  await db.umzug.up();
+
   const app = express();
 
   if (process.env.NODE_ENV === 'development') {
@@ -64,6 +66,7 @@ const start = () => {
 };
 
 const stop = () => {
+  db.sequelize.close();
   server.close();
 };
 
