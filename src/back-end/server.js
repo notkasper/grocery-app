@@ -10,6 +10,7 @@ const xssClean = require('xss-clean');
 const hpp = require('hpp');
 const cors = require('cors');
 const chalk = require('chalk');
+require('./models');
 
 const products = require('./routes/products');
 
