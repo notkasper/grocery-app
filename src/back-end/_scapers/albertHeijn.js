@@ -5,6 +5,31 @@ const uuid = require('uuid');
 const { autoScroll } = require('./_utils');
 const db = require('../models');
 
+const parseAvailabilityTill = (unparsed) => {
+  const daynameMap = {
+    maandag: 'mon',
+    dinsdag: 'tue',
+    woensdag: 'wed',
+    donderdag: 'thu',
+    vrijdag: 'fri',
+    zaterdag: 'sat',
+    zondag: 'sun',
+  };
+  const getNextDayOfTheWeek = (dayName, excludeToday = true, refDate = new Date()) => {
+    const dayOfWeek = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'].indexOf(dayName.slice(0, 3).toLowerCase());
+    if (dayOfWeek < 0) return null;
+    refDate.setHours(0, 0, 0, 0);
+    // eslint-disable-next-line max-len
+    refDate.setDate(refDate.getDate() + !!excludeToday + (((dayOfWeek + 7 - refDate.getDay() - !!excludeToday) % 7) + 1));
+    return refDate;
+  };
+
+  const trimmed = unparsed.replace('t/m', '').trim().toLowerCase();
+  const parsed = getNextDayOfTheWeek(daynameMap[trimmed], false);
+
+  return parsed;
+};
+
 const scrapeAlbertHeijn = async () => {
   const browser = await puppeteer.launch({ headless: false });
   const page = await browser.newPage();
@@ -50,7 +75,7 @@ const scrapeAlbertHeijn = async () => {
         .$('span.shield_text__iFLQN')
         .then((e) => e.getProperty('textContent'))
         .then((e) => e.jsonValue());
-      const availability = await product
+      const availableTill = await product
         .$('p.smart-label_bonus__27_aC span.line-clamp')
         .then((e) => (e ? e.getProperty('textContent') : null))
         .then((e) => (e ? e.jsonValue() : null));
@@ -91,7 +116,8 @@ const scrapeAlbertHeijn = async () => {
         image: productImageSrc,
         amount,
         discount_type: discountType,
-        availability,
+        availability_from: null,
+        availability_till: availableTill ? parseAvailabilityTill(availableTill) : null,
         link,
         new_price: newPrice,
         discounted: true,
