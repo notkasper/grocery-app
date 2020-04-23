@@ -16,6 +16,33 @@ const ProductShowcase = styled.div`
   padding: 15px;
 `;
 
+const products = [
+  {
+    image: gember,
+    storeName: 'jumbo',
+    title: 'Super gember mega cool',
+    amountText: '1kg',
+    cost: '0.99',
+    likes: 32,
+  },
+  {
+    image: worstjes,
+    storeName: 'albertHeijn',
+    title: 'worstjes',
+    amountText: '500g',
+    cost: '1.50',
+    likes: 12340,
+  },
+  {
+    image: worstjes,
+    storeName: 'albertHeijn',
+    title: 'worstjes',
+    amountText: '500g',
+    cost: '1.50',
+    likes: 4324,
+  },
+];
+
 @inject('applicationStore')
 @observer
 class App extends Component {
@@ -24,19 +51,16 @@ class App extends Component {
     return (
       <>
         <ProductShowcase>
-          <ProductCard image={gember} storeName="jumbo" />
-          <ProductCard image={worstjes} storeName="albertHeijn" />
-          <ProductCard image={worstjes} storeName="albertHeijn" />
-        </ProductShowcase>
-        <ProductShowcase>
-          <ProductCard image={gember} storeName="jumbo" />
-          <ProductCard image={worstjes} storeName="albertHeijn" />
-          <ProductCard image={worstjes} storeName="albertHeijn" />
-        </ProductShowcase>
-        <ProductShowcase>
-          <ProductCard image={gember} storeName="jumbo" />
-          <ProductCard image={worstjes} storeName="albertHeijn" />
-          <ProductCard image={worstjes} storeName="albertHeijn" />
+          {products.map((product) => (
+            <ProductCard
+              image={product.image}
+              storeName={product.storeName}
+              title={product.title}
+              amountText={product.amountText}
+              cost={product.cost}
+              likes={product.likes}
+            />
+          ))}
         </ProductShowcase>
       </>
     );
