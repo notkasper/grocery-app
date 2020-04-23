@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'mobx-react';
@@ -10,10 +11,8 @@ const mountNode = document.getElementById('root');
 
 // eslint-disable-next-line no-unused-expressions
 const GlobalStyle = createGlobalStyle`
-  @import url('https://fonts.googleapis.com/css?family=Montserrat|Roboto');
-
   body {
-    font-family: robo, sans-serif;
+    font-family: 'Work Sans', sans-serif;
   }
 `;
 

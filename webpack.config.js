@@ -22,15 +22,16 @@ const config = {
         use: 'file-loader',
       },
       {
-        test: /\.png$/,
+        test: /\.(png|jpe?g|gif)$/i,
         use: [
           {
-            loader: 'url-loader',
-            options: {
-              mimetype: 'image/png',
-            },
+            loader: 'file-loader',
           },
         ],
+      },
+      {
+        test: /\.svg$/,
+        loader: 'svg-inline-loader',
       },
     ],
   },

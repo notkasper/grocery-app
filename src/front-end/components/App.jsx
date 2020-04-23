@@ -5,11 +5,15 @@ import styled from 'styled-components';
 // import PropTypes from 'prop-types';
 import ProductCard from './ProductCard';
 
+import gember from '../assets/gember.png';
+import worstjes from '../assets/worstjes.jpg';
+
 const ProductShowcase = styled.div`
   display: grid;
   grid-template-columns: repeat(5, 1fr);
+  grid-gap: 10px;
   background-color: #f1f6fa;
-  padding: 20px;
+  padding: 15px;
 `;
 
 @inject('applicationStore')
@@ -18,9 +22,23 @@ class App extends Component {
   render() {
     const { applicationStore } = this.props;
     return (
-      <ProductShowcase>
-        <ProductCard />
-      </ProductShowcase>
+      <>
+        <ProductShowcase>
+          <ProductCard image={gember} storeName="jumbo" />
+          <ProductCard image={worstjes} storeName="albertHeijn" />
+          <ProductCard image={worstjes} storeName="albertHeijn" />
+        </ProductShowcase>
+        <ProductShowcase>
+          <ProductCard image={gember} storeName="jumbo" />
+          <ProductCard image={worstjes} storeName="albertHeijn" />
+          <ProductCard image={worstjes} storeName="albertHeijn" />
+        </ProductShowcase>
+        <ProductShowcase>
+          <ProductCard image={gember} storeName="jumbo" />
+          <ProductCard image={worstjes} storeName="albertHeijn" />
+          <ProductCard image={worstjes} storeName="albertHeijn" />
+        </ProductShowcase>
+      </>
     );
   }
 }
