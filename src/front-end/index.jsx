@@ -2,6 +2,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'mobx-react';
+import 'mobx-react/batchingForReactDom';
 import { createGlobalStyle } from 'styled-components';
 import { Reset as StyledReset } from 'styled-reset';
 import applicationStore from './stores/application';

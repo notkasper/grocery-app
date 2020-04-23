@@ -5,7 +5,12 @@
     "node": true,
     "jest": true
   },
-  "extends": ["plugin:react/recommended", "airbnb"],
+  "extends": [
+    "airbnb",
+    "plugin:prettier/recommended",
+    "plugin:react/recommended"
+    "prettier"
+  ],
   "globals": {
     "Atomics": "readonly",
     "SharedArrayBuffer": "readonly"
@@ -25,6 +30,7 @@
     "arrow-parens": 0,
     "no-console": ["error", { "allow": ["warn", "error", "info"] }],
     "prettier/prettier": ["error"],
-    "max-len": ["error", { "code": 120 }]
+    "max-len": ["error", { "code": 120 }],
+    "object-curly-newline": ["error", { "multiline": true, "minProperties": 4 }]
   }
 }

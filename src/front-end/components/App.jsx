@@ -1,8 +1,6 @@
-import React, { Component } from 'react';
-import { hot } from 'react-hot-loader/root';
-import { observer, inject, PropTypes as MobxPropTypes } from 'mobx-react';
+import React from 'react';
+import { observer, inject } from 'mobx-react';
 import styled from 'styled-components';
-// import PropTypes from 'prop-types';
 import ProductCard from './ProductCard';
 
 import gember from '../assets/gember.png';
@@ -18,6 +16,7 @@ const ProductShowcase = styled.div`
 
 const products = [
   {
+    id: 1,
     image: gember,
     storeName: 'jumbo',
     title: 'Super gember mega cool',
@@ -26,6 +25,7 @@ const products = [
     likes: 32,
   },
   {
+    id: 2,
     image: worstjes,
     storeName: 'albertHeijn',
     title: 'worstjes',
@@ -34,20 +34,19 @@ const products = [
     likes: 12340,
   },
   {
+    id: 3,
     image: worstjes,
     storeName: 'albertHeijn',
     title: 'worstjes',
-    amountText: '500g',
+    amountText: '502g',
     cost: '1.50',
     likes: 4324,
   },
 ];
 
-@inject('applicationStore')
-@observer
-class App extends Component {
-  render() {
-    const { applicationStore } = this.props;
+const App = inject('applicationStore')(
+  observer((props) => {
+    console.info(props.applicationStore.foo);
     return (
       <>
         <ProductShowcase>
@@ -59,16 +58,15 @@ class App extends Component {
               amountText={product.amountText}
               cost={product.cost}
               likes={product.likes}
+              key={product.id}
             />
           ))}
         </ProductShowcase>
       </>
     );
-  }
-}
+  })
+);
 
-App.propTypes = {
-  applicationStore: MobxPropTypes.observableObject.isRequired,
-};
+App.propTypes = {};
 
-export default hot(App);
+export default App;
