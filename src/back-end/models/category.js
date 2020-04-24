@@ -7,11 +7,9 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.UUID,
       },
       label: DataTypes.STRING,
-      image: DataTypes.STRING,
+      svg: DataTypes.STRING,
     },
-    {
-      freezeTableName: true,
-    }
+    { freezeTableName: true }
   );
 
   return Category;

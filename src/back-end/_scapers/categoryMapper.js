@@ -1,0 +1,22 @@
+module.exports = {
+  albertHeijn: {
+    'Aardappel, groente, fruit': '81f25338-9164-44e0-854f-f1e1e205fc5c',
+    'Salades, pizza, maaltijden': '11f3a62f-4df7-4fd7-b985-03366a9d3ecd',
+    'Vlees, kip, vis, vega': '85698cd6-d8eb-4883-8dd2-ba1c1733ec13',
+    'Kaas, vleeswaren, tapas': '4d19851c-c0c9-48d6-85b2-ae007237f3a9',
+    'Boter, eieren, zuivel': '444e3a99-8c88-4b09-b70a-0d5108e09906',
+    'Brood en gebak': '3cee0cd0-0a1c-46ce-90fe-e93b824df04d',
+    'Ontbijtgranen, beleg, tussendoor': '143ca1c5-2d7e-491a-8e59-0a5c25e4f9e3',
+    'Frisdrank, koffie, thee, sappen': '6dc98c4d-8e40-46b3-bc15-4121dad2a954',
+    Wijn: '2e67fcdc-37b0-4782-96c2-f1ed9edf2623',
+    'Bier en sterke drank': 'd64fb66e-ba1a-460a-8235-1359ec619d3e',
+    'Pasta, rijst, wereldkeuken': '7c5ad839-a50d-4d6b-b100-852d1a9d6308',
+    'Soepen, sauzen, kruiden, olie': '9eb0ce98-ad14-43ff-b04d-e086c48252de',
+    'Chips, koek, snoep, chocolade': 'f0017007-b349-4b59-8cf9-3bf456e01c80',
+    Diepvries: '2d07a92d-de8a-4948-809b-9d38b4cd9431',
+    'Baby, drogisterij': '67937d0d-f761-4dc9-acb5-91952b082f3a',
+    'Bewuste voeding': 'd9f1b75f-5ace-4aa9-b79a-2a30a1a76f01',
+    'Huishouden, huisdier': '47cb0d4a-97e9-49c9-acd7-558b24b2ca43',
+    'Koken, tafelen, vrije tijd': 'd2be8627-1593-4547-81d9-9aed82e2b30c',
+  },
+};

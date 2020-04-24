@@ -1,5 +1,6 @@
 /* eslint-disable no-await-in-loop */
-const wait = async (ms) => new Promise((resolve) => setTimeout(() => resolve(), ms));
+const wait = async (ms) =>
+  new Promise((resolve) => setTimeout(() => resolve(), ms));
 
 const autoScroll = async (page) => {
   // Get the height of the rendered page

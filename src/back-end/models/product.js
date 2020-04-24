@@ -17,9 +17,7 @@ module.exports = (sequelize, DataTypes) => {
       new_price: DataTypes.NUMBER,
       discounted: DataTypes.BOOLEAN,
     },
-    {
-      freezeTableName: true,
-    }
+    { freezeTableName: true }
   );
 
   return Product;

@@ -55,7 +55,11 @@ const start = async () => {
   app.use((error, req, res, next) => res.status(500).send({ error }));
 
   const { PORT, NODE_ENV } = process.env;
-  server = app.listen(PORT, () => console.info(chalk.yellow.bold(`Server running in ${NODE_ENV} mode on port ${PORT}`)));
+  server = app.listen(PORT, () =>
+    console.info(
+      chalk.yellow.bold(`Server running in ${NODE_ENV} mode on port ${PORT}`)
+    )
+  );
 
   process.on('unhandledRejection', (error) => {
     console.error(chalk.red.bold(`Error: ${error.message}`));

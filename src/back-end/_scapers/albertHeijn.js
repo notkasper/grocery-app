@@ -4,6 +4,7 @@ const puppeteer = require('puppeteer');
 const uuid = require('uuid');
 const { autoScroll } = require('./_utils');
 const db = require('../models');
+const categoryMapper = require('./categoryMapper');
 
 const parseAvailabilityTill = (unparsed) => {
   const daynameMap = {
@@ -15,12 +16,22 @@ const parseAvailabilityTill = (unparsed) => {
     zaterdag: 'sat',
     zondag: 'sun',
   };
-  const getNextDayOfTheWeek = (dayName, excludeToday = true, refDate = new Date()) => {
-    const dayOfWeek = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'].indexOf(dayName.slice(0, 3).toLowerCase());
+  const getNextDayOfTheWeek = (
+    dayName,
+    excludeToday = true,
+    refDate = new Date()
+  ) => {
+    const dayOfWeek = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'].indexOf(
+      dayName.slice(0, 3).toLowerCase()
+    );
     if (dayOfWeek < 0) return null;
     refDate.setHours(0, 0, 0, 0);
     // eslint-disable-next-line max-len
-    refDate.setDate(refDate.getDate() + !!excludeToday + (((dayOfWeek + 7 - refDate.getDay() - !!excludeToday) % 7) + 1));
+    refDate.setDate(
+      refDate.getDate() +
+        !!excludeToday +
+        (((dayOfWeek + 7 - refDate.getDay() - !!excludeToday) % 7) + 1)
+    );
     return refDate;
   };
 
@@ -35,21 +46,18 @@ const scrapeAlbertHeijn = async () => {
   const page = await browser.newPage();
   await page.goto('https://www.ah.nl/producten');
 
-  const categoryOverviews = await page.$$('div.product-category-overview_category__E6EMG');
+  const categoryOverviews = await page.$$(
+    'div.product-category-overview_category__E6EMG'
+  );
   for (const categoryOverview of categoryOverviews) {
     const categoryName = await categoryOverview
       .$('a.taxonomy-card_titleLink__1Dgai')
       .then((e) => e.getProperty('textContent'))
       .then((e) => e.jsonValue());
-    const imageSrc = await categoryOverview
-      .$('img.taxonomy-card_image__2W_2r')
-      .then((e) => e.getProperty('src'))
-      .then((e) => e.jsonValue());
-    await db.Category.create({
-      id: uuid.v4(),
-      label: categoryName,
-      image: imageSrc,
-    });
+    // const imageSrc = await categoryOverview
+    //   .$('img.taxonomy-card_image__2W_2r')
+    //   .then((e) => e.getProperty('src'))
+    //   .then((e) => e.jsonValue());
     const categoryHref = await categoryOverview
       .$('a.taxonomy-card_titleLink__1Dgai')
       .then((e) => e.getProperty('href'))
@@ -91,7 +99,9 @@ const scrapeAlbertHeijn = async () => {
         .then(async (es) => {
           if (!es) return;
           for (const e of es) {
-            const value = await e.getProperty('textContent').then((textContent) => textContent.jsonValue());
+            const value = await e
+              .getProperty('textContent')
+              .then((textContent) => textContent.jsonValue());
             newPrice = `${newPrice}${value}`;
           }
         });
@@ -104,20 +114,24 @@ const scrapeAlbertHeijn = async () => {
         .then(async (es) => {
           if (!es) return;
           for (const e of es) {
-            const value = await e.getProperty('textContent').then((textContent) => textContent.jsonValue());
+            const value = await e
+              .getProperty('textContent')
+              .then((textContent) => textContent.jsonValue());
             oldPrice = `${oldPrice}${value}`;
           }
         });
       newPrice = Number.parseFloat(newPrice);
       await db.Product.create({
         id: uuid.v4(),
-        category: uuid.v4(), // TODO
+        category: categoryMapper.albertHeijn[categoryName] || null,
         label,
         image: productImageSrc,
         amount,
         discount_type: discountType,
         availability_from: null,
-        availability_till: availableTill ? parseAvailabilityTill(availableTill) : null,
+        availability_till: availableTill
+          ? parseAvailabilityTill(availableTill)
+          : null,
         link,
         new_price: newPrice,
         discounted: true,

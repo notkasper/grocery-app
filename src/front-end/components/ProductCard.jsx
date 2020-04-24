@@ -134,6 +134,7 @@ const Svg = styled.svg`
 const FooterDiv = styled.div``;
 
 const ProductCard = (props) => {
+  // eslint-disable-next-line object-curly-newline
   const { storeName, amountText, image, title, cost, likes } = props;
   return (
     <Container>

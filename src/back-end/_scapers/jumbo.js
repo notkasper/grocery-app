@@ -23,14 +23,22 @@ const scrapeJumbo = async () => {
   for (const categoryLink of categoryLinks) {
     const [categoryName, categoryCount] = await categoryLink
       .$$('span')
-      .then(async ([e1, e2]) => [await e1.getProperty('textContent'), await e2.getProperty('textContent')])
+      .then(async ([e1, e2]) => [
+        await e1.getProperty('textContent'),
+        await e2.getProperty('textContent'),
+      ])
       .then(async ([e1, e2]) => [await e1.jsonValue(), await e2.jsonValue()])
-      .then(([e1, e2]) => [e1, Number.parseInt(e2.slice(1, e2.length - 1), 10)]);
+      .then(([e1, e2]) => [
+        e1,
+        Number.parseInt(e2.slice(1, e2.length - 1), 10),
+      ]);
     const categoryPage = await browser.newPage();
     await categoryPage.setViewport({ width: 1366, height: 768 });
     const pageSize = 25;
     for (let offset = 0; offset < categoryCount; offset += pageSize) {
-      await categoryPage.goto(`${baseUrl}/categorieen/${categoryName}?offSet=${offset}&pageSize=${pageSize}`);
+      await categoryPage.goto(
+        `${baseUrl}/categorieen/${categoryName}?offSet=${offset}&pageSize=${pageSize}`
+      );
       await wait(2000);
       // TODO: Hardcoded wait for products to load, find a better way to do this
       const products = await categoryPage.$$('div.jum-card-grid div.jum-card');
@@ -60,11 +68,17 @@ const scrapeJumbo = async () => {
               .$('a')
               .then((e) => (e ? e.getProperty('href') : null))
               .then((e) => (e ? e.jsonValue() : null));
-            const newPrice = await product.$$('span.jum-product-price__current-price span').then(async ([e1, e2]) => {
-              const euros = await e1.getProperty('textContent').then((e) => e.jsonValue());
-              const cents = await e2.getProperty('textContent').then((e) => e.jsonValue());
-              return Number.parseFloat(`${euros}.${cents}`);
-            });
+            const newPrice = await product
+              .$$('span.jum-product-price__current-price span')
+              .then(async ([e1, e2]) => {
+                const euros = await e1
+                  .getProperty('textContent')
+                  .then((e) => e.jsonValue());
+                const cents = await e2
+                  .getProperty('textContent')
+                  .then((e) => e.jsonValue());
+                return Number.parseFloat(`${euros}.${cents}`);
+              });
             if (discountType) {
               const productPage = await browser.newPage();
               await productPage.setViewport({ width: 1366, height: 768 });
@@ -76,8 +90,12 @@ const scrapeJumbo = async () => {
               await productPage.close();
 
               const year = new Date().getFullYear();
-              const [fromDay, fromMonth] = availability.substring(9, 14).split('-');
-              const [tillDay, tillMonth] = availability.substring(17, 22).split('-');
+              const [fromDay, fromMonth] = availability
+                .substring(9, 14)
+                .split('-');
+              const [tillDay, tillMonth] = availability
+                .substring(17, 22)
+                .split('-');
 
               const availabilityFrom = new Date(year, fromMonth, fromDay);
               const availabilityTill = new Date(year, tillMonth, tillDay);
