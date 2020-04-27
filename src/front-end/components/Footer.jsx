@@ -1,8 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useHistory } from 'react-router-dom';
-import ShopSvg from '../assets/checklist.svg';
-import ChecklistSvg from '../assets/shop.svg';
+import ShopSvg from '../assets/shop.svg';
+import ChecklistSvg from '../assets/checklist.svg';
 import HeartSvg from '../assets/heart.svg';
 
 const Container = styled.div`
