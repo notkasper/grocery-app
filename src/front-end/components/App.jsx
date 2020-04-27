@@ -1,68 +1,41 @@
 import React from 'react';
 import { observer, inject } from 'mobx-react';
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import styled from 'styled-components';
-import ProductCard from './ProductCard';
+import Footer from './Footer';
+import NavBar from './NavBar';
+import ExplorePage from './ExplorePage';
 
-import gember from '../assets/gember.png';
-import worstjes from '../assets/worstjes.jpg';
-
-const ProductShowcase = styled.div`
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  grid-gap: 10px;
-  background-color: #f1f6fa;
-  padding: 15px;
+const PageContainer = styled.div`
+  max-width: 100vw;
+  overflow: hidden;
 `;
-
-const products = [
-  {
-    id: 1,
-    image: gember,
-    storeName: 'jumbo',
-    title: 'Super gember mega cool',
-    amountText: '1kg',
-    cost: '0.99',
-    likes: 32,
-  },
-  {
-    id: 2,
-    image: worstjes,
-    storeName: 'albertHeijn',
-    title: 'worstjes',
-    amountText: '500g',
-    cost: '1.50',
-    likes: 12340,
-  },
-  {
-    id: 3,
-    image: worstjes,
-    storeName: 'albertHeijn',
-    title: 'worstjes',
-    amountText: '502g',
-    cost: '1.50',
-    likes: 4324,
-  },
-];
 
 const App = inject('applicationStore')(
   observer((props) => {
     console.info(props.applicationStore.foo);
     return (
-      <>
-        <ProductShowcase>
-          {products.map((product) => (
-            <ProductCard
-              image={product.image}
-              storeName={product.storeName}
-              title={product.title}
-              amountText={product.amountText}
-              cost={product.cost}
-              likes={product.likes}
-              key={product.id}
-            />
-          ))}
-        </ProductShowcase>
-      </>
+      <Router>
+        <NavBar />
+        <PageContainer>
+          <Switch>
+            <Route path="/explore">
+              <ExplorePage />
+            </Route>
+            <Route path="/favourites">
+              <div>
+                <p>FAVOURITES</p>
+              </div>
+            </Route>
+            <Route path="/list">
+              <div>
+                <p>LIST</p>
+              </div>
+            </Route>
+          </Switch>
+        </PageContainer>
+        <Footer />
+      </Router>
     );
   })
 );
