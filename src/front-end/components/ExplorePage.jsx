@@ -2,9 +2,13 @@ import React from 'react';
 import { observer, inject } from 'mobx-react';
 import styled from 'styled-components';
 import ProductCard from './ProductCard';
-
 import gember from '../assets/gember.png';
 import worstjes from '../assets/worstjes.jpg';
+
+import AppleSvg from '../assets/apple.svg';
+import BreadSvg from '../assets/bread.svg';
+import CookieSvg from '../assets/cookie.svg';
+import CarrotSvg from '../assets/carrot.svg';
 
 const Container = styled.div`
   background-color: #f1f6fa;
@@ -12,6 +16,66 @@ const Container = styled.div`
   display: grid;
   grid-gap: 10px;
   grid-template-columns: 1fr;
+  margin-bottom: 50px;
+`;
+
+const CategoriesContainer = styled.div`
+  padding-bottom: 20px;
+  display: flex;
+`;
+
+const CategoryContainer = styled.div`
+  width: 100px;
+  height: 100px;
+  padding-right: 10px;
+`;
+
+const CategoryBubble = styled.div`
+  background: #ffffff;
+  box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.25);
+  border-radius: 100%;
+  width: 100%;
+  height: 100%;
+`;
+
+const CategoryLabel = styled.div`
+  padding-top: 5px;
+  font-family: Work Sans;
+  font-style: normal;
+  font-weight: 200;
+  font-size: 18px;
+  line-height: 21px;
+  text-align: center;
+
+  color: #000000;
+`;
+
+const Apple = styled(AppleSvg)`
+  fill: #44c062;
+  width: 50%;
+  height: 50%;
+  padding: 25%;
+`;
+
+const Carrot = styled(CarrotSvg)`
+  fill: #44c062;
+  width: 50%;
+  height: 50%;
+  padding: 25%;
+`;
+
+const Bread = styled(BreadSvg)`
+  fill: #44c062;
+  width: 50%;
+  height: 50%;
+  padding: 25%;
+`;
+
+const Cookie = styled(CookieSvg)`
+  fill: #44c062;
+  width: 50%;
+  height: 50%;
+  padding: 25%;
 `;
 
 const Header = styled.p`
@@ -80,6 +144,32 @@ const App = inject('applicationStore')(
     console.info(props.applicationStore.foo);
     return (
       <Container>
+        <CategoriesContainer>
+          <CategoryContainer>
+            <CategoryBubble>
+              <Apple />
+            </CategoryBubble>
+            <CategoryLabel>Fruit</CategoryLabel>
+          </CategoryContainer>
+          <CategoryContainer>
+            <CategoryBubble>
+              <Carrot />
+            </CategoryBubble>
+            <CategoryLabel>Fruit</CategoryLabel>
+          </CategoryContainer>
+          <CategoryContainer>
+            <CategoryBubble>
+              <Bread />
+            </CategoryBubble>
+            <CategoryLabel>Fruit</CategoryLabel>
+          </CategoryContainer>
+          <CategoryContainer>
+            <CategoryBubble>
+              <Cookie />
+            </CategoryBubble>
+            <CategoryLabel>Fruit</CategoryLabel>
+          </CategoryContainer>
+        </CategoriesContainer>
         <Header>
           <HeaderTitle>Nieuwe deals</HeaderTitle>
           <HeaderNav>Bekijk alle deals &gt;</HeaderNav>
