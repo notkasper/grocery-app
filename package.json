@@ -10,8 +10,18 @@
     "build:prod": "webpack -p --mode production",
     "dev": "concurrently \"npm run back-end:dev\" \"npm run build:dev\"",
     "test": "jest",
-    "lint": "eslint ./src/** --max-warnings 0",
+    "lint": "cd ./src && eslint . --max-warnings 0",
     "scrapers": "node ./src/back-end/_scapers"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "./src": [
+      "npm run lint"
+    ]
   },
   "keywords": [],
   "author": "",
@@ -56,6 +66,7 @@
     "@babel/plugin-transform-runtime": "^7.9.0",
     "@babel/preset-env": "^7.9.5",
     "@babel/preset-react": "^7.9.4",
+    "@svgr/webpack": "^5.4.0",
     "@types/jest": "^25.2.1",
     "babel-jest": "^25.3.0",
     "babel-loader": "^8.1.0",

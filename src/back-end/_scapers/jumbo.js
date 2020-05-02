@@ -85,18 +85,18 @@ const scrapeJumbo = async () => {
               await productPage.setViewport({ width: 1366, height: 768 });
               await productPage.goto(link);
               const availability = await productPage
-                .$('div.jum-promotion-date div')
+                .$('div.promotion-disclaimer h6')
                 .then((e) => (e ? e.getProperty('textContent') : null))
                 .then((e) => (e ? e.jsonValue() : null));
               await productPage.close();
 
+              const [from, till] = availability
+                .substring(25, 40)
+                .split(' t/m ');
+              const [fromDay, fromMonth] = from.split('-');
+              const [tillDay, tillMonth] = till.split('-');
+
               const year = new Date().getFullYear();
-              const [fromDay, fromMonth] = availability
-                .substring(9, 14)
-                .split('-');
-              const [tillDay, tillMonth] = availability
-                .substring(17, 22)
-                .split('-');
 
               const availabilityFrom = new Date(year, fromMonth, fromDay);
               const availabilityTill = new Date(year, tillMonth, tillDay);

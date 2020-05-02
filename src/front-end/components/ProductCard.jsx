@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import heartSvg from '../assets/heart';
+import HeartSvg from '../assets/filledHeart.svg';
 
 const storeProps = {
   jumbo: {
@@ -123,7 +123,7 @@ const FooterTextLeft = styled.p`
   color: #000000;
 `;
 
-const Svg = styled.svg`
+const Heart = styled(HeartSvg)`
   display: inline-block;
   width: 12px;
   height: 12px;
@@ -161,9 +161,7 @@ const ProductCard = (props) => {
           </FooterDiv>
           <FooterDiv>
             <FooterTextRight>{likes}</FooterTextRight>
-            <Svg viewBox="0 0 512 512">
-              <path d={heartSvg} />
-            </Svg>
+            <Heart />
           </FooterDiv>
         </CardFooter>
       </SubCard>

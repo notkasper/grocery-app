@@ -8,7 +8,7 @@ const config = {
   entry: ['react-hot-loader/patch', './src/front-end'],
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: '[name].[contenthash].js',
+    filename: '[name].[hash].js',
   },
   module: {
     rules: [
@@ -18,33 +18,36 @@ const config = {
         exclude: /node_modules/,
       },
       {
-        test: /\.svg$/,
-        use: 'file-loader',
+        test: /\.(png|jpe?g|gif)$/i,
+        use: [{ loader: 'file-loader' }],
       },
       {
-        test: /\.(png|jpe?g|gif)$/i,
+        test: /\.svg$/,
         use: [
           {
-            loader: 'file-loader',
+            loader: '@svgr/webpack',
+            options: { native: false },
           },
         ],
       },
-      {
-        test: /\.svg$/,
-        loader: 'svg-inline-loader',
-      },
     ],
   },
-  resolve: {
-    extensions: ['.js', '.jsx'],
-  },
+  resolve: { extensions: ['.js', '.jsx'] },
   devServer: {
     contentBase: './dist',
+    hot: true,
+    historyApiFallback: true,
+    port: 8080,
+    proxy: {
+      '/api/**': {
+        target: 'http://localhost:5000',
+        secure: false,
+        changeOrigin: true,
+      },
+    },
   },
   plugins: [
-    new HtmlWebpackPlugin({
-      template: './index.html',
-    }),
+    new HtmlWebpackPlugin({ template: './index.html' }),
     new LodashModuleReplacementPlugin(),
     new webpack.ContextReplacementPlugin(/moment[/\\]locale$/, /en/),
     new BundleAnalyzerPlugin({
