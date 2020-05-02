@@ -2,6 +2,7 @@
 /* eslint-disable no-await-in-loop */
 const puppeteer = require('puppeteer');
 const uuid = require('uuid');
+const categoryMapper = require('./categoryMapper');
 const { wait } = require('./_utils');
 const db = require('../models');
 
@@ -99,11 +100,10 @@ const scrapeJumbo = async () => {
 
               const availabilityFrom = new Date(year, fromMonth, fromDay);
               const availabilityTill = new Date(year, tillMonth, tillDay);
-
               productPromises.push(
                 db.Product.create({
                   id: uuid.v4(),
-                  category: uuid.v4(), // TODO
+                  category: categoryMapper.jumbo[categoryName],
                   label: label.substring(0, 250),
                   image: productImageSrc,
                   amount,

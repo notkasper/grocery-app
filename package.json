@@ -13,17 +13,6 @@
     "lint": "eslint ./src/** --max-warnings 0",
     "scrapers": "node ./src/back-end/_scapers"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
-  "lint-staged": {
-    "./src/**": [
-      "prettier --write",
-      "npm run lint"
-    ]
-  },
   "keywords": [],
   "author": "",
   "license": "ISC",

@@ -35,11 +35,7 @@ const categories = [
   },
   {
     id: '2e67fcdc-37b0-4782-96c2-f1ed9edf2623',
-    label: 'Wijn',
-  },
-  {
-    id: 'd64fb66e-ba1a-460a-8235-1359ec619d3e',
-    label: 'Bier en sterke drank',
+    label: 'Wijn, bier, sterke drank',
   },
   {
     id: '7c5ad839-a50d-4d6b-b100-852d1a9d6308',
