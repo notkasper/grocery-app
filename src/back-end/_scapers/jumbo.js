@@ -110,6 +110,7 @@ const scrapeJumbo = async () => {
                   discount_type: discountType,
                   availability_from: availabilityFrom,
                   availability_till: availabilityTill,
+                  store_name: 'jumbo',
                   link,
                   new_price: newPrice,
                   discounted: true,

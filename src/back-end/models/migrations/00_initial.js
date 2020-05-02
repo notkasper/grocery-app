@@ -85,6 +85,7 @@ module.exports = {
       discount_type: Sequelize.STRING,
       availability_from: Sequelize.DATE,
       availability_till: Sequelize.DATE,
+      store_name: Sequelize.STRING,
       link: Sequelize.STRING(1000),
       new_price: Sequelize.DOUBLE,
       discounted: Sequelize.BOOLEAN,

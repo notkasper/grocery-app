@@ -12,8 +12,7 @@ const PageContainer = styled.div`
 `;
 
 const App = inject('applicationStore')(
-  observer((props) => {
-    console.info(props.applicationStore.foo);
+  observer(() => {
     return (
       <Router>
         <NavBar />

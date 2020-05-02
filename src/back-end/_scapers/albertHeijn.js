@@ -132,6 +132,7 @@ const scrapeAlbertHeijn = async () => {
         availability_till: availableTill
           ? parseAvailabilityTill(availableTill)
           : null,
+        store_name: 'albert_heijn',
         link,
         new_price: newPrice,
         discounted: true,

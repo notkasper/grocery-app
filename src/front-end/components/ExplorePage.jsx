@@ -1,9 +1,7 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { observer, inject } from 'mobx-react';
 import styled from 'styled-components';
 import ProductCard from './ProductCard';
-import gember from '../assets/gember.png';
-import worstjes from '../assets/worstjes.jpg';
 
 import AppleSvg from '../assets/apple.svg';
 import BreadSvg from '../assets/bread.svg';
@@ -78,7 +76,7 @@ const Cookie = styled(CookieSvg)`
   padding: 25%;
 `;
 
-const Header = styled.p`
+const Header = styled.div`
   max-width: calc(100vw - 20px);
   display: flex;
   justify-content: space-between;
@@ -109,39 +107,18 @@ const ProductShowcase = styled.div`
   grid-gap: 10px;
 `;
 
-const products = [
-  {
-    id: 1,
-    image: gember,
-    storeName: 'jumbo',
-    title: 'Super gember mega cool',
-    amountText: '1kg',
-    cost: '0.99',
-    likes: 32,
-  },
-  {
-    id: 2,
-    image: worstjes,
-    storeName: 'albertHeijn',
-    title: 'worstjes',
-    amountText: '500g',
-    cost: '1.50',
-    likes: 12340,
-  },
-  {
-    id: 3,
-    image: worstjes,
-    storeName: 'albertHeijn',
-    title: 'worstjes',
-    amountText: '500g',
-    cost: '1.50',
-    likes: 12340,
-  },
-];
-
 const App = inject('applicationStore')(
   observer((props) => {
-    console.info(props.applicationStore.foo);
+    const { applicationStore } = props;
+    const [loading, setLoading] = useState(false);
+    const loadProducts = async () => {
+      setLoading(true);
+      await applicationStore.getProducts();
+      setLoading(false);
+    };
+    useEffect(() => {
+      loadProducts();
+    }, []);
     return (
       <Container>
         <CategoriesContainer>
@@ -174,36 +151,44 @@ const App = inject('applicationStore')(
           <HeaderTitle>Nieuwe deals</HeaderTitle>
           <HeaderNav>Bekijk alle deals &gt;</HeaderNav>
         </Header>
-        <ProductShowcase>
-          {products.map((product) => (
-            <ProductCard
-              image={product.image}
-              storeName={product.storeName}
-              title={product.title}
-              amountText={product.amountText}
-              cost={product.cost}
-              likes={product.likes}
-              key={product.id}
-            />
-          ))}
-        </ProductShowcase>
+        {loading ? (
+          <p>Loading...</p>
+        ) : (
+          <ProductShowcase>
+            {Object.values(applicationStore.products).map((product) => (
+              <ProductCard
+                image={product.image}
+                storeName={product.store_name}
+                title={product.label}
+                amountText={product.amount}
+                cost={product.new_price}
+                likes={product.likes}
+                key={product.id}
+              />
+            ))}
+          </ProductShowcase>
+        )}
         <Header>
           <HeaderTitle>Populaire deals</HeaderTitle>
           <HeaderNav>Bekijk alle deals &gt;</HeaderNav>
         </Header>
-        <ProductShowcase>
-          {products.map((product) => (
-            <ProductCard
-              image={product.image}
-              storeName={product.storeName}
-              title={product.title}
-              amountText={product.amountText}
-              cost={product.cost}
-              likes={product.likes}
-              key={product.id}
-            />
-          ))}
-        </ProductShowcase>
+        {loading ? (
+          <p>Loading...</p>
+        ) : (
+          <ProductShowcase>
+            {Object.values(applicationStore.products).map((product) => (
+              <ProductCard
+                image={product.image}
+                storeName={product.store_name}
+                title={product.label}
+                amountText={product.amount}
+                cost={product.new_price}
+                likes={product.likes}
+                key={product.id}
+              />
+            ))}
+          </ProductShowcase>
+        )}
       </Container>
     );
   })
