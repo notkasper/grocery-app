@@ -14,6 +14,8 @@ const chalk = require('chalk');
 const db = require('./models');
 const products = require('./routes/products');
 
+const authMiddleware = require('./middleware/auth');
+
 let server;
 
 const start = async () => {
@@ -49,7 +51,7 @@ const start = async () => {
   // Set static folder
   app.use(express.static(path.join(__dirname, './dist')));
 
-  app.use('/api/v1/products', products);
+  app.use('/api/v1/products', authMiddleware, products);
 
   // eslint-disable-next-line no-unused-vars
   app.use((error, req, res, next) => res.status(500).send({ error }));
