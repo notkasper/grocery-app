@@ -9,7 +9,7 @@ const storeProps = {
     label: 'Jumbo',
     textColor: '#000',
   },
-  albertHeijn: {
+  albert_heijn: {
     headerColor: '#00ADE6',
     label: 'Albert Heijn',
     textColor: '#fff',

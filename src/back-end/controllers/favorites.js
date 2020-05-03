@@ -62,10 +62,10 @@ exports.getFavoriteOptions = async (req, res) => {
       return;
     }
 
-    if (term.length < 3) {
+    if (term.length < 2) {
       res
         .status(400)
-        .send({ error: 'Please provide a term with a length of at least 3' });
+        .send({ error: 'Please provide a term with a length of at least 2' });
       return;
     }
 
