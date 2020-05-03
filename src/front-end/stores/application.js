@@ -6,10 +6,13 @@ import {
   getProducts as getProductsService,
   getFavoriteOptions as getFavoriteOptionsService,
   addFavorite as addFavoriteService,
+  getFavorites as getFavoritesService,
 } from '../services/products';
 
 class ApplicationStore {
   @observable products = {};
+
+  @observable favorites = {};
 
   @observable authenticated = false;
 
@@ -24,7 +27,22 @@ class ApplicationStore {
         this.products[newProduct.id] = newProduct;
       });
     } catch (error) {
-      console.error(`Error while updating products: ${error}`);
+      console.error(`Error while getting products: ${error}`);
+    }
+  };
+
+  @action getFavorites = async () => {
+    try {
+      const idToken = await firebase.auth().currentUser.getIdToken();
+      const {
+        body: { data: newFavorites },
+      } = await getFavoritesService(idToken);
+      this.favorites = {};
+      newFavorites.forEach((newFavorite) => {
+        this.favorites[newFavorite.favorite.id] = newFavorite;
+      });
+    } catch (error) {
+      console.error(`Error while getting favorites: ${error}`);
     }
   };
 
@@ -34,7 +52,7 @@ class ApplicationStore {
       const idToken = await firebase.auth().currentUser.getIdToken();
       response = await getFavoriteOptionsService(idToken, term);
     } catch (error) {
-      console.error(`Error while updating products: ${error}`);
+      console.error(`Error while getting favorites: ${error}`);
     }
     return response;
   };
@@ -44,7 +62,7 @@ class ApplicationStore {
       const idToken = await firebase.auth().currentUser.getIdToken();
       await addFavoriteService(idToken, categoryId, term);
     } catch (error) {
-      console.error(`Error while updating products: ${error}`);
+      console.error(`Error while adding favorite: ${error}`);
     }
   };
 }

@@ -1,3 +1,5 @@
+/* eslint-disable no-restricted-syntax */
+/* eslint-disable no-await-in-loop */
 /* eslint-disable object-curly-newline */
 const _ = require('lodash');
 const uuid = require('uuid');
@@ -5,8 +7,29 @@ const { Op } = require('sequelize');
 const { Favorite, Product, Category } = require('../models');
 
 exports.getFavorites = async (req, res) => {
-  const favorites = await Favorite.findAll({ where: { user_id: req.user.id } });
-  res.status(200).send({ data: favorites });
+  const favorites = await Favorite.findAll({
+    where: { user_id: req.user.id },
+    raw: true,
+  });
+  const categories = await Category.findAll({ raw: true });
+  const richFavorites = [];
+  for (const favorite of favorites) {
+    const products = await Product.findAll({
+      where: {
+        label: {
+          [Op.iLike]: `%${favorite.term}%`,
+        },
+      },
+      limit: 1000,
+      raw: true,
+    });
+    richFavorites.push({
+      category: categories.find((cat) => cat.id === favorite.category_id),
+      products,
+      favorite,
+    });
+  }
+  res.status(200).send({ data: richFavorites });
 };
 
 exports.addFavorite = async (req, res) => {
@@ -53,9 +76,10 @@ exports.getFavoriteOptions = async (req, res) => {
         },
       },
       limit: 1000,
+      raw: true,
     });
 
-    const categories = await Category.findAll();
+    const categories = await Category.findAll({ raw: true });
 
     res.status(200).send({ data: { products, categories } });
   } catch (error) {

@@ -144,6 +144,7 @@ const AddFavoritePage = inject('applicationStore')(
               count={results[key].count}
               onClick={async () => {
                 await applicationStore.addFavorite(key, term);
+                applicationStore.getFavorites();
                 history.push('/favorites');
               }}
             >

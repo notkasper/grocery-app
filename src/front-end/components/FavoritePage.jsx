@@ -1,26 +1,35 @@
-import React from 'react';
+/* eslint-disable react/no-array-index-key */
+import React, { useState, useEffect } from 'react';
 import { observer, inject } from 'mobx-react';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
+import ProductCard from './ProductCard';
 import PlusSvg from '../assets/plus.svg';
 
 const Container = styled.div`
   background-color: #f1f6fa;
   padding: 10px;
-  display: grid;
   grid-gap: 10px;
-  grid-template-columns: 1fr;
-  margin-bottom: 50px;
+  padding-bottom: 10000px;
   height: 100vh;
+
+  .header {
+    font-family: Work Sans;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 18px;
+    line-height: 21px;
+    color: #000000;
+  }
 `;
 
 const Fab = styled.div`
+  position: fixed;
   background: #44c062;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   width: 64px;
   height: 64px;
   border-radius: 100%;
-  position: absolute;
   right: 0;
   bottom: 50px;
   margin: 10px;
@@ -33,14 +42,64 @@ const Plus = styled(PlusSvg)`
   fill: white;
 `;
 
-const AddFavoritePage = inject('applicationStore')(
-  observer(() => {
-    // const { applicationStore } = props;
-    const history = useHistory();
+const FavoritesContainer = styled.div`
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-gap: 15px;
+  margin: 15px 0;
+`;
 
+const ProductShowcase = styled.div`
+  display: flex;
+  justify-content: flex-start;
+`;
+
+const FavoritesRow = styled.div`
+  .row-label {
+    margin-left: 5px;
+    margin-bottom: 5px;
+  }
+`;
+
+const AddFavoritePage = inject('applicationStore')(
+  observer((props) => {
+    const { applicationStore } = props;
+    const history = useHistory();
+    const [loading, setLoading] = useState(false);
+    const loadFavorites = async () => {
+      setLoading(true);
+      await applicationStore.getFavorites();
+      setLoading(false);
+    };
+    useEffect(() => {
+      loadFavorites();
+    }, []);
     return (
       <Container>
-        <p>Favorites</p>
+        <p className="header">Favorieten</p>
+        {loading ? <p>Loading...</p> : null}
+        <FavoritesContainer>
+          {Object.values(applicationStore.favorites).map((favorite, index) => {
+            return (
+              <FavoritesRow key={index}>
+                <p className="row-label">{`${favorite.favorite.term} in '${favorite.category.label}'`}</p>
+                <ProductShowcase>
+                  {favorite.products.map((product) => (
+                    <ProductCard
+                      image={product.image}
+                      storeName={product.store_name}
+                      title={product.label}
+                      amountText={product.amount}
+                      cost={product.new_price}
+                      likes={product.likes}
+                      key={product.id}
+                    />
+                  ))}
+                </ProductShowcase>
+              </FavoritesRow>
+            );
+          })}
+        </FavoritesContainer>
         <Fab onClick={() => history.push('/add_favourite')}>
           <Plus />
         </Fab>
