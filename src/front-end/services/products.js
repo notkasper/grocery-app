@@ -9,3 +9,10 @@ export const getProducts = async (idToken) => {
     .set('id_token', idToken);
   return response;
 };
+
+export const getFavoriteOptions = async (idToken, term) => {
+  const response = await request
+    .get(`${API_BASE_URL}/favorites/options/${term}`)
+    .set('id_token', idToken);
+  return response;
+};

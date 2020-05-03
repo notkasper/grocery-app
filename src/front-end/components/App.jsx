@@ -40,7 +40,7 @@ const App = inject('applicationStore')(
             <Route path="/favorites" exact>
               <FavoritePage />
             </Route>
-            <Route path="/favourites/add" exact>
+            <Route path="/add_favourite" exact>
               <AddFavoritePage />
             </Route>
             <Route path="/list" exact>

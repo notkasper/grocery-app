@@ -22,34 +22,44 @@ exports.addFavorite = async (req, res) => {
     return;
   }
 
-  const favourite = await Favorite.create({
+  const favorite = await Favorite.create({
     id: uuid.v4(),
     user_id: req.user.id,
     category_id: categoryId,
     term,
   });
-  res.status(200).send({ data: favourite });
+  res.status(200).send({ data: favorite });
 };
 
 exports.getFavoriteOptions = async (req, res) => {
-  const term = _.get(req, 'body.term');
+  try {
+    const term = _.get(req, 'params.term');
+    if (!term) {
+      res.status(400).send({ error: 'Please provide term' });
+      return;
+    }
 
-  if (!term) {
-    res.status(400).send({ error: 'Please provide term' });
-    return;
-  }
+    if (term.length < 3) {
+      res
+        .status(400)
+        .send({ error: 'Please provide a term with a length of at least 3' });
+      return;
+    }
 
-  if (term.length < 3) {
+    const products = await Product.findAll({
+      where: {
+        label: {
+          [Op.iLike]: `%${term}%`,
+        },
+      },
+      limit: 1000,
+    });
+
+    res.status(200).send({ data: products });
+  } catch (error) {
+    console.error(error);
     res
-      .status(400)
-      .send({ error: 'Please provide a term with a length of at least 3' });
-    return;
+      .status(500)
+      .send({ error: 'Something went wrong, please try again later' });
   }
-
-  const products = await Product.findAll({
-    where: { [Op.iLike]: `%${term}%` },
-    limit: 1000,
-  });
-
-  res.status(200).send({ data: products });
 };

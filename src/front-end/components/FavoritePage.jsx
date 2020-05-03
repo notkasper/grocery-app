@@ -40,8 +40,8 @@ const AddFavoritePage = inject('applicationStore')(
 
     return (
       <Container>
-        <p>Favourites</p>
-        <Fab onClick={() => history.push('/favourites/add')}>
+        <p>Favorites</p>
+        <Fab onClick={() => history.push('/add_favourite')}>
           <Plus />
         </Fab>
       </Container>

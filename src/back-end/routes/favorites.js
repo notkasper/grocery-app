@@ -9,6 +9,6 @@ const router = express.Router({ mergeParams: true });
 
 router.route('/').get(getFavorites).post(addFavorite);
 
-router.route('/options').get(getFavoriteOptions);
+router.route('/options/:term').get(getFavoriteOptions);
 
 module.exports = router;
