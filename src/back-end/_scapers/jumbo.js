@@ -9,7 +9,7 @@ const db = require('../models');
 const scrapeJumbo = async () => {
   const baseUrl = 'https://www.jumbo.com/producten';
   const browser = await puppeteer.launch({
-    headless: false,
+    headless: true,
     args: [
       '--start-maximized', // you can also use '--start-fullscreen'
     ],
