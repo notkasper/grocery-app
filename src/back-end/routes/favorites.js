@@ -7,8 +7,8 @@ const {
 
 const router = express.Router({ mergeParams: true });
 
-router.route('/').get(getFavorites).post(addFavorite);
-
+router.route('/').get(getFavorites);
 router.route('/options/:term').get(getFavoriteOptions);
+router.route('/:category_id/:term').post(addFavorite);
 
 module.exports = router;

@@ -2,7 +2,7 @@
 const _ = require('lodash');
 const uuid = require('uuid');
 const { Op } = require('sequelize');
-const { Favorite, Product } = require('../models');
+const { Favorite, Product, Category } = require('../models');
 
 exports.getFavorites = async (req, res) => {
   const favorites = await Favorite.findAll({ where: { user_id: req.user.id } });
@@ -10,8 +10,8 @@ exports.getFavorites = async (req, res) => {
 };
 
 exports.addFavorite = async (req, res) => {
-  const categoryId = _.get(req, 'body.category_id');
-  const term = _.get(req, 'body.term');
+  const categoryId = _.get(req, 'params.category_id');
+  const term = _.get(req, 'params.term');
 
   if (!categoryId) {
     res.status(400).send({ error: 'Please provide category id' });
@@ -55,7 +55,9 @@ exports.getFavoriteOptions = async (req, res) => {
       limit: 1000,
     });
 
-    res.status(200).send({ data: products });
+    const categories = await Category.findAll();
+
+    res.status(200).send({ data: { products, categories } });
   } catch (error) {
     console.error(error);
     res

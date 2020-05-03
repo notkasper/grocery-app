@@ -4,6 +4,7 @@ import { observable, action } from 'mobx';
 import {
   getProducts as getProductsService,
   getFavoriteOptions as getFavoriteOptionsService,
+  addFavorite as addFavoriteService,
 } from '../services/products';
 
 class ApplicationStore {
@@ -27,10 +28,20 @@ class ApplicationStore {
   };
 
   @action getFavoriteOptions = async (term) => {
+    let response;
     try {
       const idToken = await firebase.auth().currentUser.getIdToken();
-      const response = await getFavoriteOptionsService(idToken, term);
-      return response;
+      response = await getFavoriteOptionsService(idToken, term);
+    } catch (error) {
+      console.error(`Error while updating products: ${error}`);
+    }
+    return response;
+  };
+
+  @action addFavorite = async (categoryId, term) => {
+    try {
+      const idToken = await firebase.auth().currentUser.getIdToken();
+      await addFavoriteService(idToken, categoryId, term);
     } catch (error) {
       console.error(`Error while updating products: ${error}`);
     }

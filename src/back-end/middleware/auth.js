@@ -30,7 +30,7 @@ module.exports = async (req, res, next) => {
         firebase_uid: firebaseUser.uid,
       });
     }
-    res.user = user;
+    req.user = user;
     res.firebaseUser = firebaseUser;
     next();
   } catch (error) {

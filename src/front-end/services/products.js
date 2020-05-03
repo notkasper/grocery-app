@@ -16,3 +16,10 @@ export const getFavoriteOptions = async (idToken, term) => {
     .set('id_token', idToken);
   return response;
 };
+
+export const addFavorite = async (idToken, categoryId, term) => {
+  const response = await request
+    .post(`${API_BASE_URL}/favorites/${categoryId}/${term}`)
+    .set('id_token', idToken);
+  return response;
+};

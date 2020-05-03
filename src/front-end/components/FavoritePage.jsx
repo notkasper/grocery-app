@@ -27,9 +27,9 @@ const Fab = styled.div`
 `;
 
 const Plus = styled(PlusSvg)`
-  width: 50%;
-  height: 50;
-  margin: 25%;
+  width: 30%;
+  height: 30;
+  margin: 35%;
   fill: white;
 `;
 
