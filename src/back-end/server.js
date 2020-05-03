@@ -13,6 +13,8 @@ const chalk = require('chalk');
 
 const db = require('./models');
 const products = require('./routes/products');
+const favorites = require('./routes/favorites');
+const categories = require('./routes/categories');
 
 const authMiddleware = require('./middleware/auth');
 
@@ -52,6 +54,8 @@ const start = async () => {
   app.use(express.static(path.join(__dirname, './dist')));
 
   app.use('/api/v1/products', authMiddleware, products);
+  app.use('/api/v1/favorites', authMiddleware, favorites);
+  app.use('/api/v1/categories', authMiddleware, categories);
 
   // eslint-disable-next-line no-unused-vars
   app.use((error, req, res, next) => res.status(500).send({ error }));
