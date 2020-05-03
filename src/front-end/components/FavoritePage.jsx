@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { observer, inject } from 'mobx-react';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
@@ -34,8 +34,8 @@ const Plus = styled(PlusSvg)`
 `;
 
 const AddFavoritePage = inject('applicationStore')(
-  observer((props) => {
-    const { applicationStore } = props;
+  observer(() => {
+    // const { applicationStore } = props;
     const history = useHistory();
 
     return (

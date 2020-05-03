@@ -1,5 +1,6 @@
 /* eslint-disable object-curly-newline */
-import firebase from 'firebase';
+import firebase from 'firebase/app';
+import 'firebase/auth';
 import { observable, action } from 'mobx';
 import {
   getProducts as getProductsService,

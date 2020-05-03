@@ -1,9 +1,10 @@
 /* eslint-disable object-curly-newline */
 import React from 'react';
+import firebase from 'firebase/app';
+import 'firebase/auth';
 import { observer, inject } from 'mobx-react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import styled from 'styled-components';
-import firebase from 'firebase';
 import Footer from './Footer';
 import NavBar from './NavBar';
 import ExplorePage from './ExplorePage';
