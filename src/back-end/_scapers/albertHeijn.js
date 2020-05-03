@@ -42,7 +42,13 @@ const parseAvailabilityTill = (unparsed) => {
 };
 
 const scrapeAlbertHeijn = async () => {
-  const browser = await puppeteer.launch({ headless: true });
+  const browser = await puppeteer.launch({
+    headless: true,
+    args: [
+      '--start-maximized', // you can also use '--start-fullscreen'
+      '--no-sandbox',
+    ],
+  });
   const page = await browser.newPage();
   await page.goto('https://www.ah.nl/producten');
 
