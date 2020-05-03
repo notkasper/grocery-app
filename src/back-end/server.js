@@ -51,11 +51,15 @@ const start = async () => {
   app.use(cors());
 
   // Set static folder
-  app.use(express.static(path.join(__dirname, './dist')));
+  app.use(express.static(path.join(__dirname, '/../../dist')));
 
   app.use('/api/v1/products', authMiddleware, products);
   app.use('/api/v1/favorites', authMiddleware, favorites);
   app.use('/api/v1/categories', authMiddleware, categories);
+
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(`${__dirname}/../../dist/index.html`));
+  });
 
   // eslint-disable-next-line no-unused-vars
   app.use((error, req, res, next) => res.status(500).send({ error }));
