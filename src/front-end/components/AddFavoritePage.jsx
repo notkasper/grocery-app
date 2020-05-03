@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/no-autofocus */
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { observer, inject } from 'mobx-react';
@@ -123,6 +124,7 @@ const AddFavoritePage = inject('applicationStore')(
             className="search-field"
             placeholder="Zoek product"
             value={term}
+            autoFocus
             onChange={(event) => {
               setTerm(event.target.value);
               if (timeout) {
