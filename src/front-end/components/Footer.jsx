@@ -52,8 +52,8 @@ const Footer = () => {
       <NavItem onClick={() => history.push('/')}>
         <Shop selected={location.pathname === '/'} />
       </NavItem>
-      <NavItem onClick={() => history.push('/favourites')}>
-        <Heart selected={location.pathname === '/favourites'} />
+      <NavItem onClick={() => history.push('/favorites')}>
+        <Heart selected={location.pathname === '/favorites'} />
       </NavItem>
       <NavItem onClick={() => history.push('/list')}>
         <Checklist selected={location.pathname === '/list'} />

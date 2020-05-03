@@ -8,6 +8,8 @@ import Footer from './Footer';
 import NavBar from './NavBar';
 import ExplorePage from './ExplorePage';
 import AuthPage from './AuthPage';
+import AddFavoritePage from './AddFavoritePage';
+import FavoritePage from './FavoritePage';
 
 const PageContainer = styled.div`
   max-width: 100vw;
@@ -35,12 +37,13 @@ const App = inject('applicationStore')(
             <Route path="/" exact>
               <ExplorePage />
             </Route>
-            <Route path="/favourites">
-              <div>
-                <p>FAVOURITES</p>
-              </div>
+            <Route path="/favorites" exact>
+              <FavoritePage />
             </Route>
-            <Route path="/list">
+            <Route path="/favourites/add" exact>
+              <AddFavoritePage />
+            </Route>
+            <Route path="/list" exact>
               <div>
                 <p>LIST</p>
               </div>
