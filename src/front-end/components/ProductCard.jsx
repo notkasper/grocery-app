@@ -18,6 +18,7 @@ const storeProps = {
 
 const Container = styled.div`
   width: 132px;
+  margin: 0 5px;
 `;
 
 const CardContainer = styled.div`

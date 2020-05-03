@@ -102,9 +102,8 @@ const HeaderNav = styled.p`
 `;
 
 const ProductShowcase = styled.div`
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  grid-gap: 10px;
+  display: flex;
+  justify-content: flex-start;
 `;
 
 const App = inject('applicationStore')(
