@@ -11,6 +11,8 @@ admin.initializeApp({
 
 module.exports = async (req, res, next) => {
   try {
+    console.log('HEADERS');
+    console.log(req.headers);
     const idToken = req.headers.id_token;
     if (!idToken) {
       res.status(401).send({ error: 'Please send an id token' });
