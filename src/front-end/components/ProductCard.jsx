@@ -1,6 +1,8 @@
+/* eslint-disable object-curly-newline */
 import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
+import { useHistory } from 'react-router-dom';
 import HeartSvg from '../assets/filledHeart.svg';
 
 const storeProps = {
@@ -135,11 +137,15 @@ const Heart = styled(HeartSvg)`
 const FooterDiv = styled.div``;
 
 const ProductCard = (props) => {
-  // eslint-disable-next-line object-curly-newline
-  const { storeName, amountText, image, title, cost, likes } = props;
+  const { id, storeName, amountText, image, title, cost, likes } = props;
+  const history = useHistory();
   return (
     <Container>
-      <CardContainer>
+      <CardContainer
+        onClick={() => {
+          history.push(`/product/${id}`);
+        }}
+      >
         <CardHeader storeName={storeName}>
           <StoreTag storeName={storeName}>
             {storeProps[storeName].label}
@@ -171,6 +177,7 @@ const ProductCard = (props) => {
 };
 
 ProductCard.propTypes = {
+  id: PropTypes.string.isRequired,
   storeName: PropTypes.string.isRequired,
   amountText: PropTypes.string.isRequired,
   image: PropTypes.node.isRequired,

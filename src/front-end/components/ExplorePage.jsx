@@ -156,6 +156,7 @@ const App = inject('applicationStore')(
           <ProductShowcase>
             {Object.values(applicationStore.products).map((product) => (
               <ProductCard
+                id={product.id}
                 image={product.image}
                 storeName={product.store_name}
                 title={product.label}
@@ -177,6 +178,7 @@ const App = inject('applicationStore')(
           <ProductShowcase>
             {Object.values(applicationStore.products).map((product) => (
               <ProductCard
+                id={product.id}
                 image={product.image}
                 storeName={product.store_name}
                 title={product.label}

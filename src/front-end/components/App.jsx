@@ -18,6 +18,7 @@ import AuthPage from './AuthPage';
 import AddFavoritePage from './AddFavoritePage';
 import FavoritePage from './FavoritePage';
 import SettingsPage from './SettingsPage';
+import ProductDetailsPage from './ProductDetailsPage';
 
 const PageContainer = styled.div`
   max-width: 100vw;
@@ -70,6 +71,9 @@ const App = inject('applicationStore')(
               <div>
                 <p>LIST</p>
               </div>
+            </Route>
+            <Route path="/product/:id">
+              <ProductDetailsPage />
             </Route>
           </Switch>
         </PageContainer>

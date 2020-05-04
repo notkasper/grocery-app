@@ -86,6 +86,7 @@ const AddFavoritePage = inject('applicationStore')(
                 <ProductShowcase>
                   {favorite.products.map((product) => (
                     <ProductCard
+                      id={product.id}
                       image={product.image}
                       storeName={product.store_name}
                       title={product.label}
