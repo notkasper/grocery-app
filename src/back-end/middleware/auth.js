@@ -11,7 +11,18 @@ admin.initializeApp({
 
 module.exports = async (req, res, next) => {
   try {
-    const idToken = req.headers.id_token;
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+      res.status(401).send({ error: 'Please send an Authorization header' });
+      return;
+    }
+    const [type, idToken] = authHeader.split(' ');
+    if (type !== 'Bearer') {
+      res
+        .status(401)
+        .send({ error: 'Please send an authorization header with bearer' });
+      return;
+    }
     if (!idToken) {
       res.status(401).send({ error: 'Please send an id token' });
       return;
