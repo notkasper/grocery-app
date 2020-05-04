@@ -3,19 +3,6 @@ import React, { useEffect, useState } from 'react';
 import { observer, inject } from 'mobx-react';
 import styled from 'styled-components';
 import FilledHeartSvg from '../assets/filledHeart.svg';
-import AlbertHeijnSvg from '../assets/albert_heijn.svg';
-import JumboSvg from '../assets/jumbo.svg';
-
-const getStoreSvg = (store) => {
-  switch (store) {
-    case 'albert_heijn':
-      return <AlbertHeijnSvg className="store-logo" />;
-    case 'jumbo':
-      return <JumboSvg className="store-logo" />;
-    default:
-      return null;
-  }
-};
 
 const Container = styled.div`
   background-color: #f1f6fa;
@@ -201,21 +188,30 @@ const DetailsContainer = styled.div`
 const ProductDetailsPage = inject('applicationStore')(
   observer((props) => {
     const { applicationStore } = props;
-    const product = applicationStore.products[props.match.params.id];
+    const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(false);
-    const loadProducts = async () => {
-      // load specific product...
+    const loadProduct = async () => {
       setLoading(true);
-      await applicationStore.getProducts();
+      const loadedProduct = await applicationStore.getProduct(
+        props.match.params.id
+      );
+      setProduct(loadedProduct);
       setLoading(false);
     };
     useEffect(() => {
-      loadProducts();
+      loadProduct();
     }, []);
-    if (loading || !product) {
+    if (loading && !product) {
       return (
         <Container>
-          <p>loading...</p>
+          <p>Product ophalen...</p>
+        </Container>
+      );
+    }
+    if (!product) {
+      return (
+        <Container>
+          <p>Product niet gevonden :(</p>
         </Container>
       );
     }

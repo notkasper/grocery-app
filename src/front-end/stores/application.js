@@ -4,6 +4,7 @@ import 'firebase/auth';
 import { observable, action } from 'mobx';
 import {
   getProducts as getProductsService,
+  getProduct as getProductService,
   getFavoriteOptions as getFavoriteOptionsService,
   addFavorite as addFavoriteService,
   getFavorites as getFavoritesService,
@@ -29,6 +30,19 @@ class ApplicationStore {
     } catch (error) {
       console.error(`Error while getting products: ${error}`);
     }
+  };
+
+  @action getProduct = async (id) => {
+    try {
+      const idToken = await firebase.auth().currentUser.getIdToken();
+      const {
+        body: { data: product },
+      } = await getProductService(idToken, id);
+      return product;
+    } catch (error) {
+      console.error(`Error while getting products: ${error}`);
+    }
+    return null;
   };
 
   @action getFavorites = async () => {

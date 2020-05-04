@@ -10,6 +10,13 @@ export const getProducts = async (idToken) => {
   return response;
 };
 
+export const getProduct = async (idToken, id) => {
+  const response = await request
+    .get(`${API_BASE_URL}/products/${id}`)
+    .set('authorization', `Bearer ${idToken}`);
+  return response;
+};
+
 export const getFavorites = async (idToken) => {
   const response = await request
     .get(`${API_BASE_URL}/favorites`)

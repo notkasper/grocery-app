@@ -4,6 +4,13 @@ exports.getProducts = async (req, res) => {
   const products = await Product.findAll({
     limit: 20,
     order: [['updatedAt', 'DESC']],
+    raw: true,
   });
   res.status(200).send({ data: products });
+};
+
+exports.getProduct = async (req, res) => {
+  const { id } = req.params;
+  const product = await Product.findOne({ where: { id }, raw: true });
+  res.status(200).send({ data: product });
 };
