@@ -15,6 +15,7 @@ const Container = styled.div`
   grid-gap: 10px;
   grid-template-columns: 1fr;
   margin-bottom: 50px;
+  min-height: calc(100vh - 100px);
 `;
 
 const CategoriesContainer = styled.div`

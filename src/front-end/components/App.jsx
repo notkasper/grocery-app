@@ -19,6 +19,7 @@ import AddFavoritePage from './AddFavoritePage';
 import FavoritePage from './FavoritePage';
 import SettingsPage from './SettingsPage';
 import ProductDetailsPage from './ProductDetailsPage';
+import ListPage from './ListPage';
 
 const PageContainer = styled.div`
   max-width: 100vw;
@@ -51,30 +52,16 @@ const App = inject('applicationStore')(
     }
     return (
       <Router>
-        <Test />
+        {/* <Test /> */}
         <NavBar />
         <PageContainer>
           <Switch>
-            <Route path="/" exact>
-              <ExplorePage />
-            </Route>
-            <Route path="/favorites" exact>
-              <FavoritePage />
-            </Route>
-            <Route path="/add_favourite" exact>
-              <AddFavoritePage />
-            </Route>
-            <Route path="/settings" exact>
-              <SettingsPage />
-            </Route>
-            <Route path="/list" exact>
-              <div>
-                <p>LIST</p>
-              </div>
-            </Route>
-            <Route path="/product/:id">
-              <ProductDetailsPage />
-            </Route>
+            <Route path="/" exact component={ExplorePage} />
+            <Route path="/favorites" exact component={FavoritePage} />
+            <Route path="/add_favourite" exact component={AddFavoritePage} />
+            <Route path="/settings" exact component={SettingsPage} />
+            <Route path="/list" exact component={ListPage} />
+            <Route path="/product/:id" component={ProductDetailsPage} />
           </Switch>
         </PageContainer>
         <Footer />

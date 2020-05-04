@@ -10,8 +10,8 @@ const Container = styled.div`
   background-color: #f1f6fa;
   padding: 10px;
   grid-gap: 10px;
-  padding-bottom: 10000px;
-  height: 100vh;
+  min-height: calc(100vh - 100px);
+  padding-bottom: 50px;
 
   .header {
     font-family: Work Sans;

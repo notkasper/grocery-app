@@ -8,6 +8,7 @@ const config = {
   entry: ['react-hot-loader/patch', './src/front-end'],
   output: {
     path: path.resolve(__dirname, 'dist'),
+    publicPath: '/',
     filename: '[name].[hash].js',
   },
   module: {
