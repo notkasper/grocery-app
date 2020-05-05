@@ -14,18 +14,21 @@ puppeteer.use(StealthPlugin());
 
 const scrapeJumbo = async () => {
   const browser = await puppeteer.launch({
-    headless: true,
+    headless: false,
     args: [
       '--start-maximized', // you can also use '--start-fullscreen'
       '--no-sandbox ',
     ],
   });
   const page = await browser.newPage();
+  console.log('1');
   page.setUserAgent(
     'Mozilla/5.0 (iPhone; CPU iPhone OS 9_1 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13B143 Safari/601.1'
   );
   await page.setViewport({ width: 1366, height: 768 });
+  console.log('2');
   await page.goto('https://www.jumbo.com/producten/?offSet=0&pageSize=25');
+  console.log('3');
 
   await wait(1000);
   const categoryList = await page.$$('ul.filter-group');
