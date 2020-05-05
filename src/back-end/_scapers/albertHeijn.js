@@ -49,7 +49,7 @@ const scrapeAlbertHeijn = async () => {
     headless: false,
     args: [
       '--start-maximized', // you can also use '--start-fullscreen'
-      '--no-sandbox ',
+      '--no-sandbox',
       '--disable-setuid-sandbox',
     ],
   });

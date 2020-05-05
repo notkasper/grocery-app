@@ -17,7 +17,7 @@ const scrapeJumbo = async () => {
     headless: true,
     args: [
       '--start-maximized', // you can also use '--start-fullscreen'
-      '--no-sandbox ',
+      '--no-sandbox',
       '--disable-setuid-sandbox',
     ],
   });
