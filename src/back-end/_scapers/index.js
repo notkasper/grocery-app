@@ -4,9 +4,9 @@ const scrapeJumbo = require('./jumbo');
 const models = require('../models');
 
 const run = async () => {
-  // await models.umzug.up();
-  await scrapeJumbo();
+  await models.umzug.up();
   await scrapeAlbertHeijn();
+  await scrapeJumbo();
   models.sequelize.close();
 };
 
