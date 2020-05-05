@@ -17,7 +17,6 @@ const scrapeJumbo = async () => {
     headless: false,
     args: [
       '--start-maximized', // you can also use '--start-fullscreen'
-      '--no-sandbox ',
     ],
   });
   const page = await browser.newPage();
