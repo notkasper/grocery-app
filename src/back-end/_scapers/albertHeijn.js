@@ -46,7 +46,7 @@ const parseAvailabilityTill = (unparsed) => {
 
 const scrapeAlbertHeijn = async () => {
   const browser = await puppeteer.launch({
-    headless: true,
+    headless: false,
     args: [
       '--start-maximized', // you can also use '--start-fullscreen'
       '--no-sandbox ',
@@ -74,9 +74,10 @@ const scrapeAlbertHeijn = async () => {
       .then((e) => e.jsonValue());
     const categoryPage = await browser.newPage();
     await categoryPage.goto(`${categoryHref}?kenmerk=bonus&page=100`);
-    await autoScroll(categoryPage);
+    // await autoScroll(categoryPage);
     const bonusProducts = await categoryPage.$$('article');
     for (const product of bonusProducts) {
+      console.log('scraping product...');
       const label = await product
         .$('span.line-clamp')
         .then((e) => e.getProperty('textContent'))
@@ -147,6 +148,7 @@ const scrapeAlbertHeijn = async () => {
         new_price: newPrice,
         discounted: true,
       });
+      console.log('product created...');
     }
     await categoryPage.close();
   }
