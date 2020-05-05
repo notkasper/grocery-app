@@ -14,9 +14,10 @@ puppeteer.use(StealthPlugin());
 
 const scrapeJumbo = async () => {
   const browser = await puppeteer.launch({
-    headless: false,
+    headless: true,
     args: [
       '--start-maximized', // you can also use '--start-fullscreen'
+      '--no-sandbox ',
     ],
   });
   const page = await browser.newPage();
