@@ -3,7 +3,7 @@
 const puppeteer = require('puppeteer');
 const uuid = require('uuid');
 const { autoScroll } = require('./_utils');
-// const db = require('../models');
+const db = require('../models');
 const categoryMapper = require('./categoryMapper');
 
 const parseAvailabilityTill = (unparsed) => {
