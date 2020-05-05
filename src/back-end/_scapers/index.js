@@ -5,8 +5,8 @@ const models = require('../models');
 
 const run = async () => {
   await models.umzug.up();
-  // await scrapeAlbertHeijn();
   await scrapeJumbo();
+  await scrapeAlbertHeijn();
   models.sequelize.close();
 };
 
