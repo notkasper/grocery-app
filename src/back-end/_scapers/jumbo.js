@@ -2,15 +2,19 @@
 /* eslint-disable max-len */
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-await-in-loop */
-const puppeteer = require('puppeteer');
+const puppeteer = require('puppeteer-extra');
 const uuid = require('uuid');
+const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 const categoryMapper = require('./categoryMapper');
 const { wait } = require('./_utils');
 const db = require('../models');
 
+// add stealth plugin and use defaults (all evasion techniques)
+puppeteer.use(StealthPlugin());
+
 const scrapeJumbo = async () => {
   const browser = await puppeteer.launch({
-    headless: false,
+    headless: true,
     args: [
       '--start-maximized', // you can also use '--start-fullscreen'
       '--no-sandbox ',
@@ -27,10 +31,10 @@ const scrapeJumbo = async () => {
   const categoryList = await page.$$('ul.filter-group');
   const categoryLinks = await categoryList[0].$$('li a');
   let catCounter = 0;
+  let productCounter = 0;
   for (const categoryLink of categoryLinks) {
     catCounter += 1;
     console.info(`=======[category ${catCounter}/${categoryLinks.length}]=======`);
-    await wait(15000); // To avoid rate limit...
     const [categoryName, categoryCount] = await categoryLink
       .$$('span')
       .then(async ([e1, e2]) => [await e1.getProperty('textContent'), await e2.getProperty('textContent')])
@@ -40,6 +44,11 @@ const scrapeJumbo = async () => {
     await categoryPage.setViewport({ width: 1366, height: 768 });
     const pageSize = 25;
     for (let offset = 0; offset < categoryCount; offset += pageSize) {
+      if (productCounter > 1000) {
+        productCounter = 0;
+        await wait(60000);
+        console.info('Waiting to avoid rate-limit...');
+      }
       console.info(`page ${offset / pageSize}/${Math.ceil(categoryCount / pageSize)}`);
       const categoryPageUrl = `https://www.jumbo.com/producten/categorieen/${categoryName
         .split(' ')
@@ -127,6 +136,7 @@ const scrapeJumbo = async () => {
                   new_price: newPrice,
                   discounted: true,
                 });
+                console.info('product created...');
               };
               scrapePage();
             }
@@ -135,6 +145,7 @@ const scrapeJumbo = async () => {
           console.error(`Error while scraping product\n${error}`);
         }
       }
+      productCounter += 25;
     }
     await categoryPage.close();
   }
