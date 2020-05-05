@@ -1,10 +1,13 @@
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-await-in-loop */
-const puppeteer = require('puppeteer');
+const puppeteer = require('puppeteer-extra');
 const uuid = require('uuid');
-const { autoScroll } = require('./_utils');
-const db = require('../models');
+const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 const categoryMapper = require('./categoryMapper');
+const db = require('../models');
+
+// add stealth plugin and use defaults (all evasion techniques)
+puppeteer.use(StealthPlugin());
 
 const parseAvailabilityTill = (unparsed) => {
   const daynameMap = {
@@ -46,7 +49,8 @@ const scrapeAlbertHeijn = async () => {
     headless: true,
     args: [
       '--start-maximized', // you can also use '--start-fullscreen'
-      '--no-sandbox',
+      '--no-sandbox ',
+      '--disable-setuid-sandbox,',
     ],
   });
   const page = await browser.newPage();
