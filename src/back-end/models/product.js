@@ -15,6 +15,7 @@ module.exports = (sequelize, DataTypes) => {
       availability_till: DataTypes.DATE,
       store_name: DataTypes.STRING,
       link: DataTypes.STRING(1000),
+      description: DataTypes.STRING(10000),
       new_price: DataTypes.NUMBER,
       discounted: DataTypes.BOOLEAN,
     },

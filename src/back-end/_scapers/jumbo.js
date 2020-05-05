@@ -1,3 +1,5 @@
+/* eslint-disable prettier/prettier */
+/* eslint-disable max-len */
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-await-in-loop */
 const puppeteer = require('puppeteer');
@@ -7,44 +9,44 @@ const { wait } = require('./_utils');
 const db = require('../models');
 
 const scrapeJumbo = async () => {
-  const baseUrl = 'https://www.jumbo.com/producten';
   const browser = await puppeteer.launch({
-    headless: true,
+    headless: false,
     args: [
       '--start-maximized', // you can also use '--start-fullscreen'
-      '--no-sandbox',
     ],
   });
   const page = await browser.newPage();
+  page.setUserAgent(
+    'Mozilla/5.0 (iPhone; CPU iPhone OS 9_1 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13B143 Safari/601.1'
+  );
   await page.setViewport({ width: 1366, height: 768 });
-  await page.goto(baseUrl);
+  await page.goto('https://www.jumbo.com/producten/?offSet=0&pageSize=25');
 
   await wait(1000);
   const categoryList = await page.$$('ul.filter-group');
   const categoryLinks = await categoryList[0].$$('li a');
+  let catCounter = 0;
   for (const categoryLink of categoryLinks) {
+    catCounter += 1;
+    console.info(`=======[category ${catCounter}/${categoryLinks.length}]=======`);
+    await wait(15000); // To avoid rate limit...
     const [categoryName, categoryCount] = await categoryLink
       .$$('span')
-      .then(async ([e1, e2]) => [
-        await e1.getProperty('textContent'),
-        await e2.getProperty('textContent'),
-      ])
+      .then(async ([e1, e2]) => [await e1.getProperty('textContent'), await e2.getProperty('textContent')])
       .then(async ([e1, e2]) => [await e1.jsonValue(), await e2.jsonValue()])
-      .then(([e1, e2]) => [
-        e1,
-        Number.parseInt(e2.slice(1, e2.length - 1), 10),
-      ]);
+      .then(([e1, e2]) => [e1, Number.parseInt(e2.slice(1, e2.length - 1), 10)]);
     const categoryPage = await browser.newPage();
     await categoryPage.setViewport({ width: 1366, height: 768 });
     const pageSize = 25;
     for (let offset = 0; offset < categoryCount; offset += pageSize) {
-      await categoryPage.goto(
-        `${baseUrl}/categorieen/${categoryName}?offSet=${offset}&pageSize=${pageSize}`
-      );
-      await wait(2000);
-      // TODO: Hardcoded wait for products to load, find a better way to do this
+      console.info(`page ${offset / pageSize}/${Math.ceil(categoryCount / pageSize)}`);
+      const categoryPageUrl = `https://www.jumbo.com/producten/categorieen/${categoryName
+        .split(' ')
+        .join('-')
+        .toLowerCase()}/?offSet=${offset}&pageSize=${pageSize}`;
+      await categoryPage.goto(categoryPageUrl);
+      await wait(1000);
       const products = await categoryPage.$$('div.jum-card-grid div.jum-card');
-      const productPromises = [];
       for (const product of products) {
         try {
           const banner = await product.$('div.banner-content');
@@ -70,39 +72,47 @@ const scrapeJumbo = async () => {
               .$('a')
               .then((e) => (e ? e.getProperty('href') : null))
               .then((e) => (e ? e.jsonValue() : null));
-            const newPrice = await product
-              .$$('span.jum-product-price__current-price span')
-              .then(async ([e1, e2]) => {
-                const euros = await e1
-                  .getProperty('textContent')
-                  .then((e) => e.jsonValue());
-                const cents = await e2
-                  .getProperty('textContent')
-                  .then((e) => e.jsonValue());
-                return Number.parseFloat(`${euros}.${cents}`);
-              });
+            const newPrice = await product.$$('span.jum-product-price__current-price span').then(async ([e1, e2]) => {
+              const euros = await e1.getProperty('textContent').then((e) => e.jsonValue());
+              const cents = await e2.getProperty('textContent').then((e) => e.jsonValue());
+              return Number.parseFloat(`${euros}.${cents}`);
+            });
             if (discountType) {
-              const productPage = await browser.newPage();
-              await productPage.setViewport({ width: 1366, height: 768 });
-              await productPage.goto(link);
-              const availability = await productPage
-                .$('div.promotion-disclaimer h6')
-                .then((e) => (e ? e.getProperty('textContent') : null))
-                .then((e) => (e ? e.jsonValue() : null));
-              await productPage.close();
+              const scrapePage = async () => {
+                const productPage = await browser.newPage();
+                await productPage.setViewport({ width: 1366, height: 768 });
+                await productPage.goto(link);
+                const availability = await productPage
+                  .$('div.promotion-disclaimer h6')
+                  .then((e) => (e ? e.getProperty('textContent') : null))
+                  .then((e) => (e ? e.jsonValue() : null));
+                await productPage.close();
 
-              const [from, till] = availability
-                .substring(25, 40)
-                .split(' t/m ');
-              const [fromDay, fromMonth] = from.split('-');
-              const [tillDay, tillMonth] = till.split('-');
+                let tillDay;
+                let tillMonth;
+                let fromDay;
+                let fromMonth;
+                try {
+                  const [from, till] = availability.substring(25, 40).split(' t/m ');
+                  [fromDay, fromMonth] = from.split('-');
+                  [tillDay, tillMonth] = till.split('-');
+                } catch (error) {
+                  console.error(`could not find availability for: ${link}`);
+                }
 
-              const year = new Date().getFullYear();
+                const year = new Date().getFullYear();
 
-              const availabilityFrom = new Date(year, fromMonth, fromDay);
-              const availabilityTill = new Date(year, tillMonth, tillDay);
-              productPromises.push(
-                db.Product.create({
+                let availabilityFrom = null;
+                if (fromDay && fromMonth) {
+                  availabilityFrom = new Date(year, fromMonth, fromDay);
+                }
+
+                let availabilityTill = null;
+                if (tillDay && tillMonth) {
+                  availabilityTill = new Date(year, tillMonth, tillDay);
+                }
+
+                await db.Product.create({
                   id: uuid.v4(),
                   category: categoryMapper.jumbo[categoryName],
                   label: label.substring(0, 250),
@@ -115,15 +125,15 @@ const scrapeJumbo = async () => {
                   link,
                   new_price: newPrice,
                   discounted: true,
-                })
-              );
+                });
+              };
+              scrapePage();
             }
           }
         } catch (error) {
           console.error(`Error while scraping product\n${error}`);
         }
       }
-      await Promise.all(productPromises);
     }
     await categoryPage.close();
   }
