@@ -8,10 +8,10 @@ import SearchSvg from '../assets/search.svg';
 const Container = styled.div`
   background-color: #f1f6fa;
   padding: 10px;
-  display: grid;
-  grid-gap: 10px;
   grid-template-columns: 1fr;
   margin-bottom: 50px;
+  padding-top: 20px;
+  min-height: calc(100vh - 130px);
 `;
 
 const SearchBar = styled.div`

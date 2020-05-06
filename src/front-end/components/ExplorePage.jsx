@@ -11,30 +11,26 @@ import CarrotSvg from '../assets/carrot.svg';
 const Container = styled.div`
   background-color: #f1f6fa;
   padding: 10px;
-  display: grid;
-  grid-gap: 10px;
-  grid-template-columns: 1fr;
   margin-bottom: 50px;
   min-height: calc(100vh - 100px);
 `;
 
 const CategoriesContainer = styled.div`
-  padding-bottom: 20px;
-  display: flex;
+  padding-bottom: 10px;
+  overflow-x: auto;
+  white-space: nowrap;
 `;
 
 const CategoryContainer = styled.div`
+  display: inline-block;
   width: 100px;
-  height: 100px;
-  padding-right: 10px;
+  padding: 5px;
 `;
 
 const CategoryBubble = styled.div`
   background: #ffffff;
   box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.25);
   border-radius: 100%;
-  width: 100%;
-  height: 100%;
 `;
 
 const CategoryLabel = styled.div`
@@ -77,6 +73,7 @@ const Cookie = styled(CookieSvg)`
 
 const Header = styled.div`
   max-width: calc(100vw - 20px);
+  margin-top: 5px;
   display: flex;
   justify-content: space-between;
 `;
@@ -142,6 +139,12 @@ const App = inject('applicationStore')(
               <Cookie />
             </CategoryBubble>
             <CategoryLabel>Koekjes</CategoryLabel>
+          </CategoryContainer>
+          <CategoryContainer>
+            <CategoryBubble>
+              <Cookie />
+            </CategoryBubble>
+            <CategoryLabel>Soep</CategoryLabel>
           </CategoryContainer>
         </CategoriesContainer>
         <Header>

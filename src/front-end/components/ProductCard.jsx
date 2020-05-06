@@ -33,6 +33,7 @@ const Card = styled.div`
 `;
 
 const CardHeader = styled.div`
+  box-sizing: border-box;
   display: flex;
   justify-content: space-between;
   padding: 2px 10px;
@@ -40,6 +41,7 @@ const CardHeader = styled.div`
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
   padding-bottom: 10px;
+  width: 132px;
 `;
 
 const StoreTag = styled.p`
