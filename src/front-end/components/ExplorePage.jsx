@@ -19,6 +19,11 @@ const CategoriesContainer = styled.div`
   padding-bottom: 10px;
   overflow-x: auto;
   white-space: nowrap;
+
+  -ms-overflow-style: none;
+  ::-webkit-scrollbar {
+    display: none;
+  }
 `;
 
 const CategoryContainer = styled.div`
@@ -99,6 +104,10 @@ const ProductShowcase = styled.div`
   overflow-x: auto;
   white-space: nowrap;
   padding-bottom: 10px;
+  -ms-overflow-style: none;
+  ::-webkit-scrollbar {
+    display: none;
+  }
 `;
 
 const App = inject('applicationStore')(

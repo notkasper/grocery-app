@@ -54,6 +54,10 @@ const ProductShowcase = styled.div`
   overflow-x: auto;
   white-space: nowrap;
   padding-bottom: 10px;
+  -ms-overflow-style: none;
+  ::-webkit-scrollbar {
+    display: none;
+  }
 `;
 
 const FavoritesRow = styled.div`
