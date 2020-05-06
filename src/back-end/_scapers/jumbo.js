@@ -1,3 +1,4 @@
+/* eslint-disable no-loop-func */
 /* eslint-disable prettier/prettier */
 /* eslint-disable max-len */
 /* eslint-disable no-restricted-syntax */
@@ -122,14 +123,14 @@ const scrapeJumbo = async () => {
                 await db.Product.create({
                   id: uuid.v4(),
                   category: categoryMapper.jumbo[categoryName],
-                  label: label.substring(0, 250),
-                  image: productImageSrc,
+                  label: label.substring(0, 1000),
+                  image: productImageSrc.substring(0, 1000),
                   amount,
                   discount_type: discountType,
                   availability_from: availabilityFrom,
                   availability_till: availabilityTill,
                   store_name: 'jumbo',
-                  link,
+                  link: link.substring(0, 1000),
                   new_price: newPrice,
                   discounted: true,
                 });

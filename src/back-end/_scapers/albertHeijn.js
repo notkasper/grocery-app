@@ -126,8 +126,8 @@ const scrapeAlbertHeijn = async () => {
       await db.Product.create({
         id: uuid.v4(),
         category: categoryMapper.albertHeijn[categoryName] || null,
-        label,
-        image: productImageSrc,
+        label: label.substring(0, 1000),
+        image: productImageSrc.substring(0, 1000),
         amount,
         discount_type: discountType,
         availability_from: null,
@@ -135,7 +135,7 @@ const scrapeAlbertHeijn = async () => {
           ? parseAvailabilityTill(availableTill)
           : null,
         store_name: 'albert_heijn',
-        link,
+        link: link.substring(0, 1000),
         new_price: newPrice,
         discounted: true,
       });
