@@ -14,9 +14,9 @@ module.exports = (sequelize, DataTypes) => {
       availability_from: DataTypes.DATE,
       availability_till: DataTypes.DATE,
       store_name: DataTypes.STRING,
-      link: DataTypes.STRING(1000),
+      link: DataTypes.STRING(10000),
       description: DataTypes.STRING(10000),
-      new_price: DataTypes.NUMBER,
+      new_price: DataTypes.DOUBLE,
       discounted: DataTypes.BOOLEAN,
     },
     { freezeTableName: true }

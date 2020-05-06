@@ -130,7 +130,7 @@ const scrapeJumbo = async () => {
                   availability_from: availabilityFrom,
                   availability_till: availabilityTill,
                   store_name: 'jumbo',
-                  link: link.substring(0, 1000),
+                  link: link.substring(0, 10000),
                   new_price: newPrice,
                   discounted: true,
                 });
