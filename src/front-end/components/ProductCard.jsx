@@ -186,7 +186,7 @@ ProductCard.propTypes = {
   amountText: PropTypes.string.isRequired,
   image: PropTypes.node.isRequired,
   title: PropTypes.string.isRequired,
-  cost: PropTypes.string.isRequired,
+  cost: PropTypes.number.isRequired,
   likes: PropTypes.number.isRequired,
 };
 

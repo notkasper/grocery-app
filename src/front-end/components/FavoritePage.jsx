@@ -52,9 +52,14 @@ const FavoritesContainer = styled.div`
 const ProductShowcase = styled.div`
   display: flex;
   justify-content: flex-start;
+  overflow-x: auto;
+  white-space: nowrap;
 `;
 
 const FavoritesRow = styled.div`
+  overflow-x: auto;
+  white-space: nowrap;
+
   .row-label {
     margin-left: 5px;
     margin-bottom: 5px;

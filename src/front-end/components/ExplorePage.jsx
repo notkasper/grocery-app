@@ -105,6 +105,8 @@ const HeaderNav = styled.p`
 const ProductShowcase = styled.div`
   display: flex;
   justify-content: flex-start;
+  overflow-x: auto;
+  white-space: nowrap;
 `;
 
 const App = inject('applicationStore')(
