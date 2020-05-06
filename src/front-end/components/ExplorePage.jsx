@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { observer, inject } from 'mobx-react';
 import styled from 'styled-components';
+import { useHistory } from 'react-router-dom';
 import ProductCard from './ProductCard';
 
 import AppleSvg from '../assets/apple.svg';
@@ -114,6 +115,7 @@ const App = inject('applicationStore')(
   observer((props) => {
     const { applicationStore } = props;
     const [loading, setLoading] = useState(false);
+    const history = useHistory();
     const loadProducts = async () => {
       setLoading(true);
       await applicationStore.getProducts();
@@ -125,7 +127,10 @@ const App = inject('applicationStore')(
     return (
       <Container>
         <CategoriesContainer>
-          <CategoryContainer>
+          <CategoryContainer
+            onClick={() =>
+              history.push('/categories/81f25338-9164-44e0-854f-f1e1e205fc5c')}
+          >
             <CategoryBubble>
               <Apple />
             </CategoryBubble>

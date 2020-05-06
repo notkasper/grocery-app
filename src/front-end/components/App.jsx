@@ -19,6 +19,7 @@ import AddFavoritePage from './AddFavoritePage';
 import FavoritePage from './FavoritePage';
 import SettingsPage from './SettingsPage';
 import ProductDetailsPage from './ProductDetailsPage';
+import CategoryPage from './CategoryPage';
 import ListPage from './ListPage';
 import Loader from './Loader';
 
@@ -79,6 +80,7 @@ const App = inject('applicationStore')(
             <Route path="/settings" exact component={SettingsPage} />
             <Route path="/list" exact component={ListPage} />
             <Route path="/product/:id" component={ProductDetailsPage} />
+            <Route path="/categories/:id" component={CategoryPage} />
           </Switch>
         </PageContainer>
         <Footer />

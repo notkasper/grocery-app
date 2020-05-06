@@ -44,3 +44,14 @@ export const deleteFavorite = async (idToken, id) => {
     .set('authorization', `Bearer ${idToken}`);
   return response;
 };
+
+export const getProductsInCategory = async (
+  idToken,
+  categoryId,
+  offset = 0
+) => {
+  const response = await request
+    .get(`${API_BASE_URL}/categories/${categoryId}/${offset}`)
+    .set('authorization', `Bearer ${idToken}`);
+  return response;
+};

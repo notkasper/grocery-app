@@ -9,10 +9,13 @@ import {
   addFavorite as addFavoriteService,
   getFavorites as getFavoritesService,
   deleteFavorite as deleteFavoriteService,
+  getProductsInCategory as getProductsInCategoryService,
 } from '../services/products';
 
 class ApplicationStore {
   @observable products = {};
+
+  @observable productsPerCategory = {};
 
   @observable favorites = {};
 
@@ -30,6 +33,21 @@ class ApplicationStore {
       });
     } catch (error) {
       console.error(`Error while getting products: ${error}`);
+    }
+  };
+
+  @action getProductsInCategory = async (categoryId, offset) => {
+    try {
+      const idToken = await firebase.auth().currentUser.getIdToken();
+      const {
+        body: { data: newProducts },
+      } = await getProductsInCategoryService(idToken, categoryId, offset);
+      this.productsPerCategory[categoryId] = {};
+      newProducts.forEach((newProduct) => {
+        this.productsPerCategory[categoryId][newProduct.id] = newProduct;
+      });
+    } catch (error) {
+      console.error(`Error while getting products in category: ${error}`);
     }
   };
 
