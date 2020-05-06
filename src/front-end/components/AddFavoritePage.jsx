@@ -101,8 +101,11 @@ const AddFavoritePage = inject('applicationStore')(
     const history = useHistory();
     const [term, setTerm] = useState('');
     const [results, setResults] = useState([]);
-    const search = async () => {
-      const response = await applicationStore.getFavoriteOptions(term);
+    const search = async (newTerm) => {
+      if (newTerm.length < 3) {
+        return;
+      }
+      const response = await applicationStore.getFavoriteOptions(newTerm);
       if (response.error) {
         return;
       }
@@ -126,12 +129,13 @@ const AddFavoritePage = inject('applicationStore')(
             value={term}
             autoFocus
             onChange={(event) => {
-              setTerm(event.target.value);
+              const newTerm = event.target.value;
+              setTerm(newTerm);
               if (timeout) {
                 clearTimeout(timeout);
               }
               timeout = setTimeout(() => {
-                search();
+                search(newTerm);
               }, 750);
             }}
           />
