@@ -62,7 +62,7 @@ exports.deleteFavorite = async (req, res) => {
     return;
   }
 
-  await Favorite.delete({
+  await Favorite.destroy({
     where: { id, user_id: req.user.id },
   });
   res.status(200).send({ data: {} });

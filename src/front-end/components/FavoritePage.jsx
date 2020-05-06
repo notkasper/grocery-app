@@ -104,7 +104,6 @@ const AddFavoritePage = inject('applicationStore')(
             return (
               <FavoritesRow key={index}>
                 <div className="row-header">
-                  <p className="row-label">{`${favorite.favorite.term} in '${favorite.category.label}'`}</p>
                   <Cross
                     className="delete-button"
                     onClick={async () => {
@@ -114,6 +113,7 @@ const AddFavoritePage = inject('applicationStore')(
                       await applicationStore.getFavorites();
                     }}
                   />
+                  <p className="row-label">{`${favorite.favorite.term} in '${favorite.category.label}'`}</p>
                 </div>
                 <ProductShowcase>
                   {favorite.products.map((product) => (
