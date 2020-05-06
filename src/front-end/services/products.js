@@ -1,7 +1,7 @@
 /* eslint-disable import/prefer-default-export */
 import request from 'superagent';
 
-const API_BASE_URL = 'http://localhost:5000/api/v1';
+const API_BASE_URL = 'http://139.162.207.169/api/v1';
 
 export const getProducts = async (idToken) => {
   const response = await request
