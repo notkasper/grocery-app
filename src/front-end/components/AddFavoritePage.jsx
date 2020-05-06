@@ -142,22 +142,30 @@ const AddFavoritePage = inject('applicationStore')(
           <SearchSvg className="search-icon" />
         </SearchBar>
         <Results>
-          {Object.keys(results).map((key) => (
-            <ResultRow
-              key={key}
-              count={results[key].count}
-              onClick={async () => {
-                await applicationStore.addFavorite(key, term);
-                applicationStore.getFavorites();
-                history.push('/favorites');
-              }}
-            >
-              <p className="result-label">{results[key].category.label}</p>
-              <div className="count-container">
-                <p className="count">{results[key].count}</p>
-              </div>
-            </ResultRow>
-          ))}
+          {Object.keys(results)
+            .sort((key1, key2) => {
+              const count1 = results[key1].count;
+              const count2 = results[key2].count;
+              if (count1 < count2) return 1;
+              if (count1 > count2) return -1;
+              return 0;
+            })
+            .map((key) => (
+              <ResultRow
+                key={key}
+                count={results[key].count}
+                onClick={async () => {
+                  await applicationStore.addFavorite(key, term);
+                  applicationStore.getFavorites();
+                  history.push('/favorites');
+                }}
+              >
+                <p className="result-label">{results[key].category.label}</p>
+                <div className="count-container">
+                  <p className="count">{results[key].count}</p>
+                </div>
+              </ResultRow>
+            ))}
         </Results>
       </Container>
     );
