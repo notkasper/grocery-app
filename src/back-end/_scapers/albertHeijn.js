@@ -71,84 +71,91 @@ const scrapeAlbertHeijn = async () => {
       .then((e) => e.getProperty('href'))
       .then((e) => e.jsonValue());
     const categoryPage = await browser.newPage();
-    await categoryPage.goto(`${categoryHref}?kenmerk=bonus&page=100`);
-    // await autoScroll(categoryPage); // TODO: FIX THIS
-    const bonusProducts = await categoryPage.$$('article');
-    for (const product of bonusProducts) {
-      const label = await product
-        .$('span.line-clamp')
-        .then((e) => e.getProperty('textContent'))
-        .then((e) => e.jsonValue());
-      const productImageSrc = await product
-        .$('img')
-        .then((e) => e.getProperty('src'))
-        .then((e) => e.jsonValue());
-      const amount = await product
-        .$('span.price_unitSize__2pujV')
-        .then((e) => e.getProperty('textContent'))
-        .then((e) => e.jsonValue());
-      const discountType = await product
-        .$('span.shield_text__iFLQN')
-        .then((e) => e.getProperty('textContent'))
-        .then((e) => e.jsonValue());
-      const availableTill = await product
-        .$('p.smart-label_bonus__27_aC span.line-clamp')
-        .then((e) => (e ? e.getProperty('textContent') : null))
-        .then((e) => (e ? e.jsonValue() : null));
-      const link = await product
-        .$('div a.link_root__1r7dk')
-        .then((e) => e.getProperty('href'))
-        .then((e) => e.jsonValue());
-      let newPrice = '';
-      await product
-        .$$('div.price-amount_root__2jJz9')
-        .then((es) => (es.length > 1 ? es[1] : es[0]))
-        .then((e) => (e ? e.$$('span') : null))
-        .then(async (es) => {
-          if (!es) return;
-          for (const e of es) {
-            const value = await e
-              .getProperty('textContent')
-              .then((textContent) => textContent.jsonValue());
-            newPrice = `${newPrice}${value}`;
-          }
+    const pageUrl = `${categoryHref}?kenmerk=bonus&page=100`;
+    try {
+      await categoryPage.goto(pageUrl);
+      // await autoScroll(categoryPage); // TODO: FIX THIS
+      const bonusProducts = await categoryPage.$$('article');
+      for (const product of bonusProducts) {
+        const label = await product
+          .$('span.line-clamp')
+          .then((e) => e.getProperty('textContent'))
+          .then((e) => e.jsonValue());
+        const productImageSrc = await product
+          .$('img')
+          .then((e) => e.getProperty('src'))
+          .then((e) => e.jsonValue());
+        const amount = await product
+          .$('span.price_unitSize__2pujV')
+          .then((e) => e.getProperty('textContent'))
+          .then((e) => e.jsonValue());
+        const discountType = await product
+          .$('span.shield_text__iFLQN')
+          .then((e) => e.getProperty('textContent'))
+          .then((e) => e.jsonValue());
+        const availableTill = await product
+          .$('p.smart-label_bonus__27_aC span.line-clamp')
+          .then((e) => (e ? e.getProperty('textContent') : null))
+          .then((e) => (e ? e.jsonValue() : null));
+        const link = await product
+          .$('div a.link_root__1r7dk')
+          .then((e) => e.getProperty('href'))
+          .then((e) => e.jsonValue());
+        let newPrice = '';
+        await product
+          .$$('div.price-amount_root__2jJz9')
+          .then((es) => (es.length > 1 ? es[1] : es[0]))
+          .then((e) => (e ? e.$$('span') : null))
+          .then(async (es) => {
+            if (!es) return;
+            for (const e of es) {
+              const value = await e
+                .getProperty('textContent')
+                .then((textContent) => textContent.jsonValue());
+              newPrice = `${newPrice}${value}`;
+            }
+          });
+        newPrice = Number.parseFloat(newPrice);
+        let oldPrice = '';
+        await product
+          .$$('div.price-amount_root__2jJz9')
+          .then((es) => (es.length > 1 ? es[0] : null))
+          .then((e) => (e ? e.$$('span') : null))
+          .then(async (es) => {
+            if (!es) return;
+            for (const e of es) {
+              const value = await e
+                .getProperty('textContent')
+                .then((textContent) => textContent.jsonValue());
+              oldPrice = `${oldPrice}${value}`;
+            }
+          });
+        oldPrice = Number.parseFloat(oldPrice);
+        await db.Product.create({
+          id: uuid.v4(),
+          category: categoryMapper.albertHeijn[categoryName] || null,
+          label: label.substring(0, 1000),
+          image: productImageSrc.substring(0, 1000),
+          amount,
+          discount_type: discountType,
+          availability_from: null,
+          availability_till: availableTill
+            ? parseAvailabilityTill(availableTill)
+            : null,
+          store_name: 'albert_heijn',
+          link: link.substring(0, 10000),
+          new_price: newPrice,
+          old_price: oldPrice,
+          discounted: true,
         });
-      newPrice = Number.parseFloat(newPrice);
-      let oldPrice = '';
-      await product
-        .$$('div.price-amount_root__2jJz9')
-        .then((es) => (es.length > 1 ? es[0] : null))
-        .then((e) => (e ? e.$$('span') : null))
-        .then(async (es) => {
-          if (!es) return;
-          for (const e of es) {
-            const value = await e
-              .getProperty('textContent')
-              .then((textContent) => textContent.jsonValue());
-            oldPrice = `${oldPrice}${value}`;
-          }
-        });
-      oldPrice = Number.parseFloat(oldPrice);
-      await db.Product.create({
-        id: uuid.v4(),
-        category: categoryMapper.albertHeijn[categoryName] || null,
-        label: label.substring(0, 1000),
-        image: productImageSrc.substring(0, 1000),
-        amount,
-        discount_type: discountType,
-        availability_from: null,
-        availability_till: availableTill
-          ? parseAvailabilityTill(availableTill)
-          : null,
-        store_name: 'albert_heijn',
-        link: link.substring(0, 10000),
-        new_price: newPrice,
-        old_price: oldPrice,
-        discounted: true,
-      });
-      console.info('product created...');
+        console.info('product created...');
+      }
+      await categoryPage.close();
+    } catch (error) {
+      console.error(
+        `Scraper encountered an error while scraping: ${pageUrl}: ${error}`
+      );
     }
-    await categoryPage.close();
   }
 
   await browser.close();
