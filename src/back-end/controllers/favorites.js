@@ -54,6 +54,20 @@ exports.addFavorite = async (req, res) => {
   res.status(200).send({ data: favorite });
 };
 
+exports.deleteFavorite = async (req, res) => {
+  const id = _.get(req, 'params.id');
+
+  if (!id) {
+    res.status(400).send({ error: 'Please provide favorite id' });
+    return;
+  }
+
+  await Favorite.delete({
+    where: { id, user_id: req.user.id },
+  });
+  res.status(200).send({ data: {} });
+};
+
 exports.getFavoriteOptions = async (req, res) => {
   try {
     const term = _.get(req, 'params.term');

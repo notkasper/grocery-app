@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { observer, inject } from 'mobx-react';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
+import Cross from '../assets/cross.svg';
 import ProductCard from './ProductCard';
 import PlusSvg from '../assets/plus.svg';
 
@@ -60,9 +61,24 @@ const FavoritesRow = styled.div`
   overflow-x: auto;
   white-space: nowrap;
 
-  .row-label {
-    margin-left: 5px;
-    margin-bottom: 5px;
+  .row-header {
+    display: flex;
+    justify-content: flex-start;
+
+    .row-label {
+      margin-left: 5px;
+      margin-bottom: 5px;
+    }
+
+    .delete-button {
+      border-radius: 100%;
+      width: 14px;
+      height: 14px;
+      background-color: #adb5c2;
+      fill: #fff;
+      padding: 3px;
+      margin-left: 5px;
+    }
   }
 `;
 
@@ -87,7 +103,18 @@ const AddFavoritePage = inject('applicationStore')(
           {Object.values(applicationStore.favorites).map((favorite, index) => {
             return (
               <FavoritesRow key={index}>
-                <p className="row-label">{`${favorite.favorite.term} in '${favorite.category.label}'`}</p>
+                <div className="row-header">
+                  <p className="row-label">{`${favorite.favorite.term} in '${favorite.category.label}'`}</p>
+                  <Cross
+                    className="delete-button"
+                    onClick={async () => {
+                      await applicationStore.deleteFavorite(
+                        favorite.favorite.id
+                      );
+                      await applicationStore.getFavorites();
+                    }}
+                  />
+                </div>
                 <ProductShowcase>
                   {favorite.products.map((product) => (
                     <ProductCard

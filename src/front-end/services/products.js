@@ -37,3 +37,10 @@ export const addFavorite = async (idToken, categoryId, term) => {
     .set('authorization', `Bearer ${idToken}`);
   return response;
 };
+
+export const deleteFavorite = async (idToken, id) => {
+  const response = await request
+    .delete(`${API_BASE_URL}/favorites/${id}`)
+    .set('authorization', `Bearer ${idToken}`);
+  return response;
+};

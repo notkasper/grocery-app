@@ -8,6 +8,7 @@ import {
   getFavoriteOptions as getFavoriteOptionsService,
   addFavorite as addFavoriteService,
   getFavorites as getFavoritesService,
+  deleteFavorite as deleteFavoriteService,
 } from '../services/products';
 
 class ApplicationStore {
@@ -77,6 +78,15 @@ class ApplicationStore {
       await addFavoriteService(idToken, categoryId, term);
     } catch (error) {
       console.error(`Error while adding favorite: ${error}`);
+    }
+  };
+
+  @action deleteFavorite = async (id) => {
+    try {
+      const idToken = await firebase.auth().currentUser.getIdToken();
+      await deleteFavoriteService(idToken, id);
+    } catch (error) {
+      console.error(`Error while deleting favorite: ${error}`);
     }
   };
 }
