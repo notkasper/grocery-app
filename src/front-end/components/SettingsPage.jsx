@@ -31,9 +31,6 @@ const Row = styled.div`
 
   .label {
     margin-left: 8px;
-    font-family: Work Sans;
-    font-style: normal;
-    font-weight: normal;
     font-size: 18px;
     line-height: 32px;
     color: #7a7a7a;

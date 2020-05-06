@@ -17,8 +17,6 @@ const Container = styled.div`
 
 const NavItem = styled.div`
   font-family: Roboto;
-  font-style: normal;
-  font-weight: normal;
   font-size: 18px;
   line-height: 21px;
   color: #ffffff;

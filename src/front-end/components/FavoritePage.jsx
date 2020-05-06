@@ -16,8 +16,6 @@ const Container = styled.div`
 
   .header {
     font-family: Work Sans;
-    font-style: normal;
-    font-weight: normal;
     font-size: 18px;
     line-height: 21px;
     color: #000000;
@@ -55,6 +53,7 @@ const ProductShowcase = styled.div`
   justify-content: flex-start;
   overflow-x: auto;
   white-space: nowrap;
+  padding-bottom: 10px;
 `;
 
 const FavoritesRow = styled.div`
@@ -78,6 +77,7 @@ const FavoritesRow = styled.div`
       fill: #fff;
       padding: 3px;
       margin-left: 5px;
+      margin-bottom: 5px;
     }
   }
 `;

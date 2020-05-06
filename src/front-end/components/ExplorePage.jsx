@@ -39,8 +39,6 @@ const CategoryBubble = styled.div`
 
 const CategoryLabel = styled.div`
   padding-top: 5px;
-  font-family: Work Sans;
-  font-style: normal;
   font-weight: 200;
   font-size: 18px;
   line-height: 21px;
@@ -85,8 +83,6 @@ const Header = styled.div`
 
 const HeaderTitle = styled.p`
   font-family: Work Sans;
-  font-style: normal;
-  font-weight: normal;
   font-size: 18px;
   line-height: 21px;
   color: #000000;
@@ -95,8 +91,6 @@ const HeaderTitle = styled.p`
 
 const HeaderNav = styled.p`
   font-family: Work Sans;
-  font-style: normal;
-  font-weight: normal;
   font-size: 13px;
   line-height: 15px;
   color: #44c062;
@@ -107,6 +101,7 @@ const ProductShowcase = styled.div`
   justify-content: flex-start;
   overflow-x: auto;
   white-space: nowrap;
+  padding-bottom: 10px;
 `;
 
 const App = inject('applicationStore')(
@@ -134,19 +129,19 @@ const App = inject('applicationStore')(
             <CategoryBubble>
               <Carrot />
             </CategoryBubble>
-            <CategoryLabel>Fruit</CategoryLabel>
+            <CategoryLabel>Groente</CategoryLabel>
           </CategoryContainer>
           <CategoryContainer>
             <CategoryBubble>
               <Bread />
             </CategoryBubble>
-            <CategoryLabel>Fruit</CategoryLabel>
+            <CategoryLabel>Brood</CategoryLabel>
           </CategoryContainer>
           <CategoryContainer>
             <CategoryBubble>
               <Cookie />
             </CategoryBubble>
-            <CategoryLabel>Fruit</CategoryLabel>
+            <CategoryLabel>Koekjes</CategoryLabel>
           </CategoryContainer>
         </CategoriesContainer>
         <Header>

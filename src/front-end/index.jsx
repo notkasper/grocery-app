@@ -13,7 +13,12 @@ const mountNode = document.getElementById('root');
 // eslint-disable-next-line no-unused-expressions
 const GlobalStyle = createGlobalStyle`
   body {
-    font-family: 'Work Sans', sans-serif;
+    font-family: Work Sans, sans-serif;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 13px;
+    line-height: 15px;
+    color: #000;
   }
 `;
 

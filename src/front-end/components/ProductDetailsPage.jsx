@@ -37,8 +37,6 @@ const DetailsContainer = styled.div`
   padding: 25vw 5% 5% 5%;
 
   .label {
-    font-family: Work Sans;
-    font-style: normal;
     font-weight: 200;
     font-size: 24px;
     line-height: 28px;
@@ -54,8 +52,6 @@ const DetailsContainer = styled.div`
 
     .price-details {
       .old-price {
-        font-family: Work Sans;
-        font-style: normal;
         font-weight: 300;
         font-size: 12px;
         line-height: 14px;
@@ -64,9 +60,6 @@ const DetailsContainer = styled.div`
         text-align: left;
       }
       .new-price {
-        font-family: Work Sans;
-        font-style: normal;
-        font-weight: normal;
         font-size: 36px;
         line-height: 42px;
         color: #44c062;
@@ -86,9 +79,6 @@ const DetailsContainer = styled.div`
       }
 
       .likes-amount {
-        font-family: Work Sans;
-        font-style: normal;
-        font-weight: normal;
         font-size: 18px;
         line-height: 21px;
         height: 32px;
@@ -105,9 +95,6 @@ const DetailsContainer = styled.div`
     margin: 20px 0;
 
     .header {
-      font-family: Work Sans;
-      font-style: normal;
-      font-weight: normal;
       font-size: 18px;
       line-height: 21px;
       display: flex;
@@ -116,8 +103,6 @@ const DetailsContainer = styled.div`
       color: #000000;
     }
     .description {
-      font-family: Work Sans;
-      font-style: normal;
       font-weight: 300;
       font-size: 14px;
       line-height: 16px;
@@ -133,9 +118,6 @@ const DetailsContainer = styled.div`
 
     .availability-container {
       .availability-header {
-        font-family: Work Sans;
-        font-style: normal;
-        font-weight: normal;
         font-size: 18px;
         line-height: 21px;
         display: flex;
@@ -145,8 +127,6 @@ const DetailsContainer = styled.div`
       }
 
       .availability {
-        font-family: Work Sans;
-        font-style: normal;
         font-weight: 300;
         font-size: 14px;
         line-height: 16px;
@@ -159,9 +139,6 @@ const DetailsContainer = styled.div`
 
     .store-container {
       .store-header {
-        font-family: Work Sans;
-        font-style: normal;
-        font-weight: normal;
         font-size: 18px;
         line-height: 21px;
         display: flex;
@@ -171,8 +148,6 @@ const DetailsContainer = styled.div`
       }
 
       .store-name {
-        font-family: Work Sans;
-        font-style: normal;
         font-weight: 300;
         font-size: 14px;
         line-height: 16px;

@@ -13,8 +13,6 @@ const Container = styled.div`
 
 const Title = styled.p`
   font-family: Work Sans;
-  font-style: normal;
-  font-weight: normal;
   font-size: 18px;
   line-height: 21px;
   color: #ffffff;

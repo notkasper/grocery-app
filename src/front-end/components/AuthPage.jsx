@@ -23,8 +23,6 @@ const Container = styled.div`
 
 const Header = styled.p`
   padding: 25vh 0 10vh 0;
-  font-family: Work Sans;
-  font-style: normal;
   font-weight: bold;
   font-size: 36px;
   line-height: 47px;

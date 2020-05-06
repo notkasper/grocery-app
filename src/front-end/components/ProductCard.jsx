@@ -43,8 +43,6 @@ const CardHeader = styled.div`
 `;
 
 const StoreTag = styled.p`
-  font-family: Work Sans;
-  font-style: normal;
   font-weight: 500;
   font-size: 10px;
   line-height: 12px;
@@ -58,14 +56,9 @@ const StoreTag = styled.p`
 `;
 
 const AmountLabel = styled.p`
-  font-family: Work Sans;
-  font-style: normal;
-  font-weight: normal;
   font-size: 10px;
   line-height: 12px;
   display: flex;
-  align-items: center;
-  text-align: right;
   color: ${(props) => storeProps[props.storeName].textColor};
   overflow: hidden;
   white-space: nowrap;
@@ -98,22 +91,14 @@ const CardFooter = styled.div`
 `;
 
 const ProductLabel = styled.p`
-  font-family: Work Sans;
-  font-style: normal;
   font-weight: 600;
-  font-size: 13px;
-  line-height: 15px;
   white-space: nowrap;
   overflow: hidden;
 `;
 
 const FooterTextRight = styled.p`
   display: inline-block;
-  font-family: 'Work Sans';
-  font-style: normal;
-  font-weight: normal;
-  font-size: 13px;
-  line-height: 15px;
+
   color: #000000;
   width: 35px;
   text-align: right;
@@ -122,11 +107,6 @@ const FooterTextRight = styled.p`
 
 const FooterTextLeft = styled.p`
   display: inline-block;
-  font-family: 'Work Sans';
-  font-style: normal;
-  font-weight: normal;
-  font-size: 13px;
-  line-height: 15px;
   color: #000000;
 `;
 

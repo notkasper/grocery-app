@@ -30,8 +30,6 @@ const SearchBar = styled.div`
     background: none;
     border: none;
     outline: none;
-    font-family: Work Sans;
-    font-style: normal;
     font-weight: 200;
     font-size: 18px;
     line-height: 21px;
@@ -67,9 +65,6 @@ const ResultRow = styled.div`
   padding: 15px 10px;
 
   .result-label {
-    font-family: Work Sans;
-    font-style: normal;
-    font-weight: normal;
     font-size: 18px;
     line-height: 21px;
     color: #44c062;
@@ -83,8 +78,6 @@ const ResultRow = styled.div`
 
     .count {
       font-family: Work Sans;
-      font-style: normal;
-      font-weight: normal;
       font-size: 12px;
       line-height: 14px;
       text-align: center;
@@ -115,6 +108,12 @@ const AddFavoritePage = inject('applicationStore')(
         res[category.id] = { category, count: 0 };
       });
       products.forEach((product) => {
+        if (!res[product.category]) {
+          console.error(
+            `Could not find category counter for category: ${product.category}`
+          );
+          return;
+        }
         res[product.category].count += 1;
       });
       setResults(res);
