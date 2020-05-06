@@ -28,7 +28,7 @@ const CategoriesContainer = styled.div`
 
 const CategoryContainer = styled.div`
   display: inline-block;
-  width: 100px;
+  width: 75px;
   padding: 5px;
 `;
 

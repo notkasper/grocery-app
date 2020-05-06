@@ -67,6 +67,7 @@ const FavoritesRow = styled.div`
   .row-header {
     display: flex;
     justify-content: flex-start;
+    overflow: hidden;
 
     .row-label {
       margin-left: 5px;
@@ -75,7 +76,7 @@ const FavoritesRow = styled.div`
 
     .delete-button {
       border-radius: 100%;
-      width: 14px;
+      min-width: 14px;
       height: 14px;
       background-color: #adb5c2;
       fill: #fff;

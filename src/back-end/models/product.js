@@ -17,6 +17,7 @@ module.exports = (sequelize, DataTypes) => {
       link: DataTypes.STRING(10000),
       description: DataTypes.STRING(10000),
       new_price: DataTypes.DOUBLE,
+      old_price: DataTypes.DOUBLE,
       discounted: DataTypes.BOOLEAN,
     },
     { freezeTableName: true }
