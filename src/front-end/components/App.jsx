@@ -1,5 +1,5 @@
 /* eslint-disable object-curly-newline */
-import React from 'react';
+import React, { useState } from 'react';
 import firebase from 'firebase/app';
 import 'firebase/auth';
 import { observer, inject } from 'mobx-react';
@@ -20,10 +20,16 @@ import FavoritePage from './FavoritePage';
 import SettingsPage from './SettingsPage';
 import ProductDetailsPage from './ProductDetailsPage';
 import ListPage from './ListPage';
+import Loader from './Loader';
 
 const PageContainer = styled.div`
   max-width: 100vw;
   overflow: hidden;
+`;
+
+const LoaderContainer = styled.div`
+  height: 50px;
+  margin-top: calc(50vh - 50px);
 `;
 
 let firstRender = true;
@@ -40,19 +46,30 @@ const Test = () => {
 const App = inject('applicationStore')(
   observer((props) => {
     const { applicationStore } = props;
+    const [initialAuthCheck, setInitialAuthCheck] = useState(false);
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
         applicationStore.authenticated = true;
       } else {
         applicationStore.authenticated = false;
       }
+      if (!initialAuthCheck) {
+        setInitialAuthCheck(true);
+      }
     });
-    if (!applicationStore.authenticated) {
+    if (!initialAuthCheck) {
+      return (
+        <LoaderContainer>
+          <Loader />
+        </LoaderContainer>
+      );
+    }
+    if (!applicationStore.authenticated && initialAuthCheck) {
       return <AuthPage />;
     }
     return (
       <Router>
-        {/* <Test /> */}
+        <Test />
         <NavBar />
         <PageContainer>
           <Switch>
