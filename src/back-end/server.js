@@ -56,7 +56,10 @@ const start = async () => {
   app.use('/api/v1/products', authMiddleware, products);
   app.use('/api/v1/favorites', authMiddleware, favorites);
   app.use('/api/v1/categories', authMiddleware, categories);
-  app.get('/api/v1/DELETE', () => db.Product.destroy({ where: {} }));
+  app.delete('/api/v1/DELETE', async (req, res) => {
+    await db.Product.destroy({ where: {} });
+    res.status(200).send({ ok: 'OK' });
+  });
 
   app.get('*', (req, res) => {
     res.sendFile(path.join(`${__dirname}/../../dist/index.html`));
