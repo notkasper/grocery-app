@@ -19,6 +19,7 @@ exports.getFavorites = async (req, res) => {
         label: {
           [Op.iLike]: `%${favorite.term}%`,
         },
+        category: favorite.category_id,
       },
       limit: 1000,
       raw: true,
