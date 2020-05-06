@@ -27,6 +27,9 @@ const parseAvailabilityTill = (unparsed) => {
     excludeToday = true,
     refDate = new Date()
   ) => {
+    if (!dayName) {
+      return null;
+    }
     const dayOfWeek = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'].indexOf(
       dayName.slice(0, 3).toLowerCase()
     );
