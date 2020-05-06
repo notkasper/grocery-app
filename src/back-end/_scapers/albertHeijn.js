@@ -10,6 +10,9 @@ const db = require('../models');
 puppeteer.use(StealthPlugin());
 
 const parseAvailabilityTill = (unparsed) => {
+  if (!unparsed) {
+    return null;
+  }
   const daynameMap = {
     maandag: 'mon',
     dinsdag: 'tue',
