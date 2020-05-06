@@ -53,6 +53,8 @@ const StoreTag = styled.p`
   align-items: center;
   text-align: center;
   color: ${(props) => storeProps[props.storeName].textColor};
+  overflow: hidden;
+  white-space: nowrap;
 `;
 
 const AmountLabel = styled.p`
@@ -65,6 +67,8 @@ const AmountLabel = styled.p`
   align-items: center;
   text-align: right;
   color: ${(props) => storeProps[props.storeName].textColor};
+  overflow: hidden;
+  white-space: nowrap;
 `;
 
 const CardContent = styled.div`
