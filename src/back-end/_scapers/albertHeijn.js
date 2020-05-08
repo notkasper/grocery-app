@@ -130,7 +130,7 @@ const scrapeAlbertHeijn = async () => {
               oldPrice = `${oldPrice}${value}`;
             }
           });
-        oldPrice = Number.parseFloat(oldPrice);
+        oldPrice = Number.parseFloat(oldPrice) || null;
         await db.Product.create({
           id: uuid.v4(),
           category: categoryMapper.albertHeijn[categoryName] || null,
