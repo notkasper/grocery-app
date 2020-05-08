@@ -10,11 +10,13 @@ const Container = styled.div`
   grid-gap: 10px;
   min-height: calc(100vh - 100px);
   padding-bottom: 50px;
+  margin: 20px 0;
 
   .product-list {
     display: grid;
     margin: auto;
-    grid-template-columns: repeat(auto-fit, 132px);
+    justify-content: center;
+    grid-template-columns: repeat(auto-fit, 136px);
     grid-gap: 5px;
   }
 `;
@@ -47,7 +49,6 @@ const CategoryPage = inject('applicationStore')(
       applicationStore.productsPerCategory[props.match.params.id] || {};
     return (
       <Container>
-        <p className="header">Categorie</p>
         <div className="product-list">
           {Object.values(productsInCategory).map((product) => (
             <ProductCard
