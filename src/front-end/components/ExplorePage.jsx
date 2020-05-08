@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-one-expression-per-line */
 import React, { useEffect, useState } from 'react';
 import { observer, inject } from 'mobx-react';
 import styled from 'styled-components';
