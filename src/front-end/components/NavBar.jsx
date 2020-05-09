@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { useHistory } from 'react-router-dom';
 import SettingsSvg from '../assets/settings.svg';
+import BackSvg from '../assets/back.svg';
 
 const Container = styled.div`
   background-color: #44c062;
@@ -9,6 +10,14 @@ const Container = styled.div`
   height: 50px;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
+
+  .back-arrow {
+    width: 24px;
+    height: 24px;
+    fill: #fff;
+    margin-left: 8px;
+    margin-top: 13px;
+  }
 `;
 
 const Title = styled.p`
@@ -34,7 +43,16 @@ const NavBar = () => {
   const history = useHistory();
   return (
     <Container>
-      <p />
+      {history.length ? (
+        <BackSvg
+          className="back-arrow"
+          onClick={() => {
+            history.goBack();
+          }}
+        />
+      ) : (
+        <p />
+      )}
       <Title>Dingen.</Title>
       <SettingsIcon
         onClick={() => {
