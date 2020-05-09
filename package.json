@@ -64,6 +64,7 @@
     "superagent": "^5.2.2",
     "umzug": "^2.3.0",
     "uuid": "^7.0.3",
+    "webpack-pwa-manifest": "^4.2.0",
     "xss-clean": "^0.1.1"
   },
   "devDependencies": {
@@ -97,6 +98,7 @@
     "webpack": "^4.42.1",
     "webpack-bundle-analyzer": "^3.7.0",
     "webpack-cli": "^3.3.11",
-    "webpack-dev-server": "^3.10.3"
+    "webpack-dev-server": "^3.10.3",
+    "workbox-webpack-plugin": "^5.1.3"
   }
 }
