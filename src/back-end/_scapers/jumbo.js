@@ -27,8 +27,8 @@ const scrapeJumbo = async () => {
       'Mozilla/5.0 (iPhone; CPU iPhone OS 9_1 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13B143 Safari/601.1'
     );
     await page.setViewport({ width: 1366, height: 768 });
-    const { status } = await page.goto('https://www.jumbo.com/producten/?offSet=0&pageSize=25');
-    console.log(`response status: ${status}`);
+    let response = await page.goto('https://www.jumbo.com/producten/?offSet=0&pageSize=25');
+    console.log(`response status: ${response.status()}`);
 
     await wait(1000);
     const categoryList = await page.$$('ul.filter-group');
@@ -53,10 +53,10 @@ const scrapeJumbo = async () => {
           .split(' ')
           .join('-')
           .toLowerCase()}/?offSet=${offset}&pageSize=${pageSize}`;
-        let response = await categoryPage.goto(categoryPageUrl);
-        console.log(`response status: ${response.status}`);
+        response = await categoryPage.goto(categoryPageUrl);
+        console.log(`response status: ${response.status()}`);
         while (response.status === 403) {
-          console.log(`response status: ${response.status}`);
+          console.log(`response status: ${response.status()}`);
           spinner.text = `Waiting to avoid rate-limit... ${spinnerText}`;
           await wait(10 * 60 * 1000); // wait 10 minutes to avoid rate limit
           response = await categoryPage.goto(categoryPageUrl);
