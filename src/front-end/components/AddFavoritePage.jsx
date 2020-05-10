@@ -33,8 +33,12 @@ const SearchBar = styled.div`
     font-weight: 200;
     font-size: 18px;
     line-height: 21px;
-    color: #adb5c2;
+    color: #000000;
     margin-left: 20px;
+
+    &::placeholder {
+      color: #adb5c2;
+    }
   }
 
   .search-icon {
