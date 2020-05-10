@@ -27,15 +27,19 @@ const scrapeJumbo = async () => {
       'Mozilla/5.0 (iPhone; CPU iPhone OS 9_1 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13B143 Safari/601.1'
     );
     page.on('error', (err) => {
-      console.log('error happen at the page: ', err);
+      console.error('error: ', err);
     });
 
     page.on('pageerror', (pageerr) => {
-      console.log('pageerror occurred: ', pageerr);
+      console.error('page error: ', pageerr);
     });
     await page.setViewport({ width: 1366, height: 768 });
     let response = await page.goto('https://www.jumbo.com/producten/?offSet=0&pageSize=25');
-    console.log(`response status: ${response.status()}`);
+    while (response.status() === 403) {
+      spinner.text = `Waiting to avoid rate-limit... [homepage]`;
+      await wait(10 * 60 * 1000); // wait 10 minutes to avoid rate limit
+      response = await page.goto('https://www.jumbo.com/producten/?offSet=0&pageSize=25');
+    }
 
     await wait(1000);
     const categoryList = await page.$$('ul.filter-group');
