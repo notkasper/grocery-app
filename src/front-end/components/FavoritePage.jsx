@@ -98,6 +98,7 @@ const AddFavoritePage = inject('applicationStore')(
       setLoading(false);
     };
     useEffect(() => {
+      applicationStore.navbarLabel = 'Favorieten';
       loadFavorites();
     }, []);
     return (

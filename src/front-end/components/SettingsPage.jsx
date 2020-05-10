@@ -50,10 +50,12 @@ const Row = styled.div`
 `;
 
 const Settingspage = inject('applicationStore')(
-  observer(() => {
+  observer((props) => {
+    const { applicationStore } = props;
     const [homepage, setHomepage] = useState('/');
     useEffect(() => {
       const homescreen = jsCookie.get('HOMEPAGE');
+      applicationStore.navbarLabel = 'Instellingen';
       setHomepage(homescreen);
     }, []);
     return (

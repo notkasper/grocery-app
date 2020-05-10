@@ -36,6 +36,7 @@ const CategoryPage = inject('applicationStore')(
       setLoading(false);
     };
     useEffect(() => {
+      applicationStore.navbarLabel = props.match.params.label;
       loadProductsInCategory();
     }, []);
     if (loading) {

@@ -80,7 +80,7 @@ const App = inject('applicationStore')(
             <Route path="/settings" exact component={SettingsPage} />
             <Route path="/list" exact component={ListPage} />
             <Route path="/product/:id" component={ProductDetailsPage} />
-            <Route path="/categories/:id" component={CategoryPage} />
+            <Route path="/categories/:id/:label" component={CategoryPage} />
           </Switch>
         </PageContainer>
         <Footer />

@@ -205,6 +205,7 @@ const App = inject('applicationStore')(
       setLoading(false);
     };
     useEffect(() => {
+      applicationStore.navbarLabel = 'Dingen.';
       loadProducts();
     }, []);
     return (
@@ -214,8 +215,7 @@ const App = inject('applicationStore')(
             <CategoryContainer
               key={category.id}
               onClick={() => {
-                history.push(`/categories/${category.id}`);
-                applicationStore.navbarLabel = category.label;
+                history.push(`/categories/${category.id}/${category.label}`);
               }}
             >
               <CategoryBubble>{category.icon}</CategoryBubble>
