@@ -21,6 +21,8 @@ class ApplicationStore {
 
   @observable authenticated = false;
 
+  @observable navbarLabel = 'Dingen.';
+
   @action getProducts = async () => {
     try {
       const idToken = await firebase.auth().currentUser.getIdToken();

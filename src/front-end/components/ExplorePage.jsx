@@ -213,7 +213,10 @@ const App = inject('applicationStore')(
           {categories.map((category) => (
             <CategoryContainer
               key={category.id}
-              onClick={() => history.push(`/categories/${category.id}`)}
+              onClick={() => {
+                history.push(`/categories/${category.id}`);
+                applicationStore.navbarLabel = category.label;
+              }}
             >
               <CategoryBubble>{category.icon}</CategoryBubble>
               <CategoryLabel>{category.label} </CategoryLabel>

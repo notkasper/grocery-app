@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { observer, inject } from 'mobx-react';
 import { useHistory } from 'react-router-dom';
 import ShopSvg from '../assets/shop.svg';
 import ChecklistSvg from '../assets/checklist.svg';
@@ -42,22 +43,40 @@ const Heart = styled(HeartSvg)`
   fill: ${(props) => (props.selected ? '#fff' : '#fff')};
 `;
 
-const Footer = () => {
-  const history = useHistory();
-  const { location } = history;
-  return (
-    <Container>
-      <NavItem onClick={() => history.push('/')}>
-        <Shop selected={location.pathname === '/'} />
-      </NavItem>
-      <NavItem onClick={() => history.push('/favorites')}>
-        <Heart selected={location.pathname === '/favorites'} />
-      </NavItem>
-      <NavItem onClick={() => history.push('/list')}>
-        <Checklist selected={location.pathname === '/list'} />
-      </NavItem>
-    </Container>
-  );
-};
+const Footer = inject('applicationStore')(
+  observer((props) => {
+    const { applicationStore } = props;
+    const history = useHistory();
+    const { location } = history;
+    return (
+      <Container>
+        <NavItem
+          onClick={() => {
+            history.push('/');
+            applicationStore.navbarLabel = 'Dingen.';
+          }}
+        >
+          <Shop selected={location.pathname === '/'} />
+        </NavItem>
+        <NavItem
+          onClick={() => {
+            history.push('/favorites');
+            applicationStore.navbarLabel = 'Favorieten';
+          }}
+        >
+          <Heart selected={location.pathname === '/favorites'} />
+        </NavItem>
+        <NavItem
+          onClick={() => {
+            history.push('/list');
+            applicationStore.navbarLabel = 'Boodschappenlijst';
+          }}
+        >
+          <Checklist selected={location.pathname === '/list'} />
+        </NavItem>
+      </Container>
+    );
+  })
+);
 
 export default Footer;

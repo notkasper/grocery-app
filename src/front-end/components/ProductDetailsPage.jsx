@@ -172,6 +172,11 @@ const ProductDetailsPage = inject('applicationStore')(
       );
       setProduct(loadedProduct);
       setLoading(false);
+      applicationStore.navbarLabel = loadedProduct.label
+        .split(' ')
+        .splice(0, 5)
+        .join(' ')
+        .substring(0, 24);
     };
     useEffect(() => {
       loadProduct();
