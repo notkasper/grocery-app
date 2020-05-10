@@ -61,9 +61,7 @@ const scrapeJumbo = async () => {
           .join('-')
           .toLowerCase()}/?offSet=${offset}&pageSize=${pageSize}`;
         response = await categoryPage.goto(categoryPageUrl);
-        console.log(`response status: ${response.status()}`);
-        while (response.status === 403) {
-          console.log(`response status: ${response.status()}`);
+        while (response.status() === 403) {
           spinner.text = `Waiting to avoid rate-limit... ${spinnerText}`;
           await wait(10 * 60 * 1000); // wait 10 minutes to avoid rate limit
           response = await categoryPage.goto(categoryPageUrl);
