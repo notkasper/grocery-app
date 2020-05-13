@@ -20,9 +20,23 @@ const scrapeJumbo = async () => {
     const spinner = ora('Starting Jumbo scraper...').start();
     const browser = await puppeteer.launch({
       headless: true,
-      args: ['--start-maximized', '--no-sandbox', '--disable-setuid-sandbox'],
+      args: [
+        '--start-maximized',
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        `--proxy-server=${process.env.LUMINATI_PROXY_IP}`,
+      ],
     });
     const page = await browser.newPage();
+    await page.authenticate({
+      username: process.env.LUMINATI_USERNAME,
+      password: process.env.LUMINATI_PASSWORD,
+    });
+    await page.goto('http://lumtest.com/myip.json');
+    await page.screenshot({ path: 'example.png' });
+    await browser.close();
+    spinner.succeed();
+    return;
     page.setUserAgent(
       'Mozilla/5.0 (iPhone; CPU iPhone OS 9_1 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13B143 Safari/601.1'
     );
