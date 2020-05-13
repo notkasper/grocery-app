@@ -116,11 +116,11 @@ const CategoryPage = inject('applicationStore')(
           {page > 1 ? (
             <p
               onClick={() => {
-                setPage(page - 2);
+                setPage(0);
                 loadProductsInCategory();
               }}
             >
-              {page - 1}
+              1...
             </p>
           ) : null}
           {page > 0 ? (
@@ -134,29 +134,33 @@ const CategoryPage = inject('applicationStore')(
             </p>
           ) : null}
           <p className="current">{page + 1}</p>
-          <p
-            onClick={() => {
-              setPage(page + 1);
-              loadProductsInCategory();
-            }}
-          >
-            {page + 2}
-          </p>
-          <p
-            onClick={() => {
-              setPage(page + 2);
-              loadProductsInCategory();
-            }}
-          >
-            {page + 3}
-          </p>
-          <BackSvg
-            className="next"
-            onClick={() => {
-              setPage(page + 1);
-              loadProductsInCategory();
-            }}
-          />
+          {Object.values(productsInCategory).length >= 20 ? (
+            <>
+              <p
+                onClick={() => {
+                  setPage(page + 1);
+                  loadProductsInCategory();
+                }}
+              >
+                {page + 2}
+              </p>
+              <p
+                onClick={() => {
+                  setPage(page + 2);
+                  loadProductsInCategory();
+                }}
+              >
+                {page + 3}
+              </p>
+              <BackSvg
+                className="next"
+                onClick={() => {
+                  setPage(page + 1);
+                  loadProductsInCategory();
+                }}
+              />
+            </>
+          ) : null}
         </PaginationContainer>
       </Container>
     );
