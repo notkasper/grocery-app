@@ -7,19 +7,103 @@ const ora = require('ora');
 const puppeteer = require('puppeteer-extra');
 const uuid = require('uuid');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
-const categoryMapper = require('./categoryMapper');
-const { wait } = require('./_utils');
+const { wait, createPage, scrapeElementProperty } = require('./_utils');
 const db = require('../models');
 
 // add stealth plugin and use defaults (all evasion techniques)
 puppeteer.use(StealthPlugin());
 
-const scrapeJumbo = async () => {
+const categories = [
+  {
+    link: 'https://www.jumbo.com/producten/categorieen/aardappel,-rijst,-pasta/?pageSize=25',
+    category: '81f25338-9164-44e0-854f-f1e1e205fc5c',
+  },
+  {
+    link: 'https://www.jumbo.com/producten/categorieen/vlees,-vis,-vegetarisch/?pageSize=25',
+    category: '85698cd6-d8eb-4883-8dd2-ba1c1733ec13',
+  },
+  {
+    link: 'https://www.jumbo.com/producten/categorieen/fruit/?pageSize=25',
+    category: '81f25338-9164-44e0-854f-f1e1e205fc5c',
+  },
+  {
+    link: 'Koken, soepen, maaltijden',
+    category: '9eb0ce98-ad14-43ff-b04d-e086c48252de',
+  },
+  {
+    link: 'https://www.jumbo.com/producten/categorieen/diepvries/?pageSize=25',
+    category: '2d07a92d-de8a-4948-809b-9d38b4cd9431',
+  },
+  {
+    link: 'https://www.jumbo.com/producten/categorieen/brood,-cereals,-beleg/?pageSize=25',
+    category: '143ca1c5-2d7e-491a-8e59-0a5c25e4f9e3',
+  },
+  {
+    link: 'https://www.jumbo.com/producten/categorieen/groente/?pageSize=25',
+    category: '81f25338-9164-44e0-854f-f1e1e205fc5c',
+  },
+  {
+    link: 'https://www.jumbo.com/producten/categorieen/koek,-gebak,-snoep,-chips/?pageSize=25',
+    category: 'f0017007-b349-4b59-8cf9-3bf456e01c80',
+  },
+  {
+    link: 'https://www.jumbo.com/producten/categorieen/zuivel,-eieren,-boter/?pageSize=25',
+    category: '444e3a99-8c88-4b09-b70a-0d5108e09906',
+  },
+  {
+    link: 'https://www.jumbo.com/producten/categorieen/fris,-sap,-koffie,-thee/?pageSize=25',
+    category: '6dc98c4d-8e40-46b3-bc15-4121dad2a954',
+  },
+  {
+    link: 'https://www.jumbo.com/producten/categorieen/wijn,-bier,-sterke-drank/?pageSize=25',
+    category: '2e67fcdc-37b0-4782-96c2-f1ed9edf2623',
+  },
+  {
+    link: 'https://www.jumbo.com/producten/categorieen/drogisterij/?pageSize=25',
+    category: '67937d0d-f761-4dc9-acb5-91952b082f3a',
+  },
+  {
+    link: 'https://www.jumbo.com/producten/categorieen/baby,-peuter/?pageSize=25',
+    category: '67937d0d-f761-4dc9-acb5-91952b082f3a',
+  },
+  {
+    link: 'https://www.jumbo.com/producten/categorieen/huishouden,-dieren,-servicebalie/?pageSize=25',
+    category: '47cb0d4a-97e9-49c9-acd7-558b24b2ca43',
+  },
+];
+
+const parseAvailability = (availability) => {
+  if (!availability) {
+    return null;
+  }
+  const [from, till] = availability.substring(25, 40).split(' t/m ');
+  const [fromDay, fromMonth] = from.split('-');
+  const [tillDay, tillMonth] = till.split('-');
+
+  const year = new Date().getFullYear();
+
+  let availabilityFrom = null;
+  if (fromDay && fromMonth) {
+    availabilityFrom = new Date(year, fromMonth, fromDay);
+  }
+
+  let availabilityTill = null;
+  if (tillDay && tillMonth) {
+    availabilityTill = new Date(year, tillMonth, tillDay);
+  }
+
+  return {
+    availabilityFrom,
+    availabilityTill,
+  };
+};
+
+const scrape = async () => {
   const errors = [];
+  const spinner = ora('Starting Jumbo scraper...').start();
   try {
-    const spinner = ora('Starting Jumbo scraper...').start();
     const browser = await puppeteer.launch({
-      headless: true,
+      headless: false,
       args: [
         '--start-maximized',
         '--no-sandbox',
@@ -27,128 +111,44 @@ const scrapeJumbo = async () => {
         `--proxy-server=${process.env.LUMINATI_PROXY_IP}`,
       ],
     });
-    const page = await browser.newPage();
-    await page.authenticate({
-      username: process.env.LUMINATI_USERNAME,
-      password: process.env.LUMINATI_PASSWORD,
-    });
-    await page.goto('http://lumtest.com/myip.json');
-    await page.screenshot({ path: 'example.png' });
-    await browser.close();
-    spinner.succeed();
-    return;
-    page.setUserAgent(
-      'Mozilla/5.0 (iPhone; CPU iPhone OS 9_1 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13B143 Safari/601.1'
-    );
-
-    await page.setViewport({ width: 1366, height: 768 });
-    let response = await page.goto('https://www.jumbo.com/producten/?offSet=0&pageSize=25');
-    while (response.status() === 403) {
-      spinner.text = `Waiting to avoid rate-limit... [homepage]`;
-      await wait(10 * 60 * 1000); // wait 10 minutes to avoid rate limit
-      response = await page.goto('https://www.jumbo.com/producten/?offSet=0&pageSize=25');
-    }
-
-    await wait(1000);
-    const categoryList = await page.$$('ul.filter-group');
-    const categoryLinks = await categoryList[0].$$('li a');
-    let catCounter = 0;
-    let productCounter = 0;
-    for (const categoryLink of categoryLinks) {
-      catCounter += 1;
-      const [categoryName, categoryCount] = await categoryLink
-        .$$('span')
-        .then(async ([e1, e2]) => [await e1.getProperty('textContent'), await e2.getProperty('textContent')])
-        .then(async ([e1, e2]) => [await e1.jsonValue(), await e2.jsonValue()])
-        .then(([e1, e2]) => [e1, Number.parseInt(e2.slice(1, e2.length - 1), 10)]);
-      const categoryPage = await browser.newPage();
-      await categoryPage.setViewport({ width: 1366, height: 768 });
-      const pageSize = 25;
-      for (let offset = 0; offset < categoryCount; offset += pageSize) {
-        const spinnerText = `category ${catCounter}/${categoryLinks.length} | page ${offset / pageSize}/${Math.ceil(
-          categoryCount / pageSize
-        )} | products created: ${productCounter}`;
-        const categoryPageUrl = `https://www.jumbo.com/producten/categorieen/${categoryName
-          .split(' ')
-          .join('-')
-          .toLowerCase()}/?offSet=${offset}&pageSize=${pageSize}`;
-        response = await categoryPage.goto(categoryPageUrl);
-        while (response.status() === 403) {
-          spinner.text = `Waiting to avoid rate-limit... ${spinnerText}`;
-          await wait(10 * 60 * 1000); // wait 10 minutes to avoid rate limit
-          response = await categoryPage.goto(categoryPageUrl);
-        }
-        spinner.text = spinnerText;
-        await wait(1000);
-        const products = await categoryPage.$$('div.jum-card-grid div.jum-card');
+    const page = await createPage(browser);
+    for (const category of categories) {
+      await page.goto(category.link);
+      let firstPage = true;
+      let done = false;
+      let discountCounter = 0;
+      while (!done) {
+        await wait(60 * 1000);
+        const products = await page.$$('div.jum-card-grid div.jum-card');
         for (const product of products) {
           try {
             const banner = await product.$('div.banner-content');
             if (!banner) {
-              const label = await product
-                .$('h3.jum-card-title__text span')
-                .then((e) => e.getProperty('textContent'))
-                .then((e) => e.jsonValue());
-              const productImageSrc = await product
-                .$('img')
-                .then((e) => e.getProperty('src'))
-                .then((e) => e.jsonValue());
-              const amount = await product
-                .$('h4')
-                .then((e) => (e ? e.getProperty('textContent') : null))
-                .then((e) => (e ? e.jsonValue() : null));
-              const discountType = await product
-                .$('ul.jum-tag-list li span')
-                .then((e) => (e ? e.getProperty('textContent') : null))
-                .then((e) => (e ? e.jsonValue() : null))
-                .then((e) => (e ? e.trim() : null));
-              const link = await product
-                .$('a')
-                .then((e) => (e ? e.getProperty('href') : null))
-                .then((e) => (e ? e.jsonValue() : null));
+              const productImageSrc = await scrapeElementProperty(product, 'img', 'src');
+              const discountType = await scrapeElementProperty(product, 'ul.jum-tag-list li span');
+              const label = await scrapeElementProperty(product, 'h3.jum-card-title__text span');
+              const amount = await scrapeElementProperty(product, 'h4');
+              const link = await scrapeElementProperty(product, 'a', 'href');
+
               const newPrice = await product.$$('span.jum-product-price__current-price span').then(async ([e1, e2]) => {
                 const euros = await e1.getProperty('textContent').then((e) => e.jsonValue());
                 const cents = await e2.getProperty('textContent').then((e) => e.jsonValue());
                 return Number.parseFloat(`${euros}.${cents}`);
               });
               if (discountType) {
+                discountCounter += 1;
+                spinner.text = `found ${discountCounter} products`;
                 const scrapePage = async () => {
-                  const productPage = await browser.newPage();
-                  await productPage.setViewport({ width: 1366, height: 768 });
+                  const productPage = await createPage(browser);
                   await productPage.goto(link);
-                  const availability = await productPage
-                    .$('div.promotion-disclaimer h6')
-                    .then((e) => (e ? e.getProperty('textContent') : null))
-                    .then((e) => (e ? e.jsonValue() : null));
+                  const availability = await scrapeElementProperty(productPage, 'div.promotion-disclaimer h6');
                   await productPage.close();
 
-                  let tillDay;
-                  let tillMonth;
-                  let fromDay;
-                  let fromMonth;
-                  try {
-                    const [from, till] = availability.substring(25, 40).split(' t/m ');
-                    [fromDay, fromMonth] = from.split('-');
-                    [tillDay, tillMonth] = till.split('-');
-                  } catch (error) {
-                    errors.push({ message: `could not find availability for: ${link}`, error });
-                  }
-
-                  const year = new Date().getFullYear();
-
-                  let availabilityFrom = null;
-                  if (fromDay && fromMonth) {
-                    availabilityFrom = new Date(year, fromMonth, fromDay);
-                  }
-
-                  let availabilityTill = null;
-                  if (tillDay && tillMonth) {
-                    availabilityTill = new Date(year, tillMonth, tillDay);
-                  }
+                  const { availabilityFrom, availabilityTill } = parseAvailability(availability);
 
                   await db.Product.create({
                     id: uuid.v4(),
-                    category: categoryMapper.jumbo[categoryName],
+                    category: categories[0].category,
                     label: label.substring(0, 1000),
                     image: productImageSrc.substring(0, 1000),
                     amount,
@@ -160,23 +160,43 @@ const scrapeJumbo = async () => {
                     new_price: newPrice,
                     discounted: true,
                   });
-                  productCounter += 1;
                 };
-                scrapePage();
+                await scrapePage();
               }
             }
           } catch (error) {
             errors.push({ messsage: `Error while scraping product\n${error}`, error });
           }
         }
+
+        // go to next page
+        await wait(1000);
+        const res = await page.$$('div.pagination-buttons-container button.jum-button');
+        if (res.length === 1) {
+          if (firstPage) {
+            const [next] = res;
+            next.click();
+            firstPage = false;
+          } else {
+            done = true;
+          }
+        } else if (res.length === 2) {
+          const [, next] = res;
+          next.click();
+        } else {
+          throw new Error('Found zero or more than two buttons on product page');
+        }
       }
-      await categoryPage.close();
     }
-    await browser.close();
   } catch (error) {
-    errors.push({ message: 'Jumbo scraper crashed...', error });
+    errors.push({ message: 'Jumbo scraper crashed...\n', error });
   }
-  console.error(errors);
+
+  if (errors.length) {
+    console.error(errors);
+  }
+
+  spinner.succeed();
 };
 
-module.exports = scrapeJumbo;
+module.exports = scrape;

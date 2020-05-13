@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 /* eslint-disable no-await-in-loop */
 const wait = async (ms) =>
   new Promise((resolve) => setTimeout(() => resolve(), ms));
@@ -28,4 +29,40 @@ const autoScroll = async (page) => {
   await wait(100);
 };
 
-module.exports = { autoScroll, wait };
+const createPage = async (browser) => {
+  const page = await browser.newPage();
+  page.setUserAgent(
+    'Mozilla/5.0 (iPhone; CPU iPhone OS 9_1 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13B143 Safari/601.1'
+  );
+  await page.setRequestInterception(true);
+  page.on('request', (request) => {
+    if (request.resourceType() === 'image') request.abort();
+    else request.continue();
+  });
+  await page.authenticate({
+    username: process.env.LUMINATI_USERNAME,
+    password: process.env.LUMINATI_PASSWORD,
+  });
+  await page.setViewport({ width: 1366, height: 768 });
+  return page;
+};
+
+const scrapeElementProperty = async (
+  page,
+  elementPath,
+  property = 'textContent'
+) => {
+  const prop = await page
+    .$(elementPath)
+    .then((e) => (e ? e.getProperty(property) : null))
+    .then((e) => (e ? e.jsonValue() : null))
+    .then((e) => (e ? e.trim() : null));
+  return prop;
+};
+
+module.exports = {
+  autoScroll,
+  wait,
+  createPage,
+  scrapeElementProperty,
+};

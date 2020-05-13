@@ -5,6 +5,7 @@ const uuid = require('uuid');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 const categoryMapper = require('./categoryMapper');
 const db = require('../models');
+const { createPage } = require('./_utils');
 
 // add stealth plugin and use defaults (all evasion techniques)
 puppeteer.use(StealthPlugin());
@@ -52,10 +53,15 @@ const parseAvailabilityTill = (unparsed) => {
 
 const scrapeAlbertHeijn = async () => {
   const browser = await puppeteer.launch({
-    headless: true,
-    args: ['--start-maximized', '--no-sandbox', '--disable-setuid-sandbox'],
+    headless: false,
+    args: [
+      '--start-maximized',
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      `--proxy-server=${process.env.LUMINATI_PROXY_IP}`,
+    ],
   });
-  const page = await browser.newPage();
+  const page = await createPage(browser);
   await page.goto('https://www.ah.nl/producten');
 
   const categoryOverviews = await page.$$(
@@ -70,7 +76,7 @@ const scrapeAlbertHeijn = async () => {
       .$('a.taxonomy-card_titleLink__1Dgai')
       .then((e) => e.getProperty('href'))
       .then((e) => e.jsonValue());
-    const categoryPage = await browser.newPage();
+    const categoryPage = await createPage(browser);
     const pageUrl = `${categoryHref}?kenmerk=bonus&page=100`;
     try {
       await categoryPage.goto(pageUrl);
