@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { observer, inject } from 'mobx-react';
 import styled from 'styled-components';
-import FilledHeartSvg from '../assets/filledHeart.svg';
+import FilledHeartSvg from '../assets/filledheart.svg';
 
 const Container = styled.div`
   background-color: #f1f6fa;

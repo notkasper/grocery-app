@@ -3,7 +3,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { useHistory } from 'react-router-dom';
-import HeartSvg from '../assets/filledHeart.svg';
+import HeartSvg from '../assets/filledheart.svg';
 
 const storeProps = {
   jumbo: {
