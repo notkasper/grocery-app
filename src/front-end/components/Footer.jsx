@@ -39,10 +39,6 @@ const Footer = inject('applicationStore')(
     const { applicationStore } = props;
     const history = useHistory();
     const { location } = history;
-    console.info('===============');
-    console.info(location.pathname);
-    console.info(location.pathname);
-    console.info(location.pathname);
     return (
       <Container>
         <NavItem

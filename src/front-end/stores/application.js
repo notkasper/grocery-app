@@ -38,12 +38,12 @@ class ApplicationStore {
     }
   };
 
-  @action getProductsInCategory = async (categoryId, offset) => {
+  @action getProductsInCategory = async (categoryId, page) => {
     try {
       const idToken = await firebase.auth().currentUser.getIdToken();
       const {
         body: { data: newProducts },
-      } = await getProductsInCategoryService(idToken, categoryId, offset);
+      } = await getProductsInCategoryService(idToken, categoryId, page);
       this.productsPerCategory[categoryId] = {};
       newProducts.forEach((newProduct) => {
         this.productsPerCategory[categoryId][newProduct.id] = newProduct;

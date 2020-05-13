@@ -1,9 +1,11 @@
 const { Product } = require('../models');
 
 exports.getProducts = async (req, res) => {
+  const { page } = req.params;
   const products = await Product.findAll({
     limit: 20,
     order: [['updatedAt', 'DESC']],
+    offset: page * 20,
     raw: true,
   });
   res.status(200).send({ data: products });

@@ -7,7 +7,7 @@ exports.getCategories = async (req, res) => {
 
 exports.getProductsInCategory = async (req, res) => {
   const categoryId = req.params.category_id;
-  const { offset } = req.params;
+  const { page } = req.params;
   if (!categoryId) {
     res.status(400).send({ error: 'Please provide category id' });
     return;
@@ -16,8 +16,8 @@ exports.getProductsInCategory = async (req, res) => {
   const products = await Product.findAll({
     where: { category: categoryId },
     raw: true,
-    offset,
-    limit: 30,
+    offset: page * 20,
+    limit: 20,
   });
   res.status(200).send({ data: products });
 };
