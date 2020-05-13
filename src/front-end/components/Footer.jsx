@@ -2,9 +2,12 @@ import React from 'react';
 import styled from 'styled-components';
 import { observer, inject } from 'mobx-react';
 import { useHistory } from 'react-router-dom';
-import ShopSvg from '../assets/shop.svg';
-import ChecklistSvg from '../assets/checklist.svg';
-import HeartSvg from '../assets/heart.svg';
+import Shop from '../assets/shop.svg';
+import ShopFilled from '../assets/shopfilled.svg';
+import Checklist from '../assets/checklist.svg';
+import ChecklistFilled from '../assets/checklistfilled.svg';
+import Heart from '../assets/heart.svg';
+import HeartFilled from '../assets/filledheart.svg';
 
 const Container = styled.div`
   position: fixed;
@@ -23,24 +26,12 @@ const NavItem = styled.div`
   color: #ffffff;
   text-align: center;
   padding-top: 10px;
-`;
 
-const Shop = styled(ShopSvg)`
-  width: 30px;
-  height: 30px;
-  fill: ${(props) => (props.selected ? '#fff' : '#fff')};
-`;
-
-const Checklist = styled(ChecklistSvg)`
-  width: 30px;
-  height: 30px;
-  fill: ${(props) => (props.selected ? '#fff' : '#fff')};
-`;
-
-const Heart = styled(HeartSvg)`
-  width: 30px;
-  height: 30px;
-  fill: ${(props) => (props.selected ? '#fff' : '#fff')};
+  svg {
+    width: 30px;
+    height: 30px;
+    fill: ${(props) => (props.selected ? '#fff' : '#fff')};
+  }
 `;
 
 const Footer = inject('applicationStore')(
@@ -48,6 +39,10 @@ const Footer = inject('applicationStore')(
     const { applicationStore } = props;
     const history = useHistory();
     const { location } = history;
+    console.info('===============');
+    console.info(location.pathname);
+    console.info(location.pathname);
+    console.info(location.pathname);
     return (
       <Container>
         <NavItem
@@ -56,7 +51,7 @@ const Footer = inject('applicationStore')(
             applicationStore.navbarLabel = 'Dingen.';
           }}
         >
-          <Shop selected={location.pathname === '/'} />
+          {location.pathname === '/' ? <ShopFilled /> : <Shop />}
         </NavItem>
         <NavItem
           onClick={() => {
@@ -64,7 +59,7 @@ const Footer = inject('applicationStore')(
             applicationStore.navbarLabel = 'Favorieten';
           }}
         >
-          <Heart selected={location.pathname === '/favorites'} />
+          {location.pathname === '/favorites' ? <HeartFilled /> : <Heart />}
         </NavItem>
         <NavItem
           onClick={() => {
@@ -72,7 +67,7 @@ const Footer = inject('applicationStore')(
             applicationStore.navbarLabel = 'Boodschappenlijst';
           }}
         >
-          <Checklist selected={location.pathname === '/list'} />
+          {location.pathname === '/list' ? <ChecklistFilled /> : <Checklist />}
         </NavItem>
       </Container>
     );
