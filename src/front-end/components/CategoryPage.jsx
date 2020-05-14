@@ -40,8 +40,8 @@ const CategoryPage = inject('applicationStore')(
             key={item.id}
           />
         )}
-        onLoadPage={(page) => {
-          loadProductsInCategory(page);
+        onLoadPage={async (page) => {
+          await loadProductsInCategory(page);
         }}
         totalItems={_.get(
           applicationStore.productsPerCategory,
