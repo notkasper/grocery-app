@@ -3,9 +3,9 @@ import request from 'superagent';
 
 const API_BASE_URL = 'http://localhost:5000/api/v1';
 
-export const getProducts = async (idToken) => {
+export const getProducts = async (idToken, page) => {
   const response = await request
-    .get(`${API_BASE_URL}/products`)
+    .get(`${API_BASE_URL}/products/page/${page}`)
     .set('authorization', `Bearer ${idToken}`);
   return response;
 };

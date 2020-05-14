@@ -23,12 +23,12 @@ class ApplicationStore {
 
   @observable navbarLabel = 'Dingen.';
 
-  @action getProducts = async () => {
+  @action getProducts = async (page) => {
     try {
       const idToken = await firebase.auth().currentUser.getIdToken();
       const {
         body: { data: newProducts },
-      } = await getProductsService(idToken);
+      } = await getProductsService(idToken, page);
       this.products = {};
       newProducts.forEach((newProduct) => {
         this.products[newProduct.id] = newProduct;
