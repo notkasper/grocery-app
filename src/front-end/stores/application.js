@@ -42,11 +42,18 @@ class ApplicationStore {
     try {
       const idToken = await firebase.auth().currentUser.getIdToken();
       const {
-        body: { data: newProducts },
+        body: {
+          data: { rows: newProducts, count },
+        },
       } = await getProductsInCategoryService(idToken, categoryId, page);
-      this.productsPerCategory[categoryId] = {};
+      this.productsPerCategory[categoryId] = {
+        count,
+        products: {},
+      };
       newProducts.forEach((newProduct) => {
-        this.productsPerCategory[categoryId][newProduct.id] = newProduct;
+        this.productsPerCategory[categoryId].products[
+          newProduct.id
+        ] = newProduct;
       });
     } catch (error) {
       console.error(`Error while getting products in category: ${error}`);

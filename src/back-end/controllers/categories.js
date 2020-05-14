@@ -13,11 +13,12 @@ exports.getProductsInCategory = async (req, res) => {
     return;
   }
 
-  const products = await Product.findAll({
+  const productsAndCount = await Product.findAndCountAll({
     where: { category: categoryId },
     raw: true,
     offset: page * 20,
     limit: 20,
   });
-  res.status(200).send({ data: products });
+
+  res.status(200).send({ data: productsAndCount });
 };
