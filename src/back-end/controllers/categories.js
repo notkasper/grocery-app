@@ -7,7 +7,7 @@ exports.getCategories = async (req, res) => {
 
 exports.getProductsInCategory = async (req, res) => {
   const categoryId = req.params.category_id;
-  const { page } = req.params;
+  const page = Number.parseInt(req.params.page, 10);
   if (!categoryId) {
     res.status(400).send({ error: 'Please provide category id' });
     return;

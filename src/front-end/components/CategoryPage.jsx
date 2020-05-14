@@ -13,7 +13,7 @@ const Container = styled.div`
   grid-gap: 10px;
   min-height: calc(100vh - 100px);
   padding-bottom: 50px;
-  margin: 20px 0;
+  padding-top: 20px;
 
   .product-list {
     display: grid;
@@ -67,14 +67,18 @@ const CategoryPage = inject('applicationStore')(
     const { applicationStore } = props;
     const [loading, setLoading] = useState(false);
     const [page, setPage] = useState(0);
-    const loadProductsInCategory = async () => {
+    const loadProductsInCategory = async (newPage) => {
+      setPage(newPage);
       setLoading(true);
-      await applicationStore.getProductsInCategory(props.match.params.id, page);
+      await applicationStore.getProductsInCategory(
+        props.match.params.id,
+        newPage
+      );
       setLoading(false);
     };
     useEffect(() => {
       applicationStore.navbarLabel = props.match.params.label;
-      loadProductsInCategory();
+      loadProductsInCategory(page);
     }, []);
     if (loading) {
       return (
@@ -106,8 +110,7 @@ const CategoryPage = inject('applicationStore')(
             <BackSvg
               className="previous"
               onClick={() => {
-                setPage(page - 1);
-                loadProductsInCategory();
+                loadProductsInCategory(page - 1);
               }}
             />
           ) : (
@@ -116,8 +119,7 @@ const CategoryPage = inject('applicationStore')(
           {page > 1 ? (
             <p
               onClick={() => {
-                setPage(0);
-                loadProductsInCategory();
+                loadProductsInCategory(0);
               }}
             >
               1...
@@ -126,8 +128,7 @@ const CategoryPage = inject('applicationStore')(
           {page > 0 ? (
             <p
               onClick={() => {
-                setPage(page - 1);
-                loadProductsInCategory();
+                loadProductsInCategory(page - 1);
               }}
             >
               {page}
@@ -138,16 +139,14 @@ const CategoryPage = inject('applicationStore')(
             <>
               <p
                 onClick={() => {
-                  setPage(page + 1);
-                  loadProductsInCategory();
+                  loadProductsInCategory(page + 1);
                 }}
               >
                 {page + 2}
               </p>
               <p
                 onClick={() => {
-                  setPage(page + 2);
-                  loadProductsInCategory();
+                  loadProductsInCategory(page + 2);
                 }}
               >
                 {page + 3}
@@ -155,8 +154,7 @@ const CategoryPage = inject('applicationStore')(
               <BackSvg
                 className="next"
                 onClick={() => {
-                  setPage(page + 1);
-                  loadProductsInCategory();
+                  loadProductsInCategory(page + 1);
                 }}
               />
             </>

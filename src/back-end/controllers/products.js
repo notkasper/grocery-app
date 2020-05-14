@@ -1,7 +1,7 @@
 const { Product } = require('../models');
 
 exports.getProducts = async (req, res) => {
-  const { page } = req.params;
+  const page = Number.parseInt(req.params.page, 10);
   const products = await Product.findAll({
     limit: 20,
     order: [['updatedAt', 'DESC']],
