@@ -201,7 +201,7 @@ const App = inject('applicationStore')(
     const history = useHistory();
     const loadProducts = async () => {
       setLoading(true);
-      await applicationStore.getProducts();
+      await applicationStore.getProducts(0);
       setLoading(false);
     };
     useEffect(() => {
