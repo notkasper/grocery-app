@@ -103,7 +103,7 @@ const scrape = async () => {
   const spinner = ora('Starting Jumbo scraper...').start();
   try {
     const browser = await puppeteer.launch({
-      headless: false,
+      headless: true,
       args: [
         '--start-maximized',
         '--no-sandbox',

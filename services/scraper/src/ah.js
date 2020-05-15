@@ -53,7 +53,7 @@ const parseAvailabilityTill = (unparsed) => {
 const scrapeAlbertHeijn = async () => {
   console.info('Starting scraper...');
   const browser = await puppeteer.launch({
-    headless: false,
+    headless: true,
     args: [
       '--start-maximized',
       '--no-sandbox',
