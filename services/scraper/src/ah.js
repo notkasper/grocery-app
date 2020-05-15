@@ -160,7 +160,7 @@ const scrapeAlbertHeijn = async () => {
           old_price: oldPrice,
           discounted: true,
         });
-        console.info('GProduct created...');
+        console.info('Product created...');
       }
       await categoryPage.close();
     } catch (error) {
