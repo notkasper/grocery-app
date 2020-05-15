@@ -4,7 +4,7 @@ const puppeteer = require('puppeteer-extra');
 const uuid = require('uuid');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 const categoryMapper = require('./categoryMapper');
-const db = require('../models');
+const db = require('../../models');
 const { createPage } = require('./_utils');
 
 // add stealth plugin and use defaults (all evasion techniques)
