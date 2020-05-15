@@ -63,7 +63,9 @@ const scrapeElementProperty = async (
 };
 
 const createProduct = async (product) => {
-  await request.post(`api:${process.env.API_PORT}/products`).send({ product });
+  await request
+    .post(`api:${process.env.API_PORT}/api/v1/products`)
+    .send({ product });
 };
 
 module.exports = {
