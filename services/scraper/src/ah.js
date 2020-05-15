@@ -170,7 +170,7 @@ const scrapeAlbertHeijn = async () => {
     }
   }
   console.info('Albert heijn scraper done...');
-  // await browser.close();
+  await browser.close();
 };
 
 module.exports = scrapeAlbertHeijn;

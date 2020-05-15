@@ -17,8 +17,6 @@ const favorites = require('./routes/favorites');
 const categories = require('./routes/categories');
 const scrapers = require('./routes/scrapers');
 
-const authMiddleware = require('./middleware/auth');
-
 let server;
 
 const start = async () => {
@@ -58,9 +56,9 @@ const start = async () => {
   // Set static folder
   app.use(express.static(path.join(__dirname, '/../../dist')));
 
-  app.use('/api/v1/products', authMiddleware, products);
-  app.use('/api/v1/favorites', authMiddleware, favorites);
-  app.use('/api/v1/categories', authMiddleware, categories);
+  app.use('/api/v1/products', products);
+  app.use('/api/v1/favorites', favorites);
+  app.use('/api/v1/categories', categories);
   app.use('/api/v1/scrapers', scrapers); // TODO: add middleware!
 
   app.get('*', (req, res) => {
