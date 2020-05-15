@@ -53,12 +53,12 @@ const parseAvailabilityTill = (unparsed) => {
 const scrapeAlbertHeijn = async () => {
   console.info('Starting scraper...');
   const browser = await puppeteer.launch({
-    headless: true,
+    headless: false,
     args: [
       '--start-maximized',
       '--no-sandbox',
       '--disable-setuid-sandbox',
-      `--proxy-server=${process.env.LUMINATI_PROXY_IP}`,
+      `--proxy-server=${'zproxy.lum-superproxy.io:22225'}`,
     ],
   });
   console.info('Browser started...');
@@ -169,7 +169,7 @@ const scrapeAlbertHeijn = async () => {
     }
   }
   console.info('Albert heijn scraper done...');
-  await browser.close();
+  // await browser.close();
 };
 
 module.exports = scrapeAlbertHeijn;

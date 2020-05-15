@@ -26,7 +26,8 @@ const start = async () => {
     res.status(200).send({ data: 'Scraper started' });
   });
 
-  const { PORT, NODE_ENV } = process.env;
+  const NODE_ENV = process.env.NODE_ENV || 'development';
+  const PORT = process.env.NODE_ENV || 6000;
   server = app.listen(PORT, () =>
     console.info(
       chalk.yellow.bold(
