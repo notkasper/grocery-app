@@ -22,7 +22,11 @@ const authMiddleware = require('./middleware/auth');
 let server;
 
 const start = async () => {
-  await db.umzug.up();
+  try {
+    await db.umzug.up();
+  } catch (error) {
+    console.error(error);
+  }
 
   const app = express();
 
@@ -66,7 +70,8 @@ const start = async () => {
   // eslint-disable-next-line no-unused-vars
   app.use((error, req, res, next) => res.status(500).send({ error }));
 
-  const { PORT, NODE_ENV } = process.env;
+  const NODE_ENV = process.env.NODE_ENV || 'development';
+  const PORT = process.env.NODE_ENV || 5000;
   server = app.listen(PORT, () =>
     console.info(
       chalk.yellow.bold(`Server running in ${NODE_ENV} mode on port ${PORT}`)
