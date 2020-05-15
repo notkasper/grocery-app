@@ -71,7 +71,7 @@ const start = async () => {
   app.use((error, req, res, next) => res.status(500).send({ error }));
 
   const NODE_ENV = process.env.NODE_ENV || 'development';
-  const PORT = process.env.NODE_ENV || 5000;
+  const PORT = process.env.PORT || 5000;
   server = app.listen(PORT, () =>
     console.info(
       chalk.yellow.bold(`Server running in ${NODE_ENV} mode on port ${PORT}`)

@@ -27,7 +27,7 @@ const start = async () => {
   });
 
   const NODE_ENV = process.env.NODE_ENV || 'development';
-  const PORT = process.env.NODE_ENV || 6000;
+  const PORT = process.env.PORT || 6000;
   server = app.listen(PORT, () =>
     console.info(
       chalk.yellow.bold(
