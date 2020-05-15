@@ -42,8 +42,8 @@ const createPage = async (browser) => {
     else req.continue();
   });
   await page.authenticate({
-    username: 'lum-customer-hl_db37e9dc-zone-static_res',
-    password: 'x4qtoz19csah',
+    username: process.env.LUMINATI_USERNAME,
+    password: process.env.LUMINATI_PASSWORD,
   });
   await page.setViewport({ width: 1366, height: 768 });
   return page;

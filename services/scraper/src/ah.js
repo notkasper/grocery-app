@@ -58,7 +58,7 @@ const scrapeAlbertHeijn = async () => {
       '--start-maximized',
       '--no-sandbox',
       '--disable-setuid-sandbox',
-      `--proxy-server=${'zproxy.lum-superproxy.io:22225'}`,
+      `--proxy-server=${process.env.LUMINATI_PROXY_IP}`,
     ],
   });
   console.info('Browser started...');
