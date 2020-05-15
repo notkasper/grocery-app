@@ -12,7 +12,8 @@
     "test": "jest",
     "lint": "cd ./src && eslint . --max-warnings 0",
     "scrapers": "node ./src/back-end/scripts/scrapers",
-    "clear-products": "node ./src/back-end/scripts/clearDb"
+    "clear-products": "node ./src/back-end/scripts/clearDb",
+    "scrapers-test": "docker run docker-scraper"
   },
   "husky": {
     "hooks": {

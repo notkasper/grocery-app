@@ -22,7 +22,7 @@ RUN  apt-get update \
 
 # Install Puppeteer under /node_modules so it's available system-wide
 RUN npm init -y
-RUN npm install --save puppeteer puppeteer-extra puppeteer-extra-plugin-stealth
+RUN npm install --save puppeteer puppeteer-extra puppeteer-extra-plugin-stealth uuid
 
 ADD src $HOME/src
 
