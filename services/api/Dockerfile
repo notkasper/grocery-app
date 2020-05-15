@@ -6,4 +6,7 @@ ADD package.json package-lock.json /
 RUN npm i
 ADD src $HOME/src
 
-CMD [ "node", "./src/index.js" ]
+VOLUME ./src
+RUN npm install --save -g nodemon
+
+CMD [ "npm", "run", "server" ]

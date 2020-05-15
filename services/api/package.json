@@ -4,8 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "run:dev": "nodemon --watch ./src/back-end ./src/back-end",
-    "run": "pm2 start ./src/back-end"
+    "server": "nodemon ./src/index.js"
   },
   "keywords": [],
   "author": "",

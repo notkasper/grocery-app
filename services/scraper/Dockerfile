@@ -22,8 +22,9 @@ RUN  apt-get update \
 
 # Install Puppeteer under /node_modules so it's available system-wide
 RUN npm init -y
-RUN npm install --save puppeteer puppeteer-extra puppeteer-extra-plugin-stealth uuid
+RUN npm install --save puppeteer puppeteer-extra puppeteer-extra-plugin-stealth uuid express morgan chalk
 
 ADD src $HOME/src
 
-CMD [ "node", "./src/index.js" ]
+
+CMD ["node", './src/index.js']
