@@ -9,9 +9,9 @@ const WebpackPwaManifest = require('webpack-pwa-manifest');
 
 module.exports = (env, options) => {
   return {
-    entry: ['react-hot-loader/patch', './src/front-end'],
+    entry: ['react-hot-loader/patch', './src'],
     output: {
-      path: path.resolve(__dirname, 'dist'),
+      path: path.resolve(__dirname, '../api/dist'),
       publicPath: '/',
       filename: '[name].[hash].js',
     },
@@ -64,7 +64,7 @@ module.exports = (env, options) => {
         crossorigin: 'use-credentials', // can be null, use-credentials or anonymous
         icons: [
           {
-            src: path.resolve('src/front-end/assets/icon.png'),
+            src: path.resolve('src/assets/icon.png'),
             sizes: [192], // multiple sizes
           },
         ],

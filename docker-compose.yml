@@ -1,24 +1,27 @@
 version: '3'
 services:
   database:
-    build: ./database
+    build: ./services/database
     ports:
       - '5432:5432'
   scraper:
-    build: ./scraper
+    build: ./services/scraper
   api:
-    build: ./api
+    build: ./services/api
+    depends_on:
+      - database
     ports:
       - '5000:5000'
     volumes:
-      - .:/api
+      - .:/services/api
     environment:
       NODE_ENV: development
       PORT: 5000
-      DB_USER: cheapskate_app
-      DB_PASSWORD: cheapskate_app
-      DB_NAME: cheapskate
-      DB_URL: localhost
+      DB_USER: docker
+      DB_PASSWORD: docker
+      DB_NAME: docker
+      DB_URL: database
+      DB_PORT: 5432
 
       LUMINATI_PROXY_IP: zproxy.lum-superproxy.io:22225
       LUMINATI_USERNAME: lum-customer-hl_db37e9dc-zone-static_res

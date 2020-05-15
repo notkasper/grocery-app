@@ -10,7 +10,7 @@ import {
   getFavorites as getFavoritesService,
   deleteFavorite as deleteFavoriteService,
   getProductsInCategory as getProductsInCategoryService,
-} from '../services/products';
+} from '../connectors/products';
 
 class ApplicationStore {
   @observable products = {};
