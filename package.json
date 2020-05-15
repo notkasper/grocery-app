@@ -11,7 +11,7 @@
     "dev": "concurrently \"npm run back-end:dev\" \"npm run build:dev\"",
     "test": "jest",
     "lint": "cd ./src && eslint . --max-warnings 0",
-    "scrapers": "node ./src/back-end/scripts/scapers",
+    "scrapers": "node ./src/back-end/scripts/scrapers",
     "clear-products": "node ./src/back-end/scripts/clearDb"
   },
   "husky": {
