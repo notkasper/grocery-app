@@ -14,6 +14,7 @@ services:
       LUMINATI_USERNAME: lum-customer-hl_db37e9dc-zone-static_res
       LUMINATI_PASSWORD: x4qtoz19csah
       PORT: 6000
+      API_PORT: 5000
   api:
     build: ./services/api
     depends_on:

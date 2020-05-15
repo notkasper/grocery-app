@@ -20,11 +20,12 @@ RUN  apt-get update \
     && wget --quiet https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh -O /usr/sbin/wait-for-it.sh \
     && chmod +x /usr/sbin/wait-for-it.sh
 
-# Install Puppeteer under /node_modules so it's available system-wide
-RUN npm init -y
-RUN npm install --save puppeteer puppeteer-extra puppeteer-extra-plugin-stealth uuid express morgan chalk
+ADD package.json package-lock.json /
+RUN npm i
 
 ADD src $HOME/src
+VOLUME ./src
 
+RUN npm install --save -g nodemon
 
-CMD ["node", './src/index.js']
+CMD ["npm", "run", "server"]

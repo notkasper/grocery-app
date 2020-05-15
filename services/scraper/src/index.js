@@ -21,7 +21,7 @@ const start = async () => {
   // eslint-disable-next-line no-unused-vars
   app.use((error, req, res, next) => res.status(500).send({ error }));
 
-  app.post('/scraper/ah', (req, res) => {
+  app.post('/ah', (req, res) => {
     ah();
     res.status(200).send({ data: 'Scraper started' });
   });
@@ -29,7 +29,9 @@ const start = async () => {
   const { PORT, NODE_ENV } = process.env;
   server = app.listen(PORT, () =>
     console.info(
-      chalk.yellow.bold(`Server running in ${NODE_ENV} mode on port ${PORT}`)
+      chalk.yellow.bold(
+        `Scraping server running in ${NODE_ENV} mode on port ${PORT}`
+      )
     )
   );
 

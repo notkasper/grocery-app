@@ -4,8 +4,7 @@ const puppeteer = require('puppeteer-extra');
 const uuid = require('uuid');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 const categoryMapper = require('./categoryMapper');
-// const db = require('../../models');
-const { createPage } = require('./_utils');
+const { createPage, createProduct, wait } = require('./_utils');
 
 // add stealth plugin and use defaults (all evasion techniques)
 puppeteer.use(StealthPlugin());
@@ -52,6 +51,7 @@ const parseAvailabilityTill = (unparsed) => {
 };
 
 const scrapeAlbertHeijn = async () => {
+  console.info('Starting scraper...');
   const browser = await puppeteer.launch({
     headless: true,
     args: [
@@ -61,12 +61,16 @@ const scrapeAlbertHeijn = async () => {
       `--proxy-server=${process.env.LUMINATI_PROXY_IP}`,
     ],
   });
+  console.info('Browser started...');
   const page = await createPage(browser);
   await page.goto('https://www.ah.nl/producten');
+  console.info('Directed to homepage...');
+  await wait(2000);
 
   const categoryOverviews = await page.$$(
     'div.product-category-overview_category__E6EMG'
   );
+  console.info(`Found ${categoryOverviews.length} categories...`);
   for (const categoryOverview of categoryOverviews) {
     const categoryName = await categoryOverview
       .$('a.taxonomy-card_titleLink__1Dgai')
@@ -80,6 +84,7 @@ const scrapeAlbertHeijn = async () => {
     const pageUrl = `${categoryHref}?kenmerk=bonus&page=100`;
     try {
       await categoryPage.goto(pageUrl);
+      console.info('Going to new category page...');
       // await autoScroll(categoryPage); // TODO: FIX THIS
       const bonusProducts = await categoryPage.$$('article');
       for (const product of bonusProducts) {
@@ -137,7 +142,7 @@ const scrapeAlbertHeijn = async () => {
             }
           });
         oldPrice = Number.parseFloat(oldPrice) || null;
-        await db.Product.create({
+        await createProduct({
           id: uuid.v4(),
           category: categoryMapper.albertHeijn[categoryName] || null,
           label: label.substring(0, 1000),
@@ -154,7 +159,7 @@ const scrapeAlbertHeijn = async () => {
           old_price: oldPrice,
           discounted: true,
         });
-        console.info('product created...');
+        console.info('GProduct created...');
       }
       await categoryPage.close();
     } catch (error) {
@@ -163,7 +168,7 @@ const scrapeAlbertHeijn = async () => {
       );
     }
   }
-
+  console.info('Albert heijn scraper done...');
   await browser.close();
 };
 
