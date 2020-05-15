@@ -87,6 +87,7 @@ const scrapeAlbertHeijn = async () => {
       console.info('Going to new category page...');
       // await autoScroll(categoryPage); // TODO: FIX THIS
       const bonusProducts = await categoryPage.$$('article');
+      console.info(`Found ${bonusProducts.length} products in Bonus...`);
       for (const product of bonusProducts) {
         const label = await product
           .$('span.line-clamp')
