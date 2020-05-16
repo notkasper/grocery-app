@@ -54,7 +54,7 @@ const start = async () => {
   app.use(cors());
 
   // Set static folder
-  app.use(express.static(path.join(__dirname, '/../../dist')));
+  app.use(express.static(path.join(__dirname, '../dist')));
 
   app.use('/api/v1/products', products);
   app.use('/api/v1/favorites', favorites);
@@ -62,7 +62,7 @@ const start = async () => {
   app.use('/api/v1/scrapers', scrapers); // TODO: add middleware!
 
   app.get('*', (req, res) => {
-    res.sendFile(path.join(`${__dirname}/../../dist/index.html`));
+    res.sendFile(path.join(__dirname, '../dist/index.html'));
   });
 
   // eslint-disable-next-line no-unused-vars

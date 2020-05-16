@@ -5,9 +5,12 @@
   "main": "index.js",
   "scripts": {
     "services:dev": "docker-compose up",
+    "services:prod": "docker-compose -f docker-compose.yml -f docker-compose.production.yml up -d",
     "front-end:dev": "cd services/front-end && webpack-dev-server",
     "front-end:prod": "cd services/front-end && webpack -p --mode production",
-    "dev": "concurrently \"npm run services:dev\" \"npm run front-end:dev\""
+    "dev": "concurrently \"npm run services:dev\" \"npm run front-end:dev\"",
+    "prod": "npm run services:prod",
+    "stop": "docker-compose down"
   },
   "husky": {
     "hooks": {
