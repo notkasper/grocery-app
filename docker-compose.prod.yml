@@ -1,6 +1,12 @@
 version: '3'
 services:
+  database:
+    build: ./services/database
+    ports:
+      - '5432:5432'
   scraper:
+    depends_on:
+      - database
     build: ./services/scraper
     environment:
       NODE_ENV: production
@@ -10,14 +16,16 @@ services:
       PORT: 6000
       API_PORT: 5000
   api:
+    depends_on:
+      - database
     build: ./services/api
     ports:
       - '5000:5000'
     environment:
       NODE_ENV: production
       PORT: 5000
-      DB_USER: cheapskate
-      DB_PASSWORD: 2YbwD5Y@26zn65k
-      DB_NAME: cheapskate
-      DB_URL: li732-215.members.linode.com
+      DB_USER: docker
+      DB_PASSWORD: docker
+      DB_NAME: docker
+      DB_URL: database
       DB_PORT: 5432
