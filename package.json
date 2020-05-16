@@ -4,13 +4,15 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "stop": "docker-compose down",
+    "prod": "npm run services:prod",
+    "dev": "concurrently \"npm run services:dev\" \"npm run front-end:dev\"",
+    "build:front-end": "cd services/front-end && webpack -p --mode production",
+    "build:dev": "docker-compose -f docker-compose.yml -f docker-compose.dev.yml build",
+    "build:prod": "docker-compose -f docker-compose.yml -f docker-compose.production.yml build",
     "services:dev": "docker-compose -f docker-compose.yml -f docker-compose.dev.yml up",
     "services:prod": "docker-compose -f docker-compose.yml -f docker-compose.production.yml up -d",
-    "front-end:dev": "cd services/front-end && webpack-dev-server",
-    "front-end:prod": "cd services/front-end && webpack -p --mode production",
-    "dev": "concurrently \"npm run services:dev\" \"npm run front-end:dev\"",
-    "prod": "npm run services:prod",
-    "stop": "docker-compose down"
+    "front-end:dev": "cd services/front-end && webpack-dev-server"
   },
   "husky": {
     "hooks": {
