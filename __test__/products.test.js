@@ -1,6 +1,6 @@
 const chalk = require('chalk');
 const request = require('superagent');
-const server = require('../src/back-end/server');
+const server = require('../src/api/src/server');
 
 const API_BASE_URL = 'localhost:5000/api/v1';
 

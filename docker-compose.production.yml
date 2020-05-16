@@ -1,0 +1,23 @@
+version: '3'
+services:
+  scraper:
+    build: ./services/scraper
+    environment:
+      NODE_ENV: production
+      LUMINATI_PROXY_IP: zproxy.lum-superproxy.io:22225
+      LUMINATI_USERNAME: lum-customer-hl_db37e9dc-zone-static_res
+      LUMINATI_PASSWORD: x4qtoz19csah
+      PORT: 6000
+      API_PORT: 5000
+  api:
+    build: ./services/api
+    ports:
+      - '5000:5000'
+    environment:
+      NODE_ENV: production
+      PORT: 5000
+      DB_USER: cheapskate
+      DB_PASSWORD: 2YbwD5Y@26zn65k
+      DB_NAME: cheapskate
+      DB_URL: 172.104.253.238
+      DB_PORT: 5432
