@@ -3,7 +3,7 @@ import request from 'superagent';
 
 const API_BASE_URL =
   process.env.NODE_ENV === 'production'
-    ? 'http://139.162.207.169/api/v1'
+    ? 'http://176.58.120.90/api/v1'
     : 'http://localhost:5000/api/v1';
 
 export const getProducts = async (idToken, page) => {
