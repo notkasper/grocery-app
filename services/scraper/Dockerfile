@@ -29,7 +29,7 @@ COPY package.json .
 RUN npm install
 # install puppeteer seperately because chrome doesnt download correctly if you just install dependencies normally...
 RUN npm install --save puppeteer puppeteer-extra
-RUN npm install --save -g nodemon puppeteer puppeteer-extra
+RUN npm install --save -g nodemon
 
 # Bundle app source
 COPY . .
