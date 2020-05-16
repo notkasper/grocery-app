@@ -19,5 +19,5 @@ services:
       DB_USER: cheapskate
       DB_PASSWORD: 2YbwD5Y@26zn65k
       DB_NAME: cheapskate
-      DB_URL: 85.159.215.215
+      DB_URL: li732-215.members.linode.com
       DB_PORT: 5432
