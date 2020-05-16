@@ -20,12 +20,17 @@ RUN  apt-get update \
     && wget --quiet https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh -O /usr/sbin/wait-for-it.sh \
     && chmod +x /usr/sbin/wait-for-it.sh
 
-ADD package.json package-lock.json /
-RUN npm i
+# Create app directory
+RUN mkdir -p /scraper
+WORKDIR /scraper
 
-ADD src $HOME/src
-VOLUME ./src
-
+# Install dependencies
+COPY package.json .
+RUN npm install
 RUN npm install --save -g nodemon
 
-CMD ["npm", "run", "server"]
+# Bundle app source
+COPY . .
+
+# Bundle
+CMD [ "npm", "run", "server" ]

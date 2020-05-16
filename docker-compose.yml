@@ -8,6 +8,8 @@ services:
     build: ./services/scraper
     depends_on:
       - database
+    volumes:
+      - ./services/scraper/:/scraper
     environment:
       NODE_ENV: development
       LUMINATI_PROXY_IP: zproxy.lum-superproxy.io:22225
@@ -22,7 +24,7 @@ services:
     ports:
       - '5000:5000'
     volumes:
-      - .:/services/api
+      - ./services/api/:/api
     environment:
       NODE_ENV: development
       PORT: 5000
