@@ -39,6 +39,8 @@ const Footer = inject('applicationStore')(
     const { applicationStore } = props;
     const history = useHistory();
     const { location } = history;
+    console.log('RENDER');
+    console.log(applicationStore.navbarLabel);
     return (
       <Container>
         <NavItem
@@ -47,7 +49,11 @@ const Footer = inject('applicationStore')(
             applicationStore.navbarLabel = 'Dingen.';
           }}
         >
-          {location.pathname === '/' ? <ShopFilled /> : <Shop />}
+          {applicationStore.navbarLabel === 'Dingen.' ? (
+            <ShopFilled />
+          ) : (
+            <Shop />
+          )}
         </NavItem>
         <NavItem
           onClick={() => {
@@ -55,7 +61,11 @@ const Footer = inject('applicationStore')(
             applicationStore.navbarLabel = 'Favorieten';
           }}
         >
-          {location.pathname === '/favorites' ? <HeartFilled /> : <Heart />}
+          {applicationStore.navbarLabel === 'Favorieten' ? (
+            <HeartFilled />
+          ) : (
+            <Heart />
+          )}
         </NavItem>
         <NavItem
           onClick={() => {
@@ -63,7 +73,11 @@ const Footer = inject('applicationStore')(
             applicationStore.navbarLabel = 'Boodschappenlijst';
           }}
         >
-          {location.pathname === '/list' ? <ChecklistFilled /> : <Checklist />}
+          {applicationStore.navbarLabel === 'Boodschappenlijst' ? (
+            <ChecklistFilled />
+          ) : (
+            <Checklist />
+          )}
         </NavItem>
       </Container>
     );
