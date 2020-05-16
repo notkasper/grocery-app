@@ -50,19 +50,22 @@ const parseAvailabilityTill = (unparsed) => {
   return parsed;
 };
 
-const scrapeAlbertHeijn = async () => {
+const scrapeAlbertHeijn = async (useProxy = false, useHeadless = true) => {
   console.info('Starting scraper...');
+  const args = [
+    '--start-maximized',
+    '--no-sandbox',
+    '--disable-setuid-sandbox',
+  ];
+  if (useProxy) {
+    args.push(`--proxy-server=${process.env.LUMINATI_PROXY_IP}`);
+  }
   const browser = await puppeteer.launch({
-    headless: true,
-    args: [
-      '--start-maximized',
-      '--no-sandbox',
-      '--disable-setuid-sandbox',
-      `--proxy-server=${process.env.LUMINATI_PROXY_IP}`,
-    ],
+    headless: useHeadless,
+    args,
   });
   console.info('Browser started...');
-  const page = await createPage(browser);
+  const page = await createPage(browser, useProxy);
   await page.goto('https://www.ah.nl/producten');
   console.info('Directed to homepage...');
   await wait(2000);
@@ -80,7 +83,7 @@ const scrapeAlbertHeijn = async () => {
       .$('a.taxonomy-card_titleLink__1Dgai')
       .then((e) => e.getProperty('href'))
       .then((e) => e.jsonValue());
-    const categoryPage = await createPage(browser);
+    const categoryPage = await createPage(browser, useProxy);
     const pageUrl = `${categoryHref}?kenmerk=bonus&page=100`;
     try {
       await categoryPage.goto(pageUrl);

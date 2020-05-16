@@ -37,3 +37,13 @@ exports.createProduct = async (req, res) => {
     res.status(500).send({ error });
   }
 };
+
+exports.deleteProducts = async (req, res) => {
+  try {
+    await Product.destroy({ where: {} });
+    res.status(200).send({ data: [] });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ error });
+  }
+};

@@ -21,8 +21,10 @@ const start = async () => {
   // eslint-disable-next-line no-unused-vars
   app.use((error, req, res, next) => res.status(500).send({ error }));
 
-  app.post('/ah', (req, res) => {
-    ah();
+  app.post('/ah/:useProxy/:useHeadless', (req, res) => {
+    const useProxy = req.params.useProxy === 'true';
+    const useHeadless = req.params.useHeadless === 'true';
+    ah(useProxy, useHeadless);
     res.status(200).send({ data: 'Scraper started' });
   });
 

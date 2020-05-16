@@ -27,7 +27,8 @@ WORKDIR /scraper
 # Install dependencies
 COPY package.json .
 RUN npm install
-RUN npm install --save -g nodemon
+# install puppeteer seperately because chrome doesnt download correctly if you just install dependencies normally...
+RUN npm install --save -g nodemon puppeteer puppeteer-extra
 
 # Bundle app source
 COPY . .
