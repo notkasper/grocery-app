@@ -1,5 +1,11 @@
 version: '3'
 services:
+  scraper:
+    depends_on:
+      - database
+  api:
+    depends_on:
+      - database
   database:
     build: ./services/database
     ports:
