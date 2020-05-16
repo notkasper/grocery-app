@@ -1,9 +1,5 @@
 version: '3'
 services:
-  database:
-    build: ./services/database
-    ports:
-      - '5432:5432'
   scraper:
     build: ./services/scraper
     depends_on:
@@ -24,8 +20,8 @@ services:
     environment:
       NODE_ENV: production
       PORT: 5000
-      DB_USER: docker
-      DB_PASSWORD: docker
-      DB_NAME: docker
+      DB_USER: cheapskate
+      DB_PASSWORD: 2YbwD5Y@26zn65k
+      DB_NAME: cheapskate
       DB_URL: database
       DB_PORT: 5432

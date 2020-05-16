@@ -1,9 +1,5 @@
 version: '3'
 services:
-  database:
-    build: ./services/database
-    ports:
-      - '5432:5432'
   scraper:
     build: ./services/scraper
     depends_on:
