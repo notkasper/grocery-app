@@ -38,6 +38,17 @@ exports.createProduct = async (req, res) => {
   }
 };
 
+exports.createProducts = async (req, res) => {
+  try {
+    const { products } = req.body;
+    const newProducts = await Product.bulkCreate(products);
+    res.status(200).send({ data: newProducts });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ error });
+  }
+};
+
 exports.deleteProducts = async (req, res) => {
   try {
     const where = {};
