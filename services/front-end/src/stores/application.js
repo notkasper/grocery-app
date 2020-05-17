@@ -26,7 +26,6 @@ class ApplicationStore {
   @action getProducts = async (page) => {
     try {
       const idToken = await firebase.auth().currentUser.getIdToken();
-      console.log(idToken);
       const {
         body: { data: newProducts },
       } = await getProductsService(idToken, page);

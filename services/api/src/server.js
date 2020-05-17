@@ -10,6 +10,8 @@ const xssClean = require('xss-clean');
 const hpp = require('hpp');
 const cors = require('cors');
 const chalk = require('chalk');
+const admin = require('firebase-admin');
+const serviceAccount = require('./cheapskate-de9ef-firebase-adminsdk-epf27-b8db0c1de0');
 
 const db = require('./models');
 const products = require('./routes/products');
@@ -60,6 +62,11 @@ const start = async () => {
   app.use('/api/v1/favorites', favorites);
   app.use('/api/v1/categories', categories);
   app.use('/api/v1/scrapers', scrapers); // TODO: add middleware!
+
+  admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+    databaseURL: 'https://cheapskate-de9ef.firebaseio.com',
+  });
 
   app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '../dist/index.html'));

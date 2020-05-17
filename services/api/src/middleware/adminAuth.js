@@ -3,6 +3,8 @@ const admin = require('firebase-admin');
 const uuid = require('uuid');
 const db = require('../models');
 
+const admins = ['e8awiZ2ez7NN59pDB3kAymc2vpU2'];
+
 module.exports = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
@@ -35,8 +37,12 @@ module.exports = async (req, res, next) => {
         firebase_uid: firebaseUser.uid,
       });
     }
+    if (admins.indexOf(user.firebase_uid) === -1) {
+      res.status(407).send({ error: 'Unauthorized' });
+      return;
+    }
     req.user = user;
-    res.firebaseUser = firebaseUser;
+    req.firebaseUser = firebaseUser;
     next();
   } catch (error) {
     console.error(error);
