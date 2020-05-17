@@ -40,7 +40,11 @@ exports.createProduct = async (req, res) => {
 
 exports.deleteProducts = async (req, res) => {
   try {
-    await Product.destroy({ where: {} });
+    const where = {};
+    if (req.query.store) {
+      where.store = req.query.store;
+    }
+    await Product.destroy({ where });
     res.status(200).send({ data: [] });
   } catch (error) {
     console.error(error);
