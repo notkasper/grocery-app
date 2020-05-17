@@ -47,3 +47,13 @@ exports.deleteProducts = async (req, res) => {
     res.status(500).send({ error });
   }
 };
+
+exports.deleteProduct = async (req, res) => {
+  try {
+    await Product.destroy({ where: { id: req.params.id } });
+    res.status(200).send({ data: {} });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ error });
+  }
+};

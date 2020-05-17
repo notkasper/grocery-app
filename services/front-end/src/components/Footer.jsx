@@ -38,9 +38,6 @@ const Footer = inject('applicationStore')(
   observer((props) => {
     const { applicationStore } = props;
     const history = useHistory();
-    const { location } = history;
-    console.log('RENDER');
-    console.log(applicationStore.navbarLabel);
     return (
       <Container>
         <NavItem

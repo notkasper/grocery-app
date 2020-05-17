@@ -4,6 +4,7 @@ const {
   getProduct,
   createProduct,
   deleteProducts,
+  deleteProduct,
 } = require('../controllers/products');
 const authMiddleware = require('../middleware/auth');
 
@@ -13,6 +14,6 @@ const router = express.Router({ mergeParams: true });
 router.route('/').post(createProduct).delete(deleteProducts); // TODO: add admin middleware
 
 router.route('/page/:page').get(authMiddleware, getProducts);
-router.route('/:id').get(authMiddleware, getProduct);
+router.route('/:id').get(authMiddleware, getProduct).delete(deleteProduct); // TODO: add admin middleware for DELETE
 
 module.exports = router;
