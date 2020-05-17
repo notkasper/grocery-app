@@ -4,17 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "back-end:dev": "nodemon --watch ./src/back-end ./src/back-end",
-    "back-end:prod": "pm2 start ./src/back-end",
     "build:dev": "webpack-dev-server",
-    "build:prod": "webpack -p --mode production",
-    "dev": "concurrently \"npm run back-end:dev\" \"npm run build:dev\"",
-    "test": "jest",
-    "lint": "cd ./src && eslint . --max-warnings 0",
-    "scrapers": "node ./src/back-end/scripts/scrapers",
-    "clear-products": "node ./src/back-end/scripts/clearDb",
-    "scrapers-test": "docker run docker-scraper",
-    "dev:docker": "docker-compose up"
+    "build:prod": "webpack -p --mode production"
   },
   "husky": {
     "hooks": {
