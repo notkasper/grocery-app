@@ -15,11 +15,11 @@ const router = express.Router({ mergeParams: true });
 // called by scraper
 router
   .route('/')
+  .get(authMiddleware, getProducts)
   .post(createProduct)
   .delete(adminAuthMiddleware, deleteProducts);
 router.route('/bulk').post(adminAuthMiddleware, createProducts);
 
-router.route('/page/:page').get(authMiddleware, getProducts);
 router
   .route('/:id')
   .get(authMiddleware, getProduct)

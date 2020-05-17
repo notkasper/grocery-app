@@ -1,15 +1,29 @@
 const { Product } = require('../models');
 
+const PAGE_SIZE = 20;
+
 exports.getProducts = async (req, res) => {
   try {
-    const page = Number.parseInt(req.params.page, 10);
-    const products = await Product.findAll({
-      limit: 20,
-      order: [['updatedAt', 'DESC']],
-      offset: page * 20,
+    const { store, category, page: pageString } = req.query;
+    const where = {};
+    let offset = 0;
+    if (store) {
+      where.store_name = store;
+    }
+    if (category) {
+      where.category = category;
+    }
+    if (pageString) {
+      const page = Number.parseInt(pageString, 10);
+      offset = page * PAGE_SIZE;
+    }
+    const productsAndCount = await Product.findAndCountAll({
+      where,
+      limit: PAGE_SIZE,
+      offset,
       raw: true,
     });
-    res.status(200).send({ data: products });
+    res.status(200).send({ data: productsAndCount });
   } catch (error) {
     console.error(error);
     res.status(500).send({ error });

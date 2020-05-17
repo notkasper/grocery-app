@@ -6,10 +6,11 @@ const API_BASE_URL =
     ? 'http://176.58.120.90/api/v1'
     : 'http://localhost:5000/api/v1';
 
-export const getProducts = async (idToken, page) => {
+export const getProducts = async (idToken, store, category, page) => {
   const response = await request
-    .get(`${API_BASE_URL}/products/page/${page}`)
-    .set('authorization', `Bearer ${idToken}`);
+    .get(`${API_BASE_URL}/products`)
+    .set('authorization', `Bearer ${idToken}`)
+    .query({ page, store, category });
   return response;
 };
 
@@ -44,13 +45,6 @@ export const addFavorite = async (idToken, categoryId, term) => {
 export const deleteFavorite = async (idToken, id) => {
   const response = await request
     .delete(`${API_BASE_URL}/favorites/${id}`)
-    .set('authorization', `Bearer ${idToken}`);
-  return response;
-};
-
-export const getProductsInCategory = async (idToken, categoryId, page = 0) => {
-  const response = await request
-    .get(`${API_BASE_URL}/categories/${categoryId}/${page}`)
     .set('authorization', `Bearer ${idToken}`);
   return response;
 };

@@ -9,7 +9,6 @@ import {
   addFavorite as addFavoriteService,
   getFavorites as getFavoritesService,
   deleteFavorite as deleteFavoriteService,
-  getProductsInCategory as getProductsInCategoryService,
 } from '../connectors/products';
 
 class ApplicationStore {
@@ -27,8 +26,11 @@ class ApplicationStore {
     try {
       const idToken = await firebase.auth().currentUser.getIdToken();
       const {
-        body: { data: newProducts },
-      } = await getProductsService(idToken, page);
+        body: {
+          // eslint-disable-next-line no-unused-vars
+          data: { rows: newProducts, count },
+        },
+      } = await getProductsService(idToken, null, null, page);
       this.products = {};
       newProducts.forEach((newProduct) => {
         this.products[newProduct.id] = newProduct;
@@ -45,7 +47,7 @@ class ApplicationStore {
         body: {
           data: { rows: newProducts, count },
         },
-      } = await getProductsInCategoryService(idToken, categoryId, page);
+      } = await getProductsService(idToken, null, categoryId, page);
       this.productsPerCategory[categoryId] = {
         count,
         products: {},
