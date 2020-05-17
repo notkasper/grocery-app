@@ -24,8 +24,23 @@ const start = async () => {
   app.post('/ah/:useProxy/:useHeadless', (req, res) => {
     const useProxy = req.params.useProxy === 'true';
     const useHeadless = req.params.useHeadless === 'true';
-    ah(useProxy, useHeadless);
+    ah.start(useProxy, useHeadless);
     res.status(200).send({ data: 'Scraper started' });
+  });
+
+  app.post('/ah/stop', async (req, res) => {
+    try {
+      const stopped = await ah.stop();
+      if (stopped) {
+        res.status(200).send({ data: 'Scraper stopped' });
+        return;
+      }
+      res
+        .status(200)
+        .send({ data: 'Unable to stop scraper: scraper not running' });
+    } catch (error) {
+      res.status(500).send({ error });
+    }
   });
 
   const NODE_ENV = process.env.NODE_ENV || 'development';

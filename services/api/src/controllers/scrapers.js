@@ -13,3 +13,13 @@ exports.scrapeAlbertHeijn = async (req, res) => {
     console.error(error);
   }
 };
+
+exports.stopAlbertHeijnScraper = async (req, res) => {
+  try {
+    const response = await request.post(`scraper:6000/ah/stop`);
+    res.status(200).send(response.body);
+  } catch (error) {
+    res.status(500).send({ data: error });
+    console.error(error);
+  }
+};
