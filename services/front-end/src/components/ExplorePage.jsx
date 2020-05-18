@@ -225,7 +225,13 @@ const App = inject('applicationStore')(
         </CategoriesContainer>
         <Header>
           <HeaderTitle>Nieuwe deals</HeaderTitle>
-          <HeaderNav>Bekijk alle deals &gt;</HeaderNav>
+          <HeaderNav
+            onClick={() => {
+              history.push(`/all_deals`);
+            }}
+          >
+            Bekijk alle deals &gt;
+          </HeaderNav>
         </Header>
         {loading ? (
           <p>Loading...</p>
@@ -247,7 +253,13 @@ const App = inject('applicationStore')(
         )}
         <Header>
           <HeaderTitle>Populaire deals</HeaderTitle>
-          <HeaderNav>Bekijk alle deals &gt;</HeaderNav>
+          <HeaderNav
+            onClick={() => {
+              history.push(`/all_deals`);
+            }}
+          >
+            Bekijk alle deals &gt;
+          </HeaderNav>
         </Header>
         {loading ? (
           <p>Loading...</p>

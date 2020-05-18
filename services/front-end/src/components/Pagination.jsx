@@ -83,6 +83,7 @@ const Pagination = (props) => {
       <NavButton
         className="previous"
         onClick={() => {
+          if (page <= 0) return;
           loadPage(page - 1);
         }}
         disabled={page <= 0}
@@ -105,6 +106,7 @@ const Pagination = (props) => {
       <NavButton
         className="next"
         onClick={() => {
+          if (page >= lastPage) return;
           loadPage(page + 1);
         }}
         disabled={page >= lastPage}

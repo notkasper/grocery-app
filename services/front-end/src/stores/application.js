@@ -35,6 +35,7 @@ class ApplicationStore {
       newProducts.forEach((newProduct) => {
         this.products[newProduct.id] = newProduct;
       });
+      return { newProducts, count };
     } catch (error) {
       console.error(`Error while getting products: ${error}`);
     }

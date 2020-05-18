@@ -20,6 +20,7 @@ import FavoritePage from './FavoritePage';
 import SettingsPage from './SettingsPage';
 import ProductDetailsPage from './ProductDetailsPage';
 import CategoryPage from './CategoryPage';
+import AllDealsPage from './AllDealsPage';
 import ListPage from './ListPage';
 import Loader from './Loader';
 
@@ -81,6 +82,7 @@ const App = inject('applicationStore')(
             <Route path="/list" exact component={ListPage} />
             <Route path="/product/:id" component={ProductDetailsPage} />
             <Route path="/categories/:id/:label" component={CategoryPage} />
+            <Route path="/all_deals" exact component={AllDealsPage} />
           </Switch>
         </PageContainer>
         <Footer />
