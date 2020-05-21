@@ -3,10 +3,15 @@ const express = require('express');
 const morgan = require('morgan');
 const path = require('path');
 const chalk = require('chalk');
-const ah = require('./ah');
+const albert_heijn = require('./ah');
 const jumbo = require('./jumbo');
 
 let server;
+
+const scrapers = {
+  jumbo,
+  albert_heijn,
+};
 
 const start = async () => {
   const app = express();
@@ -21,16 +26,32 @@ const start = async () => {
   // eslint-disable-next-line no-unused-vars
   app.use((error, req, res, next) => res.status(500).send({ error }));
 
-  app.post('/ah/:useProxy/:useHeadless', (req, res) => {
-    const useProxy = req.params.useProxy === 'true';
-    const useHeadless = req.params.useHeadless === 'true';
-    ah.start(useProxy, useHeadless);
-    res.status(200).send({ data: 'Scraper started' });
+  app.post('/start/:store/:useProxy/:useHeadless', (req, res) => {
+    try {
+      const { store } = req.params;
+      const useProxy = req.params.useProxy === 'true';
+      const useHeadless = req.params.useHeadless === 'true';
+      const scraper = scrapers[store];
+      if (!scraper) {
+        res.status(400).send({ error: `Invalid store: ${store}` });
+        return;
+      }
+      scraper.start(useProxy, useHeadless);
+      res.status(200).send({ data: 'Scraper started' });
+    } catch (error) {
+      res.status(500).send({ error });
+    }
   });
 
-  app.post('/ah/stop', async (req, res) => {
+  app.post('/stop/:store', async (req, res) => {
     try {
-      const stopped = await ah.stop();
+      const { store } = req.params;
+      const scraper = scrapers[store];
+      if (!scraper) {
+        res.status(400).send({ error: `Invalid store: ${store}` });
+        return;
+      }
+      const stopped = await scraper.stop();
       if (stopped) {
         res.status(200).send({ data: 'Scraper stopped' });
         return;

@@ -1,15 +1,12 @@
 const express = require('express');
-const {
-  scrapeAlbertHeijn,
-  stopAlbertHeijnScraper,
-} = require('../controllers/scrapers');
+const { scrapeStore, stopScrapeStore } = require('../controllers/scrapers');
 const adminAuthMiddleware = require('../middleware/adminAuth');
 
 const router = express.Router({ mergeParams: true });
 
 router
-  .route('/ah/:useProxy/:useHeadless')
-  .post(adminAuthMiddleware, scrapeAlbertHeijn);
-router.route('/ah/stop').post(adminAuthMiddleware, stopAlbertHeijnScraper);
+  .route('/:store/:useProxy/:useHeadless')
+  .post(adminAuthMiddleware, scrapeStore);
+router.route('/:store/stop').post(adminAuthMiddleware, stopScrapeStore);
 
 module.exports = router;
