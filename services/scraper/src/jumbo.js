@@ -9,7 +9,6 @@ const uuid = require('uuid');
 const fs = require('fs');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 const { wait, createPage, scrapeElementProperty } = require('./_utils');
-// const db = require('../../models');
 
 // add stealth plugin and use defaults (all evasion techniques)
 puppeteer.use(StealthPlugin());
@@ -73,32 +72,6 @@ const categories = [
   },
 ];
 
-// const parseAvailability = (availability) => {
-//   if (!availability) {
-//     return null;
-//   }
-//   const [from, till] = availability.substring(25, 40).split(' t/m ');
-//   const [fromDay, fromMonth] = from.split('-');
-//   const [tillDay, tillMonth] = till.split('-');
-
-//   const year = new Date().getFullYear();
-
-//   let availabilityFrom = null;
-//   if (fromDay && fromMonth) {
-//     availabilityFrom = new Date(year, fromMonth, fromDay);
-//   }
-
-//   let availabilityTill = null;
-//   if (tillDay && tillMonth) {
-//     availabilityTill = new Date(year, tillMonth, tillDay);
-//   }
-
-//   return {
-//     availabilityFrom,
-//     availabilityTill,
-//   };
-// };
-
 let browser = null;
 
 const scrapeCategory = async (categoryLink, categoryId) => {
@@ -111,7 +84,6 @@ const scrapeCategory = async (categoryLink, categoryId) => {
   await page.goto(categoryLink);
   let firstPage = true;
   let done = false;
-  let productCounter = 0;
   while (!done) {
     const products = await page.$$('div.jum-card-grid div.jum-card');
     for (const product of products) {
@@ -129,19 +101,6 @@ const scrapeCategory = async (categoryLink, categoryId) => {
             const cents = await e2.getProperty('textContent').then((e) => e.jsonValue());
             return Number.parseFloat(`${euros}.${cents}`);
           });
-          if (discountType) {
-            productCounter += 1;
-            spinner.text = `found ${productCounter} products`;
-            // const scrapePage = async () => {
-            //   const productPage = await createPage(browser);
-            //   await productPage.goto(link);
-            //   const availability = await scrapeElementProperty(productPage, 'div.promotion-disclaimer h6');
-            //   await productPage.close();
-
-            //   const { availabilityFrom, availabilityTill } = parseAvailability(availability);
-            // };
-            // await scrapePage();
-          }
           const productData = {
             id: uuid.v4(),
             category: categoryId,
