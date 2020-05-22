@@ -1,3 +1,4 @@
+/* eslint-disable object-curly-newline */
 /* eslint-disable react/button-has-type */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
@@ -7,14 +8,14 @@ import React, { useEffect, useState } from 'react';
 import { observer, inject } from 'mobx-react';
 import styled from 'styled-components';
 import { useHistory } from 'react-router-dom';
+import PropTypes from 'prop-types';
 import Checkmark from '../assets/checkmark.svg';
 
 const Container = styled.div`
   background-color: #f1f6fa;
   padding: 1rem;
   grid-gap: 10px;
-  padding-bottom: 10000px;
-  height: 100vh;
+  min-height: 100vh;
 
   .item-counter {
     font-weight: 300;
@@ -35,10 +36,9 @@ const ListItemContainer = styled.div`
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.15);
     border-radius: 8px;
     min-width: 20vw;
-    max-width: 30vw;
+    max-width: 20vw;
     display: inline-block;
     img {
-      max-height: 20vh;
       max-width: 100%;
     }
   }
@@ -64,8 +64,14 @@ const ListItemContainer = styled.div`
       width: auto;
     }
 
-    .label-tag {
-      font-weight: 500;
+    .label-tag-container {
+      span {
+        font-weight: 500;
+      }
+
+      .label-tag-count {
+        color: #44c062;
+      }
     }
   }
 
@@ -103,7 +109,7 @@ const ListItemContainer = styled.div`
 `;
 
 const ListItem = (props) => {
-  const { image, id, label, count } = props;
+  const { image, id, label, count, discountText } = props;
   const [checked, setChecked] = useState(false);
   const history = useHistory();
   return (
@@ -117,9 +123,12 @@ const ListItem = (props) => {
         <img src={image} alt="product preview" />
       </div>
       <div className="item-details">
-        <p className="label-tag">{`${count}x ${label}`}</p>
+        <p className="label-tag-container">
+          <span className="label-tag-count">{`${count}x `}</span>
+          <span className="label-tag">{label}</span>
+        </p>
         <p className="price-tag">€ 0,99</p>
-        <p className="discount-tag">2 voor de prijs van 1</p>
+        {discountText && <p className="discount-tag">{discountText}</p>}
       </div>
       {checked ? (
         <Checkmark className="checkmark" onClick={() => setChecked(false)} />
@@ -133,6 +142,16 @@ const ListItem = (props) => {
     </ListItemContainer>
   );
 };
+
+ListItem.propTypes = {
+  image: PropTypes.string.isRequired,
+  id: PropTypes.string.isRequired,
+  label: PropTypes.string.isRequired,
+  count: PropTypes.number.isRequired,
+  discountText: PropTypes.string,
+};
+
+ListItem.defaultProps = { discountText: null };
 
 const ListPage = inject('applicationStore')(
   observer((props) => {
@@ -175,6 +194,7 @@ const ListPage = inject('applicationStore')(
               count={item.count}
               image={item.product.image}
               label={item.product.label}
+              discountText={item.product.discount_type}
             />
           ))
         )}
