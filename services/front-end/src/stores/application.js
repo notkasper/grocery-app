@@ -9,6 +9,7 @@ import {
   addFavorite as addFavoriteService,
   getFavorites as getFavoritesService,
   deleteFavorite as deleteFavoriteService,
+  getListItems as getListItemsService,
 } from '../connectors/products';
 
 class ApplicationStore {
@@ -118,6 +119,16 @@ class ApplicationStore {
       await deleteFavoriteService(idToken, id);
     } catch (error) {
       console.error(`Error while deleting favorite: ${error}`);
+    }
+  };
+
+  @action getListItems = async () => {
+    try {
+      const idToken = await firebase.auth().currentUser.getIdToken();
+      const response = await getListItemsService(idToken);
+      return response.body.data;
+    } catch (error) {
+      console.error(`Error while getting list items: ${error}`);
     }
   };
 }

@@ -1,6 +1,6 @@
 /* eslint-disable object-curly-newline */
 const sequelize = require('sequelize');
-const { List } = require('../models');
+const { List, Product } = require('../models');
 
 exports.getListItems = async (req, res) => {
   try {
@@ -8,7 +8,29 @@ exports.getListItems = async (req, res) => {
       where: { owner: req.user.id },
       raw: true,
     });
-    res.status(200).send({ data: list.items });
+    const listItemsWithCount = {};
+    list.items.forEach((itemId) => {
+      if (!listItemsWithCount[itemId]) {
+        listItemsWithCount[itemId] = {
+          count: 1,
+          id: itemId,
+        };
+        return;
+      }
+      listItemsWithCount[itemId].count += 1;
+    });
+    const products = await Product.findAll({
+      where: { id: Object.keys(listItemsWithCount) },
+      raw: true,
+    });
+    const productsByKey = {};
+    products.forEach((product) => {
+      productsByKey[product.id] = product;
+    });
+    Object.keys(listItemsWithCount).forEach((key) => {
+      listItemsWithCount[key].product = productsByKey[key];
+    });
+    res.status(200).send({ data: Object.values(listItemsWithCount) });
   } catch (error) {
     console.error(error);
     res.status(500).send({ error });

@@ -48,3 +48,10 @@ export const deleteFavorite = async (idToken, id) => {
     .set('authorization', `Bearer ${idToken}`);
   return response;
 };
+
+export const getListItems = async (idToken) => {
+  const response = await request
+    .get(`${API_BASE_URL}/list`)
+    .set('authorization', `Bearer ${idToken}`);
+  return response;
+};
