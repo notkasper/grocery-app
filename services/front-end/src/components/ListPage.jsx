@@ -33,9 +33,11 @@ const ListItemContainer = styled.div`
     background: #ffffff;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.15);
     border-radius: 8px;
-    max-width: 20vw;
+    min-width: 20vw;
+    max-width: 30vw;
     display: inline-block;
     img {
+      max-height: 20vh;
       max-width: 100%;
     }
   }
@@ -67,10 +69,9 @@ const ListItemContainer = styled.div`
   }
 
   .checkbox {
+    margin-left: 10px;
     display: inline-block;
-    margin: 0;
     padding: 0;
-    appearance: none;
     border: 2px solid #44c062;
     border-radius: 8px;
     background: none;
@@ -79,10 +80,24 @@ const ListItemContainer = styled.div`
   }
 
   .checkmark {
+    margin-left: 10px;
     display: inline-block;
     fill: #adb5c2;
     max-height: 2rem;
     min-width: 2rem;
+  }
+
+  .options {
+    margin-left: 20px;
+    max-height: 2rem;
+    margin-top: 0.3rem;
+    .dot {
+      margin-bottom: 0.3rem;
+      border-radius: 20px;
+      background-color: #adb5c2;
+      width: 5px;
+      height: 5px;
+    }
   }
 `;
 
@@ -110,12 +125,17 @@ const ListItem = (props) => {
       {checked ? (
         <Checkmark className="checkmark" onClick={() => setChecked(false)} />
       ) : (
-        <input
+        <div
           type="checkbox"
           className="checkbox"
           onClick={() => setChecked(true)}
         />
       )}
+      <span className="options">
+        <p className="dot" />
+        <p className="dot" />
+        <p className="dot" />
+      </span>
     </ListItemContainer>
   );
 };
