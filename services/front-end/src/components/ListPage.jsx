@@ -1,3 +1,4 @@
+/* eslint-disable react/button-has-type */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable no-restricted-globals */
@@ -102,7 +103,7 @@ const ListItemContainer = styled.div`
 `;
 
 const ListItem = (props) => {
-  const { image, id } = props;
+  const { image, id, label, count } = props;
   const [checked, setChecked] = useState(false);
   const history = useHistory();
   return (
@@ -116,9 +117,7 @@ const ListItem = (props) => {
         <img src={image} alt="product preview" />
       </div>
       <div className="item-details">
-        <p className="label-tag">
-          1x Super speciale Gember nuggets met sambal saus
-        </p>
+        <p className="label-tag">{`${count}x ${label}`}</p>
         <p className="price-tag">€ 0,99</p>
         <p className="discount-tag">2 voor de prijs van 1</p>
       </div>
@@ -131,11 +130,6 @@ const ListItem = (props) => {
           onClick={() => setChecked(true)}
         />
       )}
-      <span className="options">
-        <p className="dot" />
-        <p className="dot" />
-        <p className="dot" />
-      </span>
     </ListItemContainer>
   );
 };
@@ -143,21 +137,47 @@ const ListItem = (props) => {
 const ListPage = inject('applicationStore')(
   observer((props) => {
     const { applicationStore } = props;
-    const [listItems, setListItems] = useState([]);
+    const [listItems, setListItems] = useState({});
     const loadListItems = async () => {
       const newListItems = await applicationStore.getListItems();
-      setListItems(newListItems);
+      const sortedListItems = {};
+      newListItems.forEach((item) => {
+        if (!sortedListItems[item.product.store_name]) {
+          sortedListItems[item.product.store_name] = [];
+          sortedListItems[item.product.store_name].push(item);
+          return;
+        }
+        sortedListItems[item.product.store_name].push(item);
+      });
+      setListItems(sortedListItems);
     };
     useEffect(() => {
       applicationStore.navbarLabel = 'Boodschappenlijst';
       loadListItems();
     }, []);
+    const getTotalItemsCount = () => {
+      let count = 0;
+      Object.keys(listItems).forEach((storeName) => {
+        listItems[storeName].forEach(() => {
+          count += 1;
+        });
+      });
+      return count;
+    };
     return (
       <Container>
-        <p className="item-counter">{`${listItems.length} producten in uw lijstje`}</p>
-        {listItems.map((item) => (
-          <ListItem key={item.id} id={item.id} image={item.product.image} />
-        ))}
+        <p className="item-counter">{`${getTotalItemsCount()} producten in uw lijstje`}</p>
+        {Object.keys(listItems).map((storeName) =>
+          listItems[storeName].map((item) => (
+            <ListItem
+              key={item.id}
+              id={item.id}
+              count={item.count}
+              image={item.product.image}
+              label={item.product.label}
+            />
+          ))
+        )}
       </Container>
     );
   })
