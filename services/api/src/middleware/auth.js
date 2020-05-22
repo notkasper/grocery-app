@@ -34,6 +34,11 @@ module.exports = async (req, res, next) => {
         id: uuid.v4(),
         firebase_uid: firebaseUser.uid,
       });
+      await db.List.create({
+        id: uuid.v4(),
+        owner: user.id,
+        items: [],
+      });
     }
     req.user = user;
     res.firebaseUser = firebaseUser;

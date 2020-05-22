@@ -18,6 +18,7 @@ const products = require('./routes/products');
 const favorites = require('./routes/favorites');
 const categories = require('./routes/categories');
 const scrapers = require('./routes/scrapers');
+const list = require('./routes/list');
 
 let server;
 
@@ -61,7 +62,8 @@ const start = async () => {
   app.use('/api/v1/products', products);
   app.use('/api/v1/favorites', favorites);
   app.use('/api/v1/categories', categories);
-  app.use('/api/v1/scrapers', scrapers); // TODO: add middleware!
+  app.use('/api/v1/scrapers', scrapers);
+  app.use('/api/v1/list', list);
 
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),

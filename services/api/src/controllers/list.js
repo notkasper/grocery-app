@@ -36,7 +36,7 @@ exports.deleteListItemSingle = async (req, res) => {
     const { id: productId } = req.params;
     const list = await List.findOne({ where: { owner: req.user.id } });
     let found = false;
-    list.items.filter((itemId) => {
+    list.items = list.items.filter((itemId) => {
       if (itemId === productId && !found) {
         found = true;
         return false;
@@ -55,7 +55,7 @@ exports.deleteListItemAll = async (req, res) => {
   try {
     const { id: productId } = req.params;
     const list = await List.findOne({ where: { owner: req.user.id } });
-    list.items.filter((itemId) => itemId !== productId);
+    list.items = list.items.filter((itemId) => itemId !== productId);
     await list.save();
     res.status(200).send({ data: {} });
   } catch (error) {
