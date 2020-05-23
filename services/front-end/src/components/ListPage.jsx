@@ -343,15 +343,25 @@ const Modal = inject('applicationStore')(
       count,
       id,
       discountText,
+      close,
     } = props;
+    const [inner, setInner] = useState(null);
+    const listener = (event) => {
+      const isClickInside = inner.contains(event.target);
+      if (!isClickInside) {
+        document.removeEventListener('click', listener);
+        close();
+      }
+    };
+    document.addEventListener('click', listener);
     return (
       <ModalContainer key={id}>
-        <div className="inner">
+        <div className="inner" ref={(element) => setInner(element)}>
           <div className="top">
             <img src={image} alt="foto van product" />
             <div className="product-info">
               <p className="label">{label}</p>
-              <p className="discount-text">{discountText}</p>
+              {discountText && <p className="discount-text">{discountText}</p>}
               <p className="new-price">{`€ ${newPrice}`}</p>
             </div>
           </div>
@@ -375,6 +385,7 @@ Modal.propTypes = {
   label: PropTypes.string.isRequired,
   count: PropTypes.number.isRequired,
   discountText: PropTypes.string,
+  close: PropTypes.func.isRequired,
 };
 
 Modal.defaultProps = { discountText: null, oldPrice: null };
@@ -460,7 +471,7 @@ const ListPage = inject('applicationStore')(
         </Container>
         {!!modalItem && (
           <Modal
-            closeModal={() => setModalItem(null)}
+            close={() => setModalItem(null)}
             key={modalItem.id}
             id={modalItem.id}
             count={modalItem.count}
