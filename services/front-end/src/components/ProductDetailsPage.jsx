@@ -1,3 +1,4 @@
+/* eslint-disable react/button-has-type */
 /* eslint-disable react/no-array-index-key */
 import React, { useEffect, useState } from 'react';
 import { observer, inject } from 'mobx-react';
@@ -158,6 +159,20 @@ const DetailsContainer = styled.div`
       }
     }
   }
+
+  .add-to-list {
+    border: none;
+    width: 100%;
+    margin: 2rem 0 0 0;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 18px;
+    text-align: center;
+    color: #fff;
+    background: #44c062;
+    height: 2.5rem;
+  }
 `;
 
 const ProductDetailsPage = inject('applicationStore')(
@@ -228,6 +243,14 @@ const ProductDetailsPage = inject('applicationStore')(
               </p>
             </div>
           </div>
+          <button
+            className="add-to-list"
+            onClick={() => {
+              applicationStore.addListItem(product.id);
+            }}
+          >
+            Toevoegen aan boodschappenlijstje
+          </button>
         </DetailsContainer>
       </Container>
     );
