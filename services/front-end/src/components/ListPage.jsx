@@ -175,7 +175,16 @@ const Total = styled.div`
 `;
 
 const ListItem = (props) => {
-  const { image, id, label, count, discountText, oldPrice, newPrice } = props;
+  const {
+    image,
+    id,
+    label,
+    count,
+    discountText,
+    oldPrice,
+    newPrice,
+    openModal,
+  } = props;
   const [checked, setChecked] = useState(false);
   const history = useHistory();
   return (
@@ -208,6 +217,11 @@ const ListItem = (props) => {
             onClick={() => setChecked(true)}
           />
         )}
+        <span className="options" onClick={openModal}>
+          <p className="dot" />
+          <p className="dot" />
+          <p className="dot" />
+        </span>
       </div>
     </ListItemContainer>
   );
@@ -221,14 +235,155 @@ ListItem.propTypes = {
   label: PropTypes.string.isRequired,
   count: PropTypes.number.isRequired,
   discountText: PropTypes.string,
+  openModal: PropTypes.func.isRequired,
 };
 
 ListItem.defaultProps = { discountText: null, oldPrice: null };
+
+const ModalContainer = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(244, 248, 251, 0.3);
+  .inner {
+    background: #ffffff;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 8px;
+    width: 75%;
+    margin: auto;
+    margin-top: 30vh;
+    padding: 20px 10px;
+
+    .top {
+      display: flex;
+      justify-content: flex-start;
+      img {
+        width: 33%;
+      }
+
+      .product-info {
+        width: 66%;
+        margin-left: 10px;
+
+        p {
+          margin: 0.5rem 0;
+        }
+
+        .discount-text {
+          display: inline-block;
+          background: #44c062;
+          border-radius: 8px;
+          color: #fff;
+          padding: 2px 10px;
+          width: auto;
+        }
+
+        .new-price {
+          font-size: 13px;
+          line-height: 15px;
+
+          color: #44c062;
+        }
+      }
+    }
+
+    .amount-controller {
+      display: flex;
+      justify-content: space-between;
+      margin: 1.5rem 30%;
+
+      button {
+        outline: none;
+        border: none;
+        appearance: none;
+        background: #44c062;
+        border-radius: 8px;
+        width: 2rem;
+        height: 2rem;
+        font-size: 24px;
+        line-height: 28px;
+        color: #ffffff;
+      }
+
+      p {
+        font-size: 1.5rem;
+        line-height: 2rem;
+        text-align: center;
+        color: #000000;
+        vertical-align: middle;
+      }
+    }
+
+    .remove-all {
+      width: 80%;
+      margin-left: 10%;
+      border: 1px solid #c04c44;
+      border-radius: 8px;
+      font-weight: 300;
+      font-size: 12px;
+      line-height: 14px;
+      text-align: center;
+      color: #c04c44;
+      background: none;
+      height: 2rem;
+    }
+  }
+`;
+
+const Modal = inject('applicationStore')(
+  observer((props) => {
+    const {
+      applicationStore,
+      image,
+      label,
+      oldPrice,
+      newPrice,
+      count,
+      id,
+      discountText,
+    } = props;
+    return (
+      <ModalContainer key={id}>
+        <div className="inner">
+          <div className="top">
+            <img src={image} alt="foto van product" />
+            <div className="product-info">
+              <p className="label">{label}</p>
+              <p className="discount-text">{discountText}</p>
+              <p className="new-price">{`€ ${newPrice}`}</p>
+            </div>
+          </div>
+          <div className="amount-controller">
+            <button>-</button>
+            <p className="count">{count}</p>
+            <button>+</button>
+          </div>
+          <button className="remove-all">Verwijderen uit winkelmandje</button>
+        </div>
+      </ModalContainer>
+    );
+  })
+);
+
+Modal.propTypes = {
+  oldPrice: PropTypes.number,
+  newPrice: PropTypes.number.isRequired,
+  image: PropTypes.string.isRequired,
+  id: PropTypes.string.isRequired,
+  label: PropTypes.string.isRequired,
+  count: PropTypes.number.isRequired,
+  discountText: PropTypes.string,
+};
+
+Modal.defaultProps = { discountText: null, oldPrice: null };
 
 const ListPage = inject('applicationStore')(
   observer((props) => {
     const { applicationStore } = props;
     const [listItems, setListItems] = useState({});
+    const [modalItem, setModalItem] = useState(null);
     const loadListItems = async () => {
       const newListItems = await applicationStore.getListItems();
       const sortedListItems = {};
@@ -262,45 +417,61 @@ const ListPage = inject('applicationStore')(
         0
       );
     return (
-      <Container>
-        <p className="item-counter">{`${getTotalItemsCount()} producten in uw lijstje`}</p>
-        {Object.keys(listItems).map((storeName) => (
-          <>
-            <StoreLabel storeName={storeName}>
-              {storeProps[storeName].label}
-            </StoreLabel>
-            {listItems[storeName].map((item) => (
-              <ListItem
-                key={item.id}
-                id={item.id}
-                count={item.count}
-                image={item.product.image}
-                label={item.product.label}
-                discountText={item.product.discount_type}
-                newPrice={item.product.new_price}
-                oldPrice={item.product.old_price}
-              />
-            ))}
-          </>
-        ))}
-        <Total>
-          <div className="price-per-store">
-            {Object.keys(listItems).map((storeName) => (
-              <div className="store-price" key={storeName}>
-                <p>{storeProps[storeName].label}</p>
-                <p>{`€ ${getTotalForStore(storeName)}`}</p>
-              </div>
-            ))}
-          </div>
-          <div className="bar" />
-          <p className="total-price">
-            {`€ ${Object.keys(listItems).reduce(
-              (acc, curr) => acc + getTotalForStore(curr),
-              0
-            )}`}
-          </p>
-        </Total>
-      </Container>
+      <>
+        <Container>
+          <p className="item-counter">{`${getTotalItemsCount()} producten in uw lijstje`}</p>
+          {Object.keys(listItems).map((storeName) => (
+            <>
+              <StoreLabel storeName={storeName}>
+                {storeProps[storeName].label}
+              </StoreLabel>
+              {listItems[storeName].map((item) => (
+                <ListItem
+                  openModal={() => setModalItem(item)}
+                  key={item.id}
+                  id={item.id}
+                  count={item.count}
+                  image={item.product.image}
+                  label={item.product.label}
+                  discountText={item.product.discount_type}
+                  newPrice={item.product.new_price}
+                  oldPrice={item.product.old_price}
+                />
+              ))}
+            </>
+          ))}
+          <Total>
+            <div className="price-per-store">
+              {Object.keys(listItems).map((storeName) => (
+                <div className="store-price" key={storeName}>
+                  <p>{storeProps[storeName].label}</p>
+                  <p>{`€ ${getTotalForStore(storeName)}`}</p>
+                </div>
+              ))}
+            </div>
+            <div className="bar" />
+            <p className="total-price">
+              {`€ ${Object.keys(listItems).reduce(
+                (acc, curr) => acc + getTotalForStore(curr),
+                0
+              )}`}
+            </p>
+          </Total>
+        </Container>
+        {!!modalItem && (
+          <Modal
+            closeModal={() => setModalItem(null)}
+            key={modalItem.id}
+            id={modalItem.id}
+            count={modalItem.count}
+            image={modalItem.product.image}
+            label={modalItem.product.label}
+            discountText={modalItem.product.discount_type}
+            newPrice={modalItem.product.new_price}
+            oldPrice={modalItem.product.old_price}
+          />
+        )}
+      </>
     );
   })
 );
