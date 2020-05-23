@@ -307,6 +307,10 @@ const ModalContainer = styled.div`
         color: #ffffff;
       }
 
+      .decrement {
+        background: ${(props) => (props.count <= 1 ? '#ADB5C2' : '#44c062')};
+      }
+
       p {
         font-size: 1.5rem;
         line-height: 2rem;
@@ -358,7 +362,7 @@ const Modal = inject('applicationStore')(
       document.addEventListener('click', clickHandler, []);
     });
     return (
-      <ModalContainer key={id}>
+      <ModalContainer key={id} count={count}>
         <div className="inner" ref={(element) => setInner(element)}>
           <div className="top">
             <img src={image} alt="foto van product" />
@@ -369,7 +373,16 @@ const Modal = inject('applicationStore')(
             </div>
           </div>
           <div className="amount-controller">
-            <button>-</button>
+            <button
+              className="decrement"
+              onClick={async () => {
+                applicationStore.deleteListItem(id);
+                setCount(count - 1);
+              }}
+              disabled={count <= 1}
+            >
+              -
+            </button>
             <p className="count">{count}</p>
             <button
               onClick={async () => {

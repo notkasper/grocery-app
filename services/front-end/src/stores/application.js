@@ -11,7 +11,8 @@ import {
   deleteFavorite as deleteFavoriteService,
   getListItems as getListItemsService,
   deleteListItemAll as deleteListItemAllService,
-  addListItem as addListItemService
+  deleteListItem as deleteListItemService,
+  addListItem as addListItemService,
 } from '../connectors/products';
 
 class ApplicationStore {
@@ -139,7 +140,16 @@ class ApplicationStore {
       const idToken = await firebase.auth().currentUser.getIdToken();
       await deleteListItemAllService(idToken, id);
     } catch (error) {
-      console.error(`Error while getting list items: ${error}`);
+      console.error(`Error while deleting list items: ${error}`);
+    }
+  };
+
+  @action deleteListItem = async (id) => {
+    try {
+      const idToken = await firebase.auth().currentUser.getIdToken();
+      await deleteListItemService(idToken, id);
+    } catch (error) {
+      console.error(`Error while deleting list item: ${error}`);
     }
   };
 
@@ -148,7 +158,7 @@ class ApplicationStore {
       const idToken = await firebase.auth().currentUser.getIdToken();
       await addListItemService(idToken, id);
     } catch (error) {
-      console.error(`Error while getting list items: ${error}`);
+      console.error(`Error while adding list items: ${error}`);
     }
   };
 }
