@@ -55,3 +55,17 @@ export const getListItems = async (idToken) => {
     .set('authorization', `Bearer ${idToken}`);
   return response;
 };
+
+export const deleteListItemAll = async (idToken, id) => {
+  const response = await request
+    .delete(`${API_BASE_URL}/list/${id}/all`)
+    .set('authorization', `Bearer ${idToken}`);
+  return response;
+};
+
+export const addListItem = async (idToken, id) => {
+  const response = await request
+    .post(`${API_BASE_URL}/list/${id}`)
+    .set('authorization', `Bearer ${idToken}`);
+  return response;
+};

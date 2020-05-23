@@ -10,6 +10,8 @@ import {
   getFavorites as getFavoritesService,
   deleteFavorite as deleteFavoriteService,
   getListItems as getListItemsService,
+  deleteListItemAll as deleteListItemAllService,
+  addListItem as addListItemService
 } from '../connectors/products';
 
 class ApplicationStore {
@@ -127,6 +129,24 @@ class ApplicationStore {
       const idToken = await firebase.auth().currentUser.getIdToken();
       const response = await getListItemsService(idToken);
       return response.body.data;
+    } catch (error) {
+      console.error(`Error while getting list items: ${error}`);
+    }
+  };
+
+  @action deleteListItemAll = async (id) => {
+    try {
+      const idToken = await firebase.auth().currentUser.getIdToken();
+      await deleteListItemAllService(idToken, id);
+    } catch (error) {
+      console.error(`Error while getting list items: ${error}`);
+    }
+  };
+
+  @action addListItem = async (id) => {
+    try {
+      const idToken = await firebase.auth().currentUser.getIdToken();
+      await addListItemService(idToken, id);
     } catch (error) {
       console.error(`Error while getting list items: ${error}`);
     }

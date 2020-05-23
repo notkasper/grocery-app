@@ -338,22 +338,25 @@ const Modal = inject('applicationStore')(
       applicationStore,
       image,
       label,
-      oldPrice,
+      // oldPrice,
       newPrice,
-      count,
+      count: originalCount,
       id,
       discountText,
       close,
     } = props;
     const [inner, setInner] = useState(null);
-    const listener = (event) => {
+    const [count, setCount] = useState(originalCount);
+    const clickHandler = (event) => {
       const isClickInside = inner.contains(event.target);
       if (!isClickInside) {
-        document.removeEventListener('click', listener);
+        document.removeEventListener('click', clickHandler);
         close();
       }
     };
-    document.addEventListener('click', listener);
+    useEffect(() => {
+      document.addEventListener('click', clickHandler, []);
+    });
     return (
       <ModalContainer key={id}>
         <div className="inner" ref={(element) => setInner(element)}>
@@ -368,9 +371,25 @@ const Modal = inject('applicationStore')(
           <div className="amount-controller">
             <button>-</button>
             <p className="count">{count}</p>
-            <button>+</button>
+            <button
+              onClick={async () => {
+                applicationStore.addListItem(id);
+                setCount(count + 1);
+              }}
+            >
+              +
+            </button>
           </div>
-          <button className="remove-all">Verwijderen uit winkelmandje</button>
+          <button
+            className="remove-all"
+            onClick={async () => {
+              await applicationStore.deleteListItemAll(id);
+              document.removeEventListener('click', clickHandler);
+              close();
+            }}
+          >
+            Verwijderen uit winkelmandje
+          </button>
         </div>
       </ModalContainer>
     );
@@ -471,7 +490,10 @@ const ListPage = inject('applicationStore')(
         </Container>
         {!!modalItem && (
           <Modal
-            close={() => setModalItem(null)}
+            close={() => {
+              setModalItem(null);
+              loadListItems();
+            }}
             key={modalItem.id}
             id={modalItem.id}
             count={modalItem.count}
