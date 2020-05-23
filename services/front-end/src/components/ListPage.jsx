@@ -288,16 +288,16 @@ const ListPage = inject('applicationStore')(
             {Object.keys(listItems).map((storeName) => (
               <div className="store-price" key={storeName}>
                 <p>{storeProps[storeName].label}</p>
-                <p>{getTotalForStore(storeName)}</p>
+                <p>{`€ ${getTotalForStore(storeName)}`}</p>
               </div>
             ))}
           </div>
           <div className="bar" />
           <p className="total-price">
-            {Object.keys(listItems).reduce(
+            {`€ ${Object.keys(listItems).reduce(
               (acc, curr) => acc + getTotalForStore(curr),
               0
-            )}
+            )}`}
           </p>
         </Total>
       </Container>
