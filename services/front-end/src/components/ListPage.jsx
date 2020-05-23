@@ -82,6 +82,22 @@ const Total = styled.div`
   }
 `;
 
+const getTotalItemsCount = (listItems) => {
+  let count = 0;
+  Object.keys(listItems).forEach((storeName) => {
+    listItems[storeName].forEach(() => {
+      count += 1;
+    });
+  });
+  return count;
+};
+
+const getTotalForStore = (listItems, storeName) =>
+  listItems[storeName].reduce(
+    (acc, curr) => acc + Number.parseFloat(curr.product.new_price) * curr.count,
+    0
+  );
+
 const ListPage = inject('applicationStore')(
   observer((props) => {
     const { applicationStore } = props;
@@ -104,25 +120,12 @@ const ListPage = inject('applicationStore')(
       applicationStore.navbarLabel = 'Boodschappenlijst';
       loadListItems();
     }, []);
-    const getTotalItemsCount = () => {
-      let count = 0;
-      Object.keys(listItems).forEach((storeName) => {
-        listItems[storeName].forEach(() => {
-          count += 1;
-        });
-      });
-      return count;
-    };
-    const getTotalForStore = (storeName) =>
-      listItems[storeName].reduce(
-        (acc, curr) =>
-          acc + Number.parseFloat(curr.product.new_price) * curr.count,
-        0
-      );
     return (
       <>
         <Container>
-          <p className="item-counter">{`${getTotalItemsCount()} producten in uw lijstje`}</p>
+          <p className="item-counter">
+            {`${getTotalItemsCount(listItems)} producten in uw lijstje`}
+          </p>
           {Object.keys(listItems).map((storeName) => (
             <>
               <StoreLabel storeName={storeName}>
@@ -148,14 +151,14 @@ const ListPage = inject('applicationStore')(
               {Object.keys(listItems).map((storeName) => (
                 <div className="store-price" key={storeName}>
                   <p>{storeProps[storeName].label}</p>
-                  <p>{`€ ${getTotalForStore(storeName)}`}</p>
+                  <p>{`€ ${getTotalForStore(listItems, storeName)}`}</p>
                 </div>
               ))}
             </div>
             <div className="bar" />
             <p className="total-price">
               {`€ ${Object.keys(listItems).reduce(
-                (acc, curr) => acc + getTotalForStore(curr),
+                (acc, curr) => acc + getTotalForStore(listItems, curr),
                 0
               )}`}
             </p>
