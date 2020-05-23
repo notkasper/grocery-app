@@ -11,9 +11,23 @@ import { useHistory } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import Checkmark from '../assets/checkmark.svg';
 
+const storeProps = {
+  jumbo: {
+    headerColor: '#FDC513',
+    label: 'Jumbo',
+    textColor: '#000',
+  },
+  albert_heijn: {
+    headerColor: '#00ADE6',
+    label: 'Albert Heijn',
+    textColor: '#fff',
+  },
+};
+
 const Container = styled.div`
   background-color: #f1f6fa;
   padding: 1rem;
+  padding-bottom: 3rem;
   grid-gap: 10px;
   min-height: 100vh;
 
@@ -24,6 +38,15 @@ const Container = styled.div`
 
     color: #adb5c2;
   }
+`;
+
+const StoreLabel = styled.div`
+  display: inline-block;
+  background: ${(props) => storeProps[props.storeName].headerColor};
+  color: ${(props) => storeProps[props.storeName].textColor};
+  border-radius: 8px;
+  padding: 2px 10px;
+  margin-top: 6px;
 `;
 
 const ListItemContainer = styled.div`
@@ -117,6 +140,40 @@ const ListItemContainer = styled.div`
   }
 `;
 
+const Total = styled.div`
+  margin: 2rem 0;
+
+  .price-per-store {
+    .store-price {
+      display: flex;
+      justify-content: space-between;
+      p {
+        display: inline-block;
+        font-weight: 300;
+        font-size: 1.25rem;
+        line-height: 1.5rem;
+        color: #adb5c2;
+      }
+    }
+  }
+
+  .bar {
+    width: 100%;
+    height: 4px;
+    border-radius: 4px;
+    background: #e5e5e5;
+    margin: 4px 0;
+  }
+
+  .total-price {
+    float: right;
+    font-weight: bold;
+    font-size: 20px;
+    line-height: 23px;
+    color: #44c062;
+  }
+`;
+
 const ListItem = (props) => {
   const { image, id, label, count, discountText, oldPrice, newPrice } = props;
   const [checked, setChecked] = useState(false);
@@ -198,23 +255,51 @@ const ListPage = inject('applicationStore')(
       });
       return count;
     };
+    const getTotalForStore = (storeName) =>
+      listItems[storeName].reduce(
+        (acc, curr) =>
+          acc + Number.parseFloat(curr.product.new_price) * curr.count,
+        0
+      );
     return (
       <Container>
         <p className="item-counter">{`${getTotalItemsCount()} producten in uw lijstje`}</p>
-        {Object.keys(listItems).map((storeName) =>
-          listItems[storeName].map((item) => (
-            <ListItem
-              key={item.id}
-              id={item.id}
-              count={item.count}
-              image={item.product.image}
-              label={item.product.label}
-              discountText={item.product.discount_type}
-              newPrice={item.product.new_price}
-              oldPrice={item.product.old_price}
-            />
-          ))
-        )}
+        {Object.keys(listItems).map((storeName) => (
+          <>
+            <StoreLabel storeName={storeName}>
+              {storeProps[storeName].label}
+            </StoreLabel>
+            {listItems[storeName].map((item) => (
+              <ListItem
+                key={item.id}
+                id={item.id}
+                count={item.count}
+                image={item.product.image}
+                label={item.product.label}
+                discountText={item.product.discount_type}
+                newPrice={item.product.new_price}
+                oldPrice={item.product.old_price}
+              />
+            ))}
+          </>
+        ))}
+        <Total>
+          <div className="price-per-store">
+            {Object.keys(listItems).map((storeName) => (
+              <div className="store-price" key={storeName}>
+                <p>{storeProps[storeName].label}</p>
+                <p>{getTotalForStore(storeName)}</p>
+              </div>
+            ))}
+          </div>
+          <div className="bar" />
+          <p className="total-price">
+            {Object.keys(listItems).reduce(
+              (acc, curr) => acc + getTotalForStore(curr),
+              0
+            )}
+          </p>
+        </Total>
       </Container>
     );
   })
