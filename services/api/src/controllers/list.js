@@ -1,5 +1,4 @@
 /* eslint-disable object-curly-newline */
-const sequelize = require('sequelize');
 const { List, Product } = require('../models');
 
 exports.getListItems = async (req, res) => {
@@ -8,29 +7,19 @@ exports.getListItems = async (req, res) => {
       where: { owner: req.user.id },
       raw: true,
     });
-    const listItemsWithCount = {};
-    list.items.forEach((itemId) => {
-      if (!listItemsWithCount[itemId]) {
-        listItemsWithCount[itemId] = {
-          count: 1,
-          id: itemId,
-        };
-        return;
+    const productIds = list.items.map((item) => item.id);
+    const productsById = {};
+    (await Product.findAll({ where: { id: productIds } })).forEach(
+      (product) => {
+        productsById[product.id] = product;
       }
-      listItemsWithCount[itemId].count += 1;
-    });
-    const products = await Product.findAll({
-      where: { id: Object.keys(listItemsWithCount) },
-      raw: true,
-    });
-    const productsByKey = {};
-    products.forEach((product) => {
-      productsByKey[product.id] = product;
-    });
-    Object.keys(listItemsWithCount).forEach((key) => {
-      listItemsWithCount[key].product = productsByKey[key];
-    });
-    res.status(200).send({ data: Object.values(listItemsWithCount) });
+    );
+    const listWithProducts = list.items.map((item) => ({
+      id: item.id,
+      count: item.count,
+      product: productsById[item.id],
+    }));
+    res.status(200).send({ data: listWithProducts });
   } catch (error) {
     console.error(error);
     res.status(500).send({ error });
@@ -40,12 +29,21 @@ exports.getListItems = async (req, res) => {
 exports.addListItem = async (req, res) => {
   try {
     const { id: productId } = req.params;
-    await List.update(
-      {
-        items: sequelize.fn('array_append', sequelize.col('items'), productId),
-      },
-      { where: { owner: req.user.id } }
-    );
+    const { amount: unparsedAmount } = req.query;
+    const amount = unparsedAmount ? Number.parseInt(unparsedAmount, 10) : 1;
+    const list = await List.findOne({ where: { owner: req.user.id } });
+    const newItems = [...list.items];
+    const existingItem = newItems.find((item) => item.id === productId);
+    if (existingItem) {
+      existingItem.count += amount;
+    } else {
+      newItems.push({
+        id: productId,
+        count: amount,
+      });
+    }
+    list.items = newItems;
+    await list.save();
     res.status(200).send({ data: productId });
   } catch (error) {
     console.error(error);
@@ -53,33 +51,22 @@ exports.addListItem = async (req, res) => {
   }
 };
 
-exports.deleteListItemSingle = async (req, res) => {
+exports.deleteListItem = async (req, res) => {
   try {
     const { id: productId } = req.params;
+    const { amount: unparsedAmount } = req.query;
+    const amount = unparsedAmount ? Number.parseInt(unparsedAmount, 10) : 1;
     const list = await List.findOne({ where: { owner: req.user.id } });
-    let found = false;
-    list.items = list.items.filter((itemId) => {
-      if (itemId === productId && !found) {
-        found = true;
-        return false;
+    list.items.forEach((item, index) => {
+      if (item.id === productId) {
+        list.items[index].count -= amount;
+        if (item.count <= 0) {
+          delete list.items[index];
+        }
       }
-      return true;
     });
     await list.save();
-    res.status(200).send({ data: {} });
-  } catch (error) {
-    console.error(error);
-    res.status(500).send({ error });
-  }
-};
-
-exports.deleteListItemAll = async (req, res) => {
-  try {
-    const { id: productId } = req.params;
-    const list = await List.findOne({ where: { owner: req.user.id } });
-    list.items = list.items.filter((itemId) => itemId !== productId);
-    await list.save();
-    res.status(200).send({ data: {} });
+    res.status(200).send({ data: productId });
   } catch (error) {
     console.error(error);
     res.status(500).send({ error });
