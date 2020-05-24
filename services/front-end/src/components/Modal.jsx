@@ -123,7 +123,10 @@ const Modal = inject('applicationStore')(
       const isClickInside = !inner.current.contains(event.target);
       if (!isClickInside) return;
       if (count < originalCount) {
-        await applicationStore.deleteListItem(id, count - originalCount);
+        await applicationStore.deleteListItem(
+          id,
+          Math.abs(originalCount - count)
+        );
       } else {
         await applicationStore.addListItem(id, count - originalCount);
       }
