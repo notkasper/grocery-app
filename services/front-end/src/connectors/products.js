@@ -56,23 +56,18 @@ export const getListItems = async (idToken) => {
   return response;
 };
 
-export const deleteListItemAll = async (idToken, id) => {
-  const response = await request
-    .delete(`${API_BASE_URL}/list/${id}/all`)
-    .set('authorization', `Bearer ${idToken}`);
-  return response;
-};
-
-export const deleteListItem = async (idToken, id) => {
+export const deleteListItem = async (idToken, id, amount = 1) => {
   const response = await request
     .delete(`${API_BASE_URL}/list/${id}`)
+    .query({ amount })
     .set('authorization', `Bearer ${idToken}`);
   return response;
 };
 
-export const addListItem = async (idToken, id) => {
+export const addListItem = async (idToken, id, amount = 1) => {
   const response = await request
     .post(`${API_BASE_URL}/list/${id}`)
+    .query({ amount })
     .set('authorization', `Bearer ${idToken}`);
   return response;
 };

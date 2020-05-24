@@ -135,28 +135,19 @@ class ApplicationStore {
     }
   };
 
-  @action deleteListItemAll = async (id) => {
+  @action deleteListItem = async (id, amount) => {
     try {
       const idToken = await firebase.auth().currentUser.getIdToken();
-      await deleteListItemAllService(idToken, id);
-    } catch (error) {
-      console.error(`Error while deleting list items: ${error}`);
-    }
-  };
-
-  @action deleteListItem = async (id) => {
-    try {
-      const idToken = await firebase.auth().currentUser.getIdToken();
-      await deleteListItemService(idToken, id);
+      await deleteListItemService(idToken, id, amount);
     } catch (error) {
       console.error(`Error while deleting list item: ${error}`);
     }
   };
 
-  @action addListItem = async (id) => {
+  @action addListItem = async (id, amount) => {
     try {
       const idToken = await firebase.auth().currentUser.getIdToken();
-      await addListItemService(idToken, id);
+      await addListItemService(idToken, id, amount);
     } catch (error) {
       console.error(`Error while adding list items: ${error}`);
     }

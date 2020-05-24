@@ -1,5 +1,5 @@
 /* eslint-disable react/button-has-type */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { observer, inject } from 'mobx-react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
@@ -113,21 +113,25 @@ const Modal = inject('applicationStore')(
       discountText,
       close,
     } = props;
-    const [inner, setInner] = useState(null);
+    const inner = useRef(null);
     const [count, setCount] = useState(originalCount);
-    const clickHandler = (event) => {
-      const isClickInside = inner.contains(event.target);
-      if (!isClickInside) {
-        document.removeEventListener('click', clickHandler);
-        close();
-      }
+    const handleDeleteAll = async () => {
+      await applicationStore.deleteListItem(id, originalCount);
+      close();
     };
-    useEffect(() => {
-      document.addEventListener('click', clickHandler, []);
-    });
+    const handleClickOutsideModal = async (event) => {
+      const isClickInside = !inner.current.contains(event.target);
+      if (!isClickInside) return;
+      if (count < originalCount) {
+        await applicationStore.deleteListItem(id, count - originalCount);
+      } else {
+        await applicationStore.addListItem(id, count - originalCount);
+      }
+      close();
+    };
     return (
-      <ModalContainer key={id} count={count}>
-        <div className="inner" ref={(element) => setInner(element)}>
+      <ModalContainer key={id} count={count} onClick={handleClickOutsideModal}>
+        <div className="inner" ref={inner}>
           <div className="top">
             <img src={image} alt="foto van product" />
             <div className="product-info">
@@ -140,7 +144,6 @@ const Modal = inject('applicationStore')(
             <button
               className="decrement"
               onClick={async () => {
-                applicationStore.deleteListItem(id);
                 setCount(count - 1);
               }}
               disabled={count <= 1}
@@ -149,22 +152,14 @@ const Modal = inject('applicationStore')(
             </button>
             <p className="count">{count}</p>
             <button
-              onClick={async () => {
-                applicationStore.addListItem(id);
+              onClick={async (e) => {
                 setCount(count + 1);
               }}
             >
               +
             </button>
           </div>
-          <button
-            className="remove-all"
-            onClick={async () => {
-              await applicationStore.deleteListItemAll(id);
-              document.removeEventListener('click', clickHandler);
-              close();
-            }}
-          >
+          <button className="remove-all" onClick={handleDeleteAll}>
             Verwijderen uit winkelmandje
           </button>
         </div>

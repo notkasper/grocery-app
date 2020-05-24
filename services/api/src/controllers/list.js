@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 /* eslint-disable object-curly-newline */
 const { List, Product } = require('../models');
 
@@ -57,14 +58,16 @@ exports.deleteListItem = async (req, res) => {
     const { amount: unparsedAmount } = req.query;
     const amount = unparsedAmount ? Number.parseInt(unparsedAmount, 10) : 1;
     const list = await List.findOne({ where: { owner: req.user.id } });
-    list.items.forEach((item, index) => {
+    const newItems = [...list.items];
+    newItems.forEach((item, index) => {
       if (item.id === productId) {
-        list.items[index].count -= amount;
+        item.count -= amount;
         if (item.count <= 0) {
-          delete list.items[index];
+          newItems.splice(index, 1);
         }
       }
     });
+    list.items = newItems;
     await list.save();
     res.status(200).send({ data: productId });
   } catch (error) {
