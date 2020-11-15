@@ -1,12 +1,16 @@
-import { useState } from 'react';
-import TextField from '@material-ui/core/TextField';
-import Grid from '@material-ui/core/Grid';
-import FormLabel from '@material-ui/core/FormLabel';
+import firebase from 'firebase/app';
+import 'firebase/auth';
 import Box from '@material-ui/core/Box';
-import FormControl from '@material-ui/core/FormControl';
 import { makeStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
 import { useHistory } from 'react-router-dom';
+import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
+
+const config = {
+  apiKey: 'AIzaSyBEzn6azcPTX_qeXpw1x0rWMAMa9Vo_duw',
+  authDomain: 'cheapskate-de9ef.firebaseapp.com',
+  // ...
+};
+firebase.initializeApp(config);
 
 const useStyles = makeStyles((theme) => ({
   box: {
@@ -14,64 +18,36 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: 'center',
     marginTop: '20vh',
   },
-  marginTop: {
-    marginTop: '.5rem',
-  },
-  marginBottom: {
-    marginBottom: '1.5rem',
-  },
-  login: {
-    marginTop: '1rem',
-    float: 'right',
-  },
 }));
+
+const createUiConfig = (loginCallback) => {
+  return {
+    // Popup signin flow rather than redirect flow.
+    signInFlow: 'popup',
+    // Redirect to /signedIn after sign in is successful. Alternatively you can provide a callbacks.signInSuccess function.
+    callbacks: {
+      // Avoid redirects after sign-in.
+      signInSuccessWithAuthResult: loginCallback,
+    },
+    // We will display Google and Facebook as auth providers.
+    signInOptions: [firebase.auth.GoogleAuthProvider.PROVIDER_ID],
+  };
+};
 
 const Login = () => {
   const classes = useStyles();
   const history = useHistory();
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
 
-  const onChangeUsername = (e) => setUsername(e.target.value);
-  const onChangePassword = (e) => setPassword(e.target.value);
-
-  const handleLogin = () => {
-    console.log('Attempt to login...');
-    // make login call
+  const handleLoginSucces = () => {
+    console.log('Logged in!');
     history.push('/home');
   };
   return (
     <Box className={classes.box}>
-      <FormControl>
-        <Grid>
-          <Grid item xs={12} className={classes.marginBottom}>
-            <FormLabel>Admin Login</FormLabel>
-          </Grid>
-          <Grid item xs={12} className={classes.marginTop}>
-            <TextField
-              id="standard-basic"
-              label="Username"
-              autoFocus
-              value={username}
-              onChange={onChangeUsername}
-            />
-          </Grid>
-          <Grid item xs={12} className={classes.marginTop}>
-            <TextField
-              id="standard-basic"
-              label="Password"
-              type="password"
-              value={password}
-              onChange={onChangePassword}
-            />
-          </Grid>
-          <Grid item xs={12} md={6} className={classes.login}>
-            <Button variant="contained" color="primary" onClick={handleLogin}>
-              Login
-            </Button>
-          </Grid>
-        </Grid>
-      </FormControl>
+      <StyledFirebaseAuth
+        uiConfig={createUiConfig(handleLoginSucces)}
+        firebaseAuth={firebase.auth()}
+      />
     </Box>
   );
 };
