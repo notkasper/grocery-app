@@ -29,7 +29,7 @@ const App = () => {
         <Container maxWidth="sm">
           <Router>
             <Switch>
-              <Route path="/">
+              <Route exact path="/">
                 <Login />
               </Route>
               <Route path="/home">

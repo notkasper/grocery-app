@@ -1,8 +1,7 @@
-// require('dotenv').config(); // initialize environment variables
-
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '../.env') }); // initialize environment variables
 const express = require('express');
 const morgan = require('morgan');
-const path = require('path');
 const fileupload = require('express-fileupload');
 const cookieParser = require('cookie-parser');
 const helmet = require('helmet');
@@ -18,6 +17,7 @@ const products = require('./routes/products');
 const favorites = require('./routes/favorites');
 const categories = require('./routes/categories');
 const scrapers = require('./routes/scrapers');
+const users = require('./routes/users');
 const list = require('./routes/list');
 
 let server;
@@ -64,6 +64,7 @@ const start = async () => {
   app.use('/api/v1/categories', categories);
   app.use('/api/v1/scrapers', scrapers);
   app.use('/api/v1/list', list);
+  app.use('/api/v1/users', users);
 
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
