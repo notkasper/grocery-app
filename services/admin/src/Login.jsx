@@ -39,7 +39,6 @@ const Login = () => {
   const history = useHistory();
 
   const handleLoginSucces = () => {
-    console.log('Logged in!');
     history.push('/Analytics');
   };
   return (

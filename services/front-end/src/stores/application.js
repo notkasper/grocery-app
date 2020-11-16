@@ -29,7 +29,6 @@ class ApplicationStore {
   @action getProducts = async (page) => {
     try {
       const idToken = await firebase.auth().currentUser.getIdToken();
-      console.log(idToken);
       const {
         body: {
           // eslint-disable-next-line no-unused-vars
