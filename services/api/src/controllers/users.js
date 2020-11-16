@@ -1,5 +1,6 @@
 /* eslint-disable no-await-in-loop */
 const admin = require('firebase-admin');
+const { User } = require('../models');
 
 const PAGE_SIZE = 1000;
 
@@ -17,7 +18,24 @@ exports.getUsers = async (req, res) => {
   users.push(...newUsers);
   while (nextPageToken) {
     [newUsers, nextPageToken] = await getUserPage(nextPageToken);
-    users.push(newUsers);
+    users.push(...newUsers);
   }
   res.status(200).send({ data: users });
+};
+
+exports.deleteUser = async (req, res) => {
+  try {
+    const { firebase_uid: id } = req.params;
+    const user = await User.findOne({ where: { firebase_uid: id } });
+    if (!user) {
+      res.status(404).send({ message: 'User not found' });
+      return;
+    }
+    await admin.auth().deleteUser(id);
+    await User.destroy({ where: { firebase_uid: id } });
+    res.status(204).send({ message: 'DELETED' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ error });
+  }
 };
