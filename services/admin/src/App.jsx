@@ -1,9 +1,10 @@
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import Login from './Login';
-import Home from './Home';
+import Analytics from './Analytics';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Container from '@material-ui/core/Container';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+import Drawer from './Drawer';
 
 const theme = createMuiTheme({
   palette: {
@@ -32,8 +33,9 @@ const App = () => {
               <Route exact path="/">
                 <Login />
               </Route>
-              <Route path="/home">
-                <Home />
+              <Route path="/Analytics">
+                <Drawer />
+                <Analytics />
               </Route>
             </Switch>
           </Router>

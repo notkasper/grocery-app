@@ -40,7 +40,7 @@ const Login = () => {
 
   const handleLoginSucces = () => {
     console.log('Logged in!');
-    history.push('/home');
+    history.push('/Analytics');
   };
   return (
     <Box className={classes.box}>
