@@ -4,9 +4,13 @@ const PAGE_SIZE = 20;
 
 exports.getProducts = async (req, res) => {
   try {
-    const { stores: storesString, category, page: pageString } = req.query;
+    const {
+      stores: storesString,
+      category,
+      limit: limitString,
+      offset: offsetString,
+    } = req.query;
     const where = {};
-    let offset = 0;
     if (storesString) {
       // comma seperated stores
       const stores = storesString.split(',');
@@ -15,13 +19,11 @@ exports.getProducts = async (req, res) => {
     if (category) {
       where.category = category;
     }
-    if (pageString) {
-      const page = Number.parseInt(pageString, 10);
-      offset = page * PAGE_SIZE;
-    }
+    const limit = Number.parseInt(limitString, 10);
+    const offset = Number.parseInt(offsetString, 10);
     const productsAndCount = await Product.findAndCountAll({
       where,
-      limit: PAGE_SIZE,
+      limit: limit || PAGE_SIZE,
       offset,
       raw: true,
     });
