@@ -94,10 +94,7 @@ const Products = () => {
   const columns = [
     { field: 'id', hide: true },
     { field: 'label', headerName: 'label', width: 200 },
-    { field: 'store_name', headerName: 'store', width: 150 },
-    { field: 'amount', headerName: 'amount', width: 150 },
-    { field: 'new_price', headerName: 'price', width: 150 },
-    { field: 'createdAt', headerName: 'Created at', width: 200 },
+    { field: 'store_name', headerName: 'store', width: 100 },
     {
       field: '',
       headerName: 'details',
@@ -115,6 +112,9 @@ const Products = () => {
         );
       },
     },
+    { field: 'amount', headerName: 'amount', width: 150 },
+    { field: 'new_price', headerName: 'price', width: 150 },
+    { field: 'createdAt', headerName: 'Created at', width: 200 },
   ];
 
   return (
@@ -171,18 +171,20 @@ const Products = () => {
           />
         </Grid>
       </Grid>
-      <DataGrid
-        checkboxSelection
-        rows={Object.values(products).flat()}
-        columns={columns}
-        pagination
-        autoHeight
-        pageSize={PAGE_SIZE}
-        rowCount={totalProducts}
-        paginationMode="server"
-        onPageChange={handlePageChange}
-        loading={loading}
-      />
+      <div style={{ width: '100%' }}>
+        <DataGrid
+          checkboxSelection
+          rows={Object.values(products).flat()}
+          columns={columns}
+          pagination
+          autoHeight
+          pageSize={PAGE_SIZE}
+          rowCount={totalProducts}
+          paginationMode="server"
+          onPageChange={handlePageChange}
+          loading={loading}
+        />
+      </div>
       <ConfirmDialog
         open={dialogOpen}
         handleClose={handleDialogClose}

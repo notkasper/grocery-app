@@ -7,6 +7,7 @@ import Users from './Users';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Container from '@material-ui/core/Container';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import Drawer from './Drawer';
 import Toolbar from './Toolbar';
 import Products from './Products';
@@ -19,8 +20,15 @@ const theme = createMuiTheme({
   },
 });
 
+const useStyles = makeStyles((theme) => ({
+  container: {
+    marginLeft: '240px',
+  },
+}));
+
 const App = () => {
   const [initialAuthCheck, setInitialAuthCheck] = useState(false);
+  const classes = useStyles();
   firebase.auth().onAuthStateChanged(() => {
     if (!initialAuthCheck) {
       setInitialAuthCheck(true);
@@ -41,28 +49,26 @@ const App = () => {
       />
       <CssBaseline />
       <ThemeProvider theme={theme}>
-        <Toolbar />
-        <Container maxWidth="lg">
-          <Router>
+        <Router>
+          <Toolbar />
+          <Drawer />
+          <Container maxWidth="lg" className={classes.container}>
             <Switch>
               <Route exact path="/">
                 <Login />
               </Route>
               <Route path="/Analytics">
-                <Drawer />
                 <Analytics />
               </Route>
               <Route path="/Users">
-                <Drawer />
                 <Users />
               </Route>
               <Route path="/Products">
-                <Drawer />
                 <Products />
               </Route>
             </Switch>
-          </Router>
-        </Container>
+          </Container>
+        </Router>
       </ThemeProvider>
     </div>
   );
