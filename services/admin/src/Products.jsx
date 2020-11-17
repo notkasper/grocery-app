@@ -99,6 +99,7 @@ const Products = () => {
       field: '',
       headerName: 'details',
       width: 80,
+      disableClickEventBubbling: true,
       renderCell: (params) => {
         return (
           <IconButton
@@ -122,7 +123,7 @@ const Products = () => {
       <Typography>{`${totalProducts} total products`}</Typography>
       <FormLabel component="legend">Store</FormLabel>
       <Grid container>
-        <Grid item xs={4}>
+        <Grid item xs={2}>
           <FormControlLabel
             control={
               <Checkbox
@@ -146,7 +147,7 @@ const Products = () => {
             label={'Jumbo'}
           />
         </Grid>
-        <Grid item xs={4}>
+        <Grid item xs={2}>
           <FormControlLabel
             control={
               <Checkbox
