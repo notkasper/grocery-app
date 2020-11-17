@@ -4,11 +4,13 @@ const PAGE_SIZE = 20;
 
 exports.getProducts = async (req, res) => {
   try {
-    const { store, category, page: pageString } = req.query;
+    const { stores: storesString, category, page: pageString } = req.query;
     const where = {};
     let offset = 0;
-    if (store) {
-      where.store_name = store;
+    if (storesString) {
+      // comma seperated stores
+      const stores = storesString.split(',');
+      where.store_name = stores;
     }
     if (category) {
       where.category = category;
