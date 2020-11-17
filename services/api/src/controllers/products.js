@@ -56,6 +56,17 @@ exports.createProduct = async (req, res) => {
   }
 };
 
+exports.deleteProduct = async (req, res) => {
+  try {
+    const { id } = req.params;
+    await Product.destroy({ where: { id } });
+    res.status(204).send({ message: 'DELETED' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ error });
+  }
+};
+
 exports.createProducts = async (req, res) => {
   try {
     const { products } = req.body;
@@ -68,6 +79,18 @@ exports.createProducts = async (req, res) => {
 };
 
 exports.deleteProducts = async (req, res) => {
+  try {
+    const { ids: idsString } = req.query;
+    const ids = idsString.split(',');
+    await Product.destroy({ where: { id: ids } });
+    res.status(200).send({ message: 'DELETED' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ error });
+  }
+};
+
+exports.deleteAllProducts = async (req, res) => {
   try {
     const where = {};
     if (req.query.store) {

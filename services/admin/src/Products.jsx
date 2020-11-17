@@ -15,8 +15,10 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import DeleteRoundedIcon from '@material-ui/icons/DeleteRounded';
 
 const PAGE_SIZE = 13;
+const STORES = ['jumbo', 'albert_heijn'];
 
 const ConfirmDialog = ({ product, open, handleClose }) => {
   if (!product) {
@@ -47,35 +49,68 @@ const ConfirmDialog = ({ product, open, handleClose }) => {
   );
 };
 
+const DeleteSelectionDialog = ({
+  handleConfirm,
+  handleClose,
+  open,
+  selection,
+}) => {
+  return (
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      aria-labelledby="alert-dialog-title"
+      aria-describedby="alert-dialog-description"
+    >
+      <DialogTitle id="alert-dialog-title">Confirm deletion</DialogTitle>
+      <DialogContent>
+        <DialogContentText id="alert-dialog-description">
+          {`Are you sure you want to delete ${selection.length} products? This process is irreversible`}
+        </DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleConfirm} color="primary">
+          Confirm Deletion
+        </Button>
+        <Button onClick={handleClose} color="primary">
+          Cancel
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+};
+
 const Products = () => {
   const [loading, setLoading] = useState(false);
   const [products, setProducts] = useState({});
+  const [productSelection, setProductSelection] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [page, setPage] = useState(1);
   const [totalProducts, setTotalProducts] = useState(0);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [selectedStores, setSelectedStores] = useState([
-    'jumbo',
-    'albert_heijn',
-  ]);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [selectedStores, setSelectedStores] = useState(STORES);
   const handlePageChange = (params) => {
     setPage(params.page);
+  };
+  const loadProducts = async () => {
+    const offset = (page - 1) * PAGE_SIZE;
+    const idToken = await getIdToken();
+    const stores = selectedStores.join(',');
+    console.log(idToken);
+    const response = await request
+      .get('api/v1/products')
+      .query({ stores, limit: PAGE_SIZE, offset })
+      .set('authorization', `Bearer ${idToken}`);
+    setTotalProducts(response.body.data.count);
+    setProducts({ ...products, [page]: response.body.data.rows });
   };
   useEffect(() => {
     let active = true;
 
     (async () => {
       setLoading(true);
-      const offset = (page - 1) * PAGE_SIZE;
-      const idToken = await getIdToken();
-      const stores = selectedStores.join(',');
-      console.log(idToken);
-      const response = await request
-        .get('api/v1/products')
-        .query({ stores, limit: PAGE_SIZE, offset })
-        .set('authorization', `Bearer ${idToken}`);
-      setTotalProducts(response.body.data.count);
-      setProducts({ ...products, [page]: response.body.data.rows });
+      await loadProducts();
 
       if (!active) {
         return;
@@ -90,6 +125,18 @@ const Products = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, selectedStores]);
   const handleDialogClose = () => setDialogOpen(false);
+  const handleDeleteDialogClose = () => setDeleteDialogOpen(false);
+  const handleConfirmDeleteSelection = async () => {
+    const idToken = await getIdToken();
+    const ids = productSelection.join(',');
+    await request
+      .delete('api/v1/products/delete/bulk')
+      .query({ ids })
+      .set('authorization', `Bearer ${idToken}`);
+    setProducts({});
+    await loadProducts();
+    setDeleteDialogOpen(false);
+  };
 
   const columns = [
     { field: 'id', hide: true },
@@ -123,53 +170,42 @@ const Products = () => {
       <Typography>{`${totalProducts} total products`}</Typography>
       <FormLabel component="legend">Store</FormLabel>
       <Grid container>
-        <Grid item xs={2}>
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={selectedStores.includes('jumbo')}
-                color="primary"
-                onChange={(event) => {
-                  const checked = event.target.checked;
-                  if (checked) {
-                    setSelectedStores([...selectedStores, 'jumbo']);
-                    setProducts({});
-                  } else {
-                    setSelectedStores(
-                      selectedStores.filter((store) => store !== 'jumbo')
-                    );
-                    setProducts({});
-                  }
-                }}
-                name={'jumbo'}
-              />
-            }
-            label={'Jumbo'}
-          />
-        </Grid>
-        <Grid item xs={2}>
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={selectedStores.includes('albert_heijn')}
-                color="primary"
-                onChange={(event) => {
-                  const checked = event.target.checked;
-                  if (checked) {
-                    setSelectedStores([...selectedStores, 'albert_heijn']);
-                    setProducts({});
-                  } else {
-                    setSelectedStores(
-                      selectedStores.filter((store) => store !== 'albert_heijn')
-                    );
-                    setProducts({});
-                  }
-                }}
-                name={'albert_heijn'}
-              />
-            }
-            label={'Albert Heijn'}
-          />
+        {STORES.map((store) => (
+          <Grid item xs={2}>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={selectedStores.includes(store)}
+                  color="primary"
+                  onChange={(event) => {
+                    const checked = event.target.checked;
+                    if (checked) {
+                      setSelectedStores([...selectedStores, store]);
+                      setProducts({});
+                    } else {
+                      setSelectedStores(
+                        selectedStores.filter((store2) => store2 !== store)
+                      );
+                      setProducts({});
+                    }
+                  }}
+                  name={store}
+                />
+              }
+              label={store}
+            />
+          </Grid>
+        ))}
+        <Grid item xs={3}>
+          <IconButton
+            onClick={() => {
+              setDeleteDialogOpen(true);
+            }}
+            color="secondary"
+          >
+            <DeleteRoundedIcon />
+            <Typography>Remove Selection</Typography>
+          </IconButton>
         </Grid>
       </Grid>
       <div style={{ width: '100%' }}>
@@ -184,6 +220,9 @@ const Products = () => {
           paginationMode="server"
           onPageChange={handlePageChange}
           loading={loading}
+          onSelectionChange={(newSelection) => {
+            setProductSelection(newSelection.rowIds);
+          }}
         />
       </div>
       <ConfirmDialog
@@ -191,6 +230,12 @@ const Products = () => {
         handleClose={handleDialogClose}
         handleDelete={handleDialogClose}
         product={selectedProduct}
+      />
+      <DeleteSelectionDialog
+        open={deleteDialogOpen}
+        handleClose={handleDeleteDialogClose}
+        handleConfirm={handleConfirmDeleteSelection}
+        selection={productSelection}
       />
     </div>
   );

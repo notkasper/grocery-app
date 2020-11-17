@@ -4,8 +4,9 @@ const {
   getProduct,
   createProduct,
   createProducts,
-  deleteProducts,
+  deleteAllProducts,
   deleteProduct,
+  deleteProducts,
 } = require('../controllers/products');
 const authMiddleware = require('../middleware/auth');
 const adminAuthMiddleware = require('../middleware/adminAuth');
@@ -17,12 +18,14 @@ router
   .route('/')
   .get(authMiddleware, getProducts)
   .post(createProduct)
-  .delete(adminAuthMiddleware, deleteProducts);
+  .delete(adminAuthMiddleware, deleteAllProducts);
 router.route('/bulk').post(adminAuthMiddleware, createProducts);
 
 router
   .route('/:id')
   .get(authMiddleware, getProduct)
   .delete(adminAuthMiddleware, deleteProduct);
+
+router.route('/delete/bulk').delete(adminAuthMiddleware, deleteProducts);
 
 module.exports = router;
