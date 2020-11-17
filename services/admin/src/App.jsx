@@ -42,7 +42,7 @@ const App = () => {
       <CssBaseline />
       <ThemeProvider theme={theme}>
         <Toolbar />
-        <Container maxWidth="md">
+        <Container maxWidth="lg">
           <Router>
             <Switch>
               <Route exact path="/">
