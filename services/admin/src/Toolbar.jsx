@@ -8,7 +8,6 @@ import MenuIcon from '@material-ui/icons/Menu';
 
 const useStyles = makeStyles((theme) => ({
   toolbar: {
-    position: 'relative',
     zIndex: theme.zIndex.drawer + 1,
   },
 }));
@@ -16,7 +15,7 @@ const useStyles = makeStyles((theme) => ({
 const CustomToolbar = () => {
   const classes = useStyles();
   return (
-    <AppBar position="static" className={classes.toolbar}>
+    <AppBar position="sticky" className={classes.toolbar}>
       <Toolbar>
         <IconButton edge="start" color="inherit" aria-label="menu">
           <MenuIcon />

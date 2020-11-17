@@ -9,6 +9,7 @@ import Container from '@material-ui/core/Container';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import Drawer from './Drawer';
 import Toolbar from './Toolbar';
+import Products from './Products';
 
 const theme = createMuiTheme({
   palette: {
@@ -41,7 +42,7 @@ const App = () => {
       <CssBaseline />
       <ThemeProvider theme={theme}>
         <Toolbar />
-        <Container maxWidth="sm">
+        <Container maxWidth="md">
           <Router>
             <Switch>
               <Route exact path="/">
@@ -54,6 +55,10 @@ const App = () => {
               <Route path="/Users">
                 <Drawer />
                 <Users />
+              </Route>
+              <Route path="/Products">
+                <Drawer />
+                <Products />
               </Route>
             </Switch>
           </Router>

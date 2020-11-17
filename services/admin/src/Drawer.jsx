@@ -9,6 +9,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
 import EqualizerRoundedIcon from '@material-ui/icons/EqualizerRounded';
 import { useHistory } from 'react-router-dom';
+import FastfoodRoundedIcon from '@material-ui/icons/FastfoodRounded';
 
 const drawerWidth = 240;
 
@@ -55,6 +56,7 @@ const CustomDrawer = () => {
   const navItems = {
     Analytics: <EqualizerRoundedIcon />,
     Users: <PeopleAltIcon />,
+    Products: <FastfoodRoundedIcon />,
   };
   return (
     <Drawer
