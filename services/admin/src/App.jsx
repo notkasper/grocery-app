@@ -11,6 +11,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Drawer from './Drawer';
 import Toolbar from './Toolbar';
 import Products from './Products';
+import UploadProducts from './UploadProducts';
 
 const theme = createMuiTheme({
   palette: {
@@ -65,6 +66,9 @@ const App = () => {
               </Route>
               <Route path="/Products">
                 <Products />
+              </Route>
+              <Route path="/UploadProducts">
+                <UploadProducts />
               </Route>
             </Switch>
           </Container>

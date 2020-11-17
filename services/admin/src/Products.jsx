@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { DataGrid } from '@material-ui/data-grid';
 import request from 'superagent';
-import { getIdToken } from './utils';
 import Typography from '@material-ui/core/Typography';
 import FormLabel from '@material-ui/core/FormLabel';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -16,8 +15,9 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DeleteRoundedIcon from '@material-ui/icons/DeleteRounded';
+import { getIdToken } from './utils';
 
-const PAGE_SIZE = 13;
+const PAGE_SIZE = 100;
 const STORES = ['jumbo', 'albert_heijn'];
 
 const ConfirmDialog = ({ product, open, handleClose }) => {
@@ -97,7 +97,7 @@ const Products = () => {
     const offset = (page - 1) * PAGE_SIZE;
     const idToken = await getIdToken();
     const stores = selectedStores.join(',');
-    console.log(idToken);
+    console.info(idToken);
     const response = await request
       .get('api/v1/products')
       .query({ stores, limit: PAGE_SIZE, offset })
