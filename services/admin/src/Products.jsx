@@ -166,7 +166,7 @@ const Products = () => {
   ];
 
   return (
-    <div style={{ width: '100%' }}>
+    <div>
       <Typography>{`${totalProducts} total products`}</Typography>
       <FormLabel component="legend">Store</FormLabel>
       <Grid container>
@@ -202,9 +202,10 @@ const Products = () => {
               setDeleteDialogOpen(true);
             }}
             color="secondary"
+            disabled={productSelection.length < 1}
           >
             <DeleteRoundedIcon />
-            <Typography>Remove Selection</Typography>
+            <Typography>Delete Selection</Typography>
           </IconButton>
         </Grid>
       </Grid>
