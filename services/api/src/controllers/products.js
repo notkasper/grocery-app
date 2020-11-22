@@ -113,3 +113,76 @@ exports.deleteProduct = async (req, res) => {
     res.status(500).send({ error });
   }
 };
+
+exports.compareStoreProducts = async (req, res) => {
+  try {
+    const { products: compareProducts, store } = req.body;
+
+    // must contain at least one product and a store name
+    if (!compareProducts.length || !store) {
+      res
+        .status(400)
+        .send({ error: 'No products or store found in request body' });
+      return;
+    }
+
+    // Check if all new products belong to the same store
+    let sameStore = true;
+    compareProducts.forEach((product) => {
+      if (product.store_name !== store) {
+        sameStore = false;
+      }
+    });
+    if (!sameStore) {
+      res
+        .status(400)
+        .send({ error: 'All products must belong to the same store' });
+      return;
+    }
+    const products = await Product.findAll({ where: { store_name: store } });
+
+    // Make a dictionary with product labels (those are unique) as indices
+    const productsLabelMap = {};
+    products.forEach((product) => {
+      productsLabelMap[product.label] = product;
+    });
+
+    const compareProductsLabelMap = {};
+    compareProducts.forEach((product) => {
+      compareProductsLabelMap[product.label] = product;
+    });
+
+    // compare dictionaries
+    const duplicateProducts = [];
+    const newProducts = [];
+    const removedProducts = [];
+
+    Object.keys(compareProductsLabelMap).forEach((compLabel) => {
+      if (!productsLabelMap[compLabel]) {
+        newProducts.push(compareProductsLabelMap[compLabel]);
+      } else {
+        duplicateProducts.push(compareProductsLabelMap[compLabel]);
+      }
+    });
+
+    Object.keys(productsLabelMap).forEach((compLabel) => {
+      if (!compareProductsLabelMap[compLabel]) {
+        removedProducts.push(productsLabelMap[compLabel]);
+      }
+    });
+
+    res.status(200).send({
+      data: {
+        duplicate_products_count: duplicateProducts.length,
+        new_products_count: newProducts.length,
+        removed_products_count: removedProducts.length,
+        duplicate_products: duplicateProducts,
+        new_products: newProducts,
+        removed_products: removedProducts,
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ error });
+  }
+};

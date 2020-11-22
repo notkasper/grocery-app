@@ -7,6 +7,7 @@ const {
   deleteAllProducts,
   deleteProduct,
   deleteProducts,
+  compareStoreProducts,
 } = require('../controllers/products');
 const authMiddleware = require('../middleware/auth');
 const adminAuthMiddleware = require('../middleware/adminAuth');
@@ -27,5 +28,6 @@ router
   .delete(adminAuthMiddleware, deleteProduct);
 
 router.route('/delete/bulk').delete(adminAuthMiddleware, deleteProducts);
+router.route('/compare').post(adminAuthMiddleware, compareStoreProducts);
 
 module.exports = router;
