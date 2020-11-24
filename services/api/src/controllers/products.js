@@ -1,7 +1,5 @@
 const { Product } = require('../models');
 
-const PAGE_SIZE = 20;
-
 exports.getProducts = async (req, res) => {
   try {
     const {
@@ -19,14 +17,19 @@ exports.getProducts = async (req, res) => {
     if (category) {
       where.category = category;
     }
-    const limit = Number.parseInt(limitString, 10);
-    const offset = Number.parseInt(offsetString, 10);
-    const productsAndCount = await Product.findAndCountAll({
+    const conditions = {
       where,
-      limit: limit || PAGE_SIZE,
-      offset,
       raw: true,
-    });
+    };
+    if (offsetString) {
+      const offset = Number.parseInt(offsetString, 10);
+      conditions.offset = offset;
+    }
+    if (limitString) {
+      const limit = Number.parseInt(limitString, 10);
+      conditions.limit = limit;
+    }
+    const productsAndCount = await Product.findAndCountAll(conditions);
     res.status(200).send({ data: productsAndCount });
   } catch (error) {
     console.error(error);
@@ -44,6 +47,8 @@ exports.getProduct = async (req, res) => {
     res.status(500).send({ error });
   }
 };
+
+/* >>>>>> ADMIN <<<<<< */
 
 exports.createProduct = async (req, res) => {
   try {
@@ -72,18 +77,6 @@ exports.createProducts = async (req, res) => {
     const { products } = req.body;
     const newProducts = await Product.bulkCreate(products);
     res.status(200).send({ data: newProducts });
-  } catch (error) {
-    console.error(error);
-    res.status(500).send({ error });
-  }
-};
-
-exports.deleteProducts = async (req, res) => {
-  try {
-    const { ids: idsString } = req.query;
-    const ids = idsString.split(',');
-    await Product.destroy({ where: { id: ids } });
-    res.status(200).send({ message: 'DELETED' });
   } catch (error) {
     console.error(error);
     res.status(500).send({ error });
@@ -181,6 +174,28 @@ exports.compareStoreProducts = async (req, res) => {
         removed_products: removedProducts,
       },
     });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ error });
+  }
+};
+
+exports.deleteProducts = async (req, res) => {
+  try {
+    const ids = req.body;
+    await Product.destroy({ where: { id: ids } });
+    res.status(200).send({ message: 'DELETED' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ error });
+  }
+};
+
+exports.deleteProductsFromStore = async (req, res) => {
+  try {
+    const { store } = req.query;
+    await Product.destroy({ where: { store_name: store } });
+    res.status(200).send({ message: 'DELETED' });
   } catch (error) {
     console.error(error);
     res.status(500).send({ error });

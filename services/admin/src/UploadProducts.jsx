@@ -83,6 +83,10 @@ const UploadProducts = () => {
     try {
       const idToken = await getIdToken();
       await request
+        .delete('api/v1/products/delete/store')
+        .query({ store })
+        .set('authorization', `Bearer ${idToken}`);
+      await request
         .post('api/v1/products/bulk')
         .send({ products })
         .set('authorization', `Bearer ${idToken}`);

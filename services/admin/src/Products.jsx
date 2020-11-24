@@ -17,7 +17,6 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import DeleteRoundedIcon from '@material-ui/icons/DeleteRounded';
 import { getIdToken } from './utils';
 
-const PAGE_SIZE = 100;
 const STORES = ['jumbo', 'albert_heijn'];
 
 const ConfirmDialog = ({ product, open, handleClose }) => {
@@ -85,45 +84,30 @@ const Products = () => {
   const [products, setProducts] = useState({});
   const [productSelection, setProductSelection] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
-  const [page, setPage] = useState(1);
   const [totalProducts, setTotalProducts] = useState(0);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedStores, setSelectedStores] = useState(STORES);
-  const handlePageChange = (params) => {
-    setPage(params.page);
-  };
   const loadProducts = async () => {
-    const offset = (page - 1) * PAGE_SIZE;
     const idToken = await getIdToken();
     const stores = selectedStores.join(',');
     console.info(idToken);
     const response = await request
       .get('api/v1/products')
-      .query({ stores, limit: PAGE_SIZE, offset })
+      .query({ stores })
       .set('authorization', `Bearer ${idToken}`);
     setTotalProducts(response.body.data.count);
-    setProducts({ ...products, [page]: response.body.data.rows });
+    setProducts(response.body.data.rows);
   };
   useEffect(() => {
-    let active = true;
-
     (async () => {
       setLoading(true);
       await loadProducts();
 
-      if (!active) {
-        return;
-      }
-
       setLoading(false);
     })();
-
-    return () => {
-      active = false;
-    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, selectedStores]);
+  }, [selectedStores]);
   const handleDialogClose = () => setDialogOpen(false);
   const handleDeleteDialogClose = () => setDeleteDialogOpen(false);
   const handleConfirmDeleteSelection = async () => {
@@ -216,10 +200,7 @@ const Products = () => {
           columns={columns}
           pagination
           autoHeight
-          pageSize={PAGE_SIZE}
           rowCount={totalProducts}
-          paginationMode="server"
-          onPageChange={handlePageChange}
           loading={loading}
           onSelectionChange={(newSelection) => {
             setProductSelection(newSelection.rowIds);

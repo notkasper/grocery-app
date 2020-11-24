@@ -8,13 +8,13 @@ const {
   deleteProduct,
   deleteProducts,
   compareStoreProducts,
+  deleteProductsFromStore,
 } = require('../controllers/products');
 const authMiddleware = require('../middleware/auth');
 const adminAuthMiddleware = require('../middleware/adminAuth');
 
 const router = express.Router({ mergeParams: true });
 
-// called by scraper
 router
   .route('/')
   .get(authMiddleware, getProducts)
@@ -28,6 +28,9 @@ router
   .delete(adminAuthMiddleware, deleteProduct);
 
 router.route('/delete/bulk').delete(adminAuthMiddleware, deleteProducts);
+router
+  .route('/delete/store')
+  .delete(adminAuthMiddleware, deleteProductsFromStore);
 router.route('/compare').post(adminAuthMiddleware, compareStoreProducts);
 
 module.exports = router;
