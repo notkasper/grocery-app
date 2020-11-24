@@ -9,6 +9,7 @@ const {
   deleteProducts,
   compareStoreProducts,
   deleteProductsFromStore,
+  updateProduct,
 } = require('../controllers/products');
 const authMiddleware = require('../middleware/auth');
 const adminAuthMiddleware = require('../middleware/adminAuth');
@@ -25,7 +26,8 @@ router.route('/bulk').post(adminAuthMiddleware, createProducts);
 router
   .route('/:id')
   .get(authMiddleware, getProduct)
-  .delete(adminAuthMiddleware, deleteProduct);
+  .delete(adminAuthMiddleware, deleteProduct)
+  .patch(adminAuthMiddleware, updateProduct);
 
 router.route('/delete/bulk').delete(adminAuthMiddleware, deleteProducts);
 router

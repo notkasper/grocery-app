@@ -201,3 +201,25 @@ exports.deleteProductsFromStore = async (req, res) => {
     res.status(500).send({ error });
   }
 };
+
+exports.updateProduct = async (req, res) => {
+  try {
+    const {
+      params: { id },
+      body,
+    } = req;
+    const product = await Product.findByPk(id);
+    if (!product) {
+      res.status(404).send();
+      return;
+    }
+    Object.keys(body).forEach((key) => {
+      product[key] = body[key];
+    });
+    await product.save();
+    res.status(200).send({ data: product });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ error });
+  }
+};
