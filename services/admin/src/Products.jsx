@@ -199,10 +199,9 @@ const Products = () => {
   const handleDeleteDialogClose = () => setDeleteDialogOpen(false);
   const handleConfirmDeleteSelection = async () => {
     const idToken = await getIdToken();
-    const ids = productSelection.join(',');
     await request
       .delete('api/v1/products/delete/bulk')
-      .query({ ids })
+      .send(productSelection)
       .set('authorization', `Bearer ${idToken}`);
     setProducts({});
     await loadProducts();

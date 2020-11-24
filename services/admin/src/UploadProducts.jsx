@@ -91,6 +91,7 @@ const UploadProducts = () => {
         .send({ products })
         .set('authorization', `Bearer ${idToken}`);
       setProducts([]);
+      setComparison(null);
       setMessage(
         `${comparison.new_products_count} Products Added. ${comparison.removed_products_count} Products Removed. ${comparison.duplicate_products_count} Products Updated`
       );
