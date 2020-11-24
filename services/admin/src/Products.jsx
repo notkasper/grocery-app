@@ -162,6 +162,13 @@ const Products = () => {
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedStores]);
+  useEffect(
+    () =>
+      setTimeout(() => {
+        setMessage(null);
+      }, 3000),
+    [message]
+  );
   const handleDialogClose = () => setDialogOpen(false);
   const handleDeleteDialogClose = () => setDeleteDialogOpen(false);
   const handleConfirmDeleteSelection = async () => {
