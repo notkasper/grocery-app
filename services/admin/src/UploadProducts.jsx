@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import request from 'superagent';
@@ -71,6 +71,7 @@ const UploadProducts = () => {
   const [products, setProducts] = useState([]);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const inputRef = useRef(null);
   const handleFileSelection = (event) => {
     const fileReader = new FileReader();
     fileReader.readAsText(event.target.files[0], 'UTF-8');
@@ -194,6 +195,7 @@ const UploadProducts = () => {
             id="contained-button-file"
             type="file"
             onChange={handleFileSelection}
+            ref={inputRef}
           />
           <label htmlFor="contained-button-file">
             <Button
@@ -215,6 +217,8 @@ const UploadProducts = () => {
             onClick={() => {
               setProducts([]);
               setComparison(null);
+              console.log(inputRef);
+              inputRef.current.value = null;
             }}
             style={{ float: 'right', marginTop: '2rem' }}
           >
