@@ -155,7 +155,9 @@ const Products = () => {
     setProducts(response.body.data.rows);
   };
   const downloadAsJSON = () => {
-    let filename = 'export.json';
+    let filename = `${selectedStores.reduce(
+      (acc, curr) => `${acc}+${curr}`
+    )}.json`;
     let contentType = 'application/json;charset=utf-8;';
     if (window.navigator && window.navigator.msSaveOrOpenBlob) {
       var blob = new Blob(
