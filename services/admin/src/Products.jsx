@@ -15,12 +15,56 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DeleteRoundedIcon from '@material-ui/icons/DeleteRounded';
+import TextField from '@material-ui/core/TextField';
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
 import { getIdToken } from './utils';
 
 const STORES = ['jumbo', 'albert_heijn'];
 
-const ConfirmDialog = ({ product, open, handleClose }) => {
-  if (!product) {
+const editableField = [
+  'label',
+  'category',
+  'image',
+  'amount',
+  'discount_type',
+  'availability_from',
+  'availability_till',
+  'store_name',
+  'link',
+  'description',
+  'new_price',
+  'old_price',
+  'discounted',
+];
+
+const DetailsDialog = ({
+  product,
+  open,
+  handleClose,
+  handleCloseWithReload,
+  setMessage,
+}) => {
+  const [productInfo, setProductInfo] = useState(null);
+  useEffect(() => {
+    setProductInfo(product);
+  }, [product]);
+  const confirm = async () => {
+    const newValues = {};
+    Object.keys(productInfo).forEach((key) => {
+      if (product[key] !== productInfo[key]) {
+        newValues[key] = productInfo[key];
+      }
+    });
+    const idToken = await getIdToken();
+    await request
+      .patch(`api/v1/products/${product.id}`)
+      .send(newValues)
+      .set('authorization', `Bearer ${idToken}`);
+    setMessage('Product updated');
+    handleCloseWithReload();
+  };
+  if (!productInfo) {
     return null;
   }
   return (
@@ -32,14 +76,28 @@ const ConfirmDialog = ({ product, open, handleClose }) => {
     >
       <DialogTitle id="alert-dialog-title">{product.label}</DialogTitle>
       <DialogContent>
-        <DialogContentText id="alert-dialog-description">
-          <img alt={product.label} src={product.image} />
+        <img alt={product.label} src={product.image} />
+        <Grid container>
           {Object.keys(product).map((key) => (
-            <Typography>{`${key}: ${product[key]}`}</Typography>
+            <Grid item xs={6}>
+              <TextField
+                label={key}
+                id={key}
+                value={productInfo[key]}
+                style={{ width: '95%', margin: '2.5%' }}
+                disabled={!editableField.includes(key)}
+                onChange={(event) =>
+                  setProductInfo({ ...productInfo, [key]: event.target.value })
+                }
+              />
+            </Grid>
           ))}
-        </DialogContentText>
+        </Grid>
       </DialogContent>
       <DialogActions>
+        <Button onClick={confirm} color="secondary">
+          Update Product
+        </Button>
         <Button onClick={handleClose} color="primary">
           Cancel
         </Button>
@@ -55,12 +113,7 @@ const DeleteSelectionDialog = ({
   selection,
 }) => {
   return (
-    <Dialog
-      open={open}
-      onClose={handleClose}
-      aria-labelledby="alert-dialog-title"
-      aria-describedby="alert-dialog-description"
-    >
+    <Dialog open={open} onClose={handleClose}>
       <DialogTitle id="alert-dialog-title">Confirm deletion</DialogTitle>
       <DialogContent>
         <DialogContentText id="alert-dialog-description">
@@ -82,6 +135,7 @@ const DeleteSelectionDialog = ({
 const Products = () => {
   const [loading, setLoading] = useState(false);
   const [products, setProducts] = useState({});
+  const [message, setMessage] = useState(null);
   const [productSelection, setProductSelection] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [totalProducts, setTotalProducts] = useState(0);
@@ -207,11 +261,15 @@ const Products = () => {
           }}
         />
       </div>
-      <ConfirmDialog
+      <DetailsDialog
         open={dialogOpen}
         handleClose={handleDialogClose}
-        handleDelete={handleDialogClose}
+        handleCloseWithReload={async () => {
+          handleDialogClose();
+          await loadProducts();
+        }}
         product={selectedProduct}
+        setMessage={setMessage}
       />
       <DeleteSelectionDialog
         open={deleteDialogOpen}
@@ -219,6 +277,11 @@ const Products = () => {
         handleConfirm={handleConfirmDeleteSelection}
         selection={productSelection}
       />
+      <Snackbar open={message} autoHideDuration={6000}>
+        <MuiAlert elevation={6} variant="filled" severity="success">
+          {message}
+        </MuiAlert>
+      </Snackbar>
     </div>
   );
 };
