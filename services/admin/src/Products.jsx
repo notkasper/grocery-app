@@ -18,6 +18,7 @@ import DeleteRoundedIcon from '@material-ui/icons/DeleteRounded';
 import TextField from '@material-ui/core/TextField';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
+import GetAppRoundedIcon from '@material-ui/icons/GetAppRounded';
 import { getIdToken } from './utils';
 
 const STORES = ['jumbo', 'albert_heijn'];
@@ -153,6 +154,29 @@ const Products = () => {
     setTotalProducts(response.body.data.count);
     setProducts(response.body.data.rows);
   };
+  const downloadAsJSON = () => {
+    let filename = 'export.json';
+    let contentType = 'application/json;charset=utf-8;';
+    if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+      var blob = new Blob(
+        [decodeURIComponent(encodeURI(JSON.stringify(products)))],
+        { type: contentType }
+      );
+      navigator.msSaveOrOpenBlob(blob, filename);
+    } else {
+      var a = document.createElement('a');
+      a.download = filename;
+      a.href =
+        'data:' +
+        contentType +
+        ',' +
+        encodeURIComponent(JSON.stringify(products));
+      a.target = '_blank';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+  };
   useEffect(() => {
     (async () => {
       setLoading(true);
@@ -252,6 +276,16 @@ const Products = () => {
             <DeleteRoundedIcon />
             <Typography>Delete Selection</Typography>
           </IconButton>
+        </Grid>
+        <Grid item xs={3}>
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<GetAppRoundedIcon />}
+            onClick={downloadAsJSON}
+          >
+            Download as JSON
+          </Button>
         </Grid>
       </Grid>
       <div style={{ width: '100%' }}>
