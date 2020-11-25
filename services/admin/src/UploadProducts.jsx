@@ -217,7 +217,6 @@ const UploadProducts = () => {
             onClick={() => {
               setProducts([]);
               setComparison(null);
-              console.log(inputRef);
               inputRef.current.value = null;
             }}
             style={{ float: 'right', marginTop: '2rem' }}

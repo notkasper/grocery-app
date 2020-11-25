@@ -17,9 +17,12 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
+import Grid from '@material-ui/core/Grid';
+import TextField from '@material-ui/core/TextField';
 import { getIdToken } from './utils';
 
-const UserListItem = ({ user, onClickDelete }) => (
+const UserListItem = ({ user, onClickDelete, onClickInfo }) => (
   <ListItem>
     <ListItemAvatar>
       <Avatar src={user.photoURL || user.providerData[0].photoURL} />
@@ -28,8 +31,21 @@ const UserListItem = ({ user, onClickDelete }) => (
       primary={user.displayName}
       secondary={`Joined at: ${user.metadata.creationTime}`}
     />
-    <ListItemSecondaryAction onClick={onClickDelete}>
-      <IconButton edge="end" aria-label="delete">
+    <ListItemSecondaryAction>
+      <IconButton
+        edge="end"
+        color="primary"
+        aria-label="delete"
+        onClick={() => onClickInfo(user)}
+      >
+        <InfoRoundedIcon />
+      </IconButton>
+      <IconButton
+        edge="end"
+        color="secondary"
+        aria-label="delete"
+        onClick={() => onClickDelete(user)}
+      >
         <DeleteIcon />
       </IconButton>
     </ListItemSecondaryAction>
@@ -37,6 +53,9 @@ const UserListItem = ({ user, onClickDelete }) => (
 );
 
 const ConfirmDialog = ({ user, open, handleClose, handleDelete }) => {
+  if (!user) {
+    return null;
+  }
   return (
     <Dialog
       open={open}
@@ -45,9 +64,7 @@ const ConfirmDialog = ({ user, open, handleClose, handleDelete }) => {
       aria-describedby="alert-dialog-description"
     >
       <DialogTitle id="alert-dialog-title">
-        {`Are you sure you want to delete this user? (${
-          user?.displayName || ''
-        })`}
+        {`Are you sure you want to delete this user? (${user.displayName})`}
       </DialogTitle>
       <DialogContent>
         <DialogContentText id="alert-dialog-description">
@@ -66,11 +83,66 @@ const ConfirmDialog = ({ user, open, handleClose, handleDelete }) => {
   );
 };
 
+const Field = ({ label, value }) => (
+  <Grid item xs={6}>
+    <TextField
+      label={label}
+      id={label}
+      value={value}
+      style={{ width: '95%', margin: '2.5%' }}
+      disabled
+    />
+  </Grid>
+);
+
+const InfoDialog = ({ user, open, handleClose }) => {
+  if (!user) {
+    return null;
+  }
+  return (
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      aria-labelledby="alert-dialog-title"
+      aria-describedby="alert-dialog-description"
+    >
+      <DialogTitle id="alert-dialog-title">{user.displayName}</DialogTitle>
+      <DialogContent>
+        <Grid container>
+          <Field label="disabled" value={user.disabled} />
+          <Field label="displayName" value={user.displayName} />
+          <Field label="email" value={user.email} />
+          <Field label="emailVerified" value={user.emailVerified} />
+          <Field
+            label="tokensValidAfterTime"
+            value={user.tokensValidAfterTime}
+          />
+          <Field label="uid" value={user.uid} />
+          {Object.keys(user.metadata).map((key) => (
+            <Field label={key} value={user.metadata[key]} />
+          ))}
+          {user.providerData.map((data) =>
+            Object.keys(data).map((key) => (
+              <Field label={key} value={data[key]} />
+            ))
+          )}
+        </Grid>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleClose} color="primary">
+          Cancel
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+};
+
 const Users = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState(null);
-  const [dialogOpen, setDialogOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [infoDialogOpen, setInfoDialogOpen] = useState(false);
   const loadUsers = async () => {
     try {
       setLoading(true);
@@ -86,14 +158,15 @@ const Users = () => {
       setLoading(false);
     }
   };
-  const handleDialogClose = () => setDialogOpen(false);
+  const handleDeleteDialogClose = () => setDeleteDialogOpen(false);
+  const handleInfoDialogClose = () => setInfoDialogOpen(false);
   const handleDeleteUser = async () => {
     try {
       const idToken = await getIdToken();
       await request
         .delete(`api/v1/users/${user.uid}`)
         .set('authorization', `Bearer ${idToken}`);
-      handleDialogClose();
+      handleDeleteDialogClose();
       setUser(null);
       loadUsers();
     } catch (error) {
@@ -104,9 +177,13 @@ const Users = () => {
   if (loading) {
     return <CircularProgress />;
   }
-  const handleDialogOpen = (selectedUser) => {
+  const handleDeleteDialog = (selectedUser) => {
     setUser(selectedUser);
-    setDialogOpen(true);
+    setDeleteDialogOpen(true);
+  };
+  const handleInfoDialog = (selectedUser) => {
+    setUser(selectedUser);
+    setInfoDialogOpen(true);
   };
   return (
     <Box>
@@ -115,14 +192,21 @@ const Users = () => {
         {users.map((user) => (
           <UserListItem
             user={user}
-            onClickDelete={() => handleDialogOpen(user)}
+            onClickDelete={handleDeleteDialog}
+            onClickInfo={handleInfoDialog}
           />
         ))}
       </List>
       <ConfirmDialog
-        open={dialogOpen}
-        handleClose={handleDialogClose}
+        open={deleteDialogOpen}
+        handleClose={handleDeleteDialogClose}
         handleDelete={handleDeleteUser}
+        user={user}
+      />
+      <InfoDialog
+        open={infoDialogOpen}
+        handleClose={handleInfoDialogClose}
+        // handleDelete={handleDeleteUser}
         user={user}
       />
     </Box>
