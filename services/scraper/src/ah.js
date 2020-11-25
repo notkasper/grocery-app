@@ -52,7 +52,7 @@ const parseAvailabilityTill = (unparsed) => {
 
 let browser = null;
 
-const start = async (useProxy = false, useHeadless = true) => {
+const start = async (useProxy = false, useHeadless = false) => {
   try {
     console.info('Starting scraper...');
     const args = [
@@ -73,17 +73,24 @@ const start = async (useProxy = false, useHeadless = true) => {
     console.info('Directed to homepage...');
     await wait(2000);
 
+    // Sometimes the cookie banner shows up
+    const cookieButton = await page.$('button#accept-cookies');
+    if (cookieButton) {
+      cookieButton.click();
+      await wait(2000);
+    }
+
     const categoryOverviews = await page.$$(
-      'div.product-category-overview_category__E6EMG'
+      'div.product-category-overview_category__1H99m'
     );
     console.info(`Found ${categoryOverviews.length} categories...`);
     for (const categoryOverview of categoryOverviews) {
       const categoryName = await categoryOverview
-        .$('a.taxonomy-card_titleLink__1Dgai')
+        .$('a.taxonomy-card_titleLink__7TTrF')
         .then((e) => e.getProperty('textContent'))
         .then((e) => e.jsonValue());
       const categoryHref = await categoryOverview
-        .$('a.taxonomy-card_titleLink__1Dgai')
+        .$('a.taxonomy-card_titleLink__7TTrF')
         .then((e) => e.getProperty('href'))
         .then((e) => e.jsonValue());
       const categoryPage = await createPage(browser, useProxy);
@@ -176,7 +183,7 @@ const start = async (useProxy = false, useHeadless = true) => {
       }
     }
     console.info('Albert heijn scraper done...');
-    await browser.close();
+    // await browser.close();
   } catch (error) {
     console.error(`Scraper crashed: ${error}`);
   }
@@ -191,3 +198,6 @@ const stop = async () => {
 };
 
 module.exports = { start, stop };
+
+// TODO: REMOVE THIS
+start();
