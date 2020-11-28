@@ -175,7 +175,7 @@ const start = async (useProxy = false, useHeadless = false) => {
   } catch (error) {
     console.error(`Scraper crashed: ${error}`);
   } finally {
-    await browser.close();
+    browser.close();
   }
 };
 

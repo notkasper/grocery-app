@@ -78,7 +78,7 @@ const getElementPropertyValue = async (page, identifier, property) => {
   return propertyValue;
 };
 
-const writeToFile = async (filename = 'temp.json', products) => {
+const writeToFile = async (filename, products) => {
   fs.writeFileSync(filename, products);
 };
 
