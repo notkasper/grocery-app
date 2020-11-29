@@ -75,7 +75,8 @@ const categories = [
 ];
 
 const scrapeCategory = async (page, categoryId) => {
-  const spinner = ora('Starting Jumbo scraper...').start();
+  const spinner = ora('Starting Jumbo scraper...');
+  spinner.start();
   const productBuffer = [];
   let firstPage = true;
   let done = false;
