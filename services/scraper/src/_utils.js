@@ -1,3 +1,5 @@
+/* eslint-disable no-await-in-loop */
+/* eslint-disable no-restricted-syntax */
 /* eslint-disable object-curly-newline */
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 const pup = require('puppeteer-extra');
@@ -11,6 +13,8 @@ const configurePuppeteer = (stealth = true) => {
     pup.use(StealthPlugin());
   }
 };
+
+const flatten = (array) => [].concat(...array);
 
 const getBrowser = async (useProxy, useHeadless) => {
   try {
@@ -78,6 +82,27 @@ const getElementPropertyValue = async (page, identifier, property) => {
   return propertyValue;
 };
 
+const getElementsPropertyValues = async (page, identifier, property) => {
+  const propertyValues = [];
+  try {
+    const elements = await page.$$(identifier);
+
+    for (const element of elements) {
+      const rawValue = await element.getProperty(property);
+      const propertyValue = await rawValue.jsonValue();
+      propertyValues.push(propertyValue);
+    }
+  } catch (error) {
+    console.error(
+      `Error while getting property values using params: ${JSON.stringify({
+        identifier,
+        property,
+      })}`
+    );
+  }
+  return propertyValues;
+};
+
 const writeToFile = async (filename, products) => {
   fs.writeFileSync(filename, products);
 };
@@ -86,7 +111,9 @@ module.exports = {
   configurePuppeteer,
   getBrowser,
   getElementPropertyValue,
+  getElementsPropertyValues,
   sleep,
   createPage,
   writeToFile,
+  flatten,
 };
