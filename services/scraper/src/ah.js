@@ -153,6 +153,22 @@ const getProductsOnPage = async (page, categoryName) => {
         oldPrice = await scrapePriceTag(oldPriceContainer);
       }
 
+      const discountTypeContainer = await productElement.$(
+        'div.shield_root__388LZ'
+      );
+      let discountType;
+      if (discountTypeContainer) {
+        discountType = await utils.getElementPropertyValue(
+          discountTypeContainer,
+          'span',
+          'textContent'
+        );
+      }
+
+      if (discounted) {
+        console.log({ newPrice, oldPrice, discountType });
+      }
+
       // make product object
       const productInfo = {
         id: uuid.v4(),
@@ -167,6 +183,7 @@ const getProductsOnPage = async (page, categoryName) => {
         new_price: newPrice,
         old_price: oldPrice,
         discounted,
+        discount_type: discountType,
       };
 
       productsInfo.push(productInfo);
