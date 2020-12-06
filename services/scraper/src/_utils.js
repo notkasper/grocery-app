@@ -64,13 +64,12 @@ const createPage = async (browser, useProxy) => {
 };
 
 const getElementPropertyValue = async (page, identifier, property) => {
-  let propertyValue;
+  let propertyValue = null;
   try {
     const element = await page.$(identifier);
     if (!element) return null;
     const rawValue = await element.getProperty(property);
     propertyValue = await rawValue.jsonValue();
-    return propertyValue;
   } catch (error) {
     console.error(
       `Error while getting property value using params: ${JSON.stringify({
@@ -78,6 +77,7 @@ const getElementPropertyValue = async (page, identifier, property) => {
         property,
       })}`
     );
+    return null;
   }
   return propertyValue;
 };

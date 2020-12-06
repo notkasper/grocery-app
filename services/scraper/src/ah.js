@@ -6,6 +6,7 @@ const categoryMapper = require('./categoryMapper');
 const utils = require('./_utils');
 
 const BASE_URL = 'https://www.ah.nl/producten';
+const MAX_PAGES = 60;
 
 // const parseAvailabilityTill = (unparsed) => {
 //   if (!unparsed) {
@@ -48,9 +49,46 @@ const BASE_URL = 'https://www.ah.nl/producten';
 //   return parsed;
 // };
 
-const scrapeCategoryPage = async (page, categoryName) => {
+const getTotalPages = async (page) => {
+  const loadMoreText = await utils.getElementPropertyValue(
+    page,
+    'div.load-more_root__9MiHC span',
+    'textContent'
+  );
+  if (!loadMoreText) {
+    console.error('Could not find load more text on this page');
+    return null;
+  }
+
+  const loadMoreRegex = /^(?<perPage>\d+)\svan\sde\s((?<total>\d+))\sresultaten\sweergegeven$/;
+  const match = loadMoreText.match(loadMoreRegex);
+  if (!match) {
+    console.error('Load more regex did not return expected results');
+    return null;
+  }
+  const {
+    groups: { perPage, total },
+  } = match;
+  if (!perPage || !total) {
+    console.error('Load more regex did not return expected results');
+    return null;
+  }
+  console.log({ perPage, total });
+  let totalPages = Math.floor(total / perPage);
+  if (totalPages > MAX_PAGES) {
+    // more than MAX_PAGES appears to crash the webpage
+    totalPages = MAX_PAGES;
+  }
+  return totalPages;
+};
+
+const getProductsOnPage = async (page, categoryName) => {
   const productsInfo = [];
   try {
+    const totalPages = await getTotalPages(page);
+    if (!totalPages){
+       return null;
+    }
     console.info('Scraping category page...');
     const productElements = await page.$$('article');
     console.info(`Found ${productElements.length} products...`);
@@ -84,8 +122,8 @@ const scrapeCategoryPage = async (page, categoryName) => {
       const productInfo = {
         id: uuid.v4(),
         category: categoryMapper.albertHeijn[categoryName] || null,
-        label: label?.substring(0, 1000),
-        image: productImageSrc?.substring(0, 1000),
+        label: label?.substring(0, 1000) || null,
+        image: productImageSrc?.substring(0, 1000) || null,
         amount,
         discount_type: discountType,
         availability_from: null,
@@ -105,6 +143,15 @@ const scrapeCategoryPage = async (page, categoryName) => {
   return productsInfo;
 };
 
+const clearCookiePopup = async (page) => {
+  const cookieButton = await page.$('button#decline-cookies');
+
+  if (cookieButton) {
+    cookieButton.click();
+    await utils.sleep(2000);
+  }
+};
+
 const start = async (useProxy = false, useHeadless = false) => {
   let browser;
   try {
@@ -122,12 +169,7 @@ const start = async (useProxy = false, useHeadless = false) => {
     console.info('At homepage...');
 
     // Sometimes the cookie banner shows up, needs to be accepted in order to further navigate
-    const cookieButton = await page.$('button#accept-cookies');
-
-    if (cookieButton) {
-      cookieButton.click();
-      await utils.sleep(2000);
-    }
+    await clearCookiePopup(page);
 
     // Get all categories
     const categoryOverviews = await page.$$(
@@ -160,12 +202,12 @@ const start = async (useProxy = false, useHeadless = false) => {
       //   visible: true,
       // });
 
-      const categoryProducts = await scrapeCategoryPage(
+      const categoryProducts = await getProductsOnPage(
         categoryPage,
         categoryName
       );
       products[categoryName] = categoryProducts;
-      await utils.sleep(120000)
+      await utils.sleep(10000);
       console.info(
         `Found: ${categoryProducts.length} products in category: ${categoryName}`
       );
