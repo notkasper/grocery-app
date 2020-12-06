@@ -89,6 +89,23 @@ const categories = [
   },
 ];
 
+const scrapePriceTag = async (container) => {
+  let price = null;
+  try {
+    const contens = await utils.getElementsPropertyValues(
+      container,
+      'span',
+      'textContent'
+    );
+    const priceString = contens.join('.');
+    price = Number.parseFloat(priceString);
+  } catch (error) {
+    console.error(`Could not scrape price tag:\n${error}`);
+    return null;
+  }
+  return price;
+};
+
 const scrapeCategory = async (page, categoryId) => {
   const spinner = ora('Starting Jumbo scraper...');
   spinner.start();
@@ -127,30 +144,31 @@ const scrapeCategory = async (page, categoryId) => {
             'href'
           );
 
-          const newPrice = await product
-            .$$('span.jum-product-price__current-price span')
-            .then(async ([e1, e2]) => {
-              const euros = await e1
-                .getProperty('textContent')
-                .then((e) => e.jsonValue());
-              const cents = await e2
-                .getProperty('textContent')
-                .then((e) => e.jsonValue());
-              return Number.parseFloat(`${euros}.${cents}`);
-            });
+          const newPriceContainer = await product.$(
+            'span.jum-product-price__current-price'
+          );
+          const newPrice = await scrapePriceTag(newPriceContainer);
+
+          const [, oldPrice] = await utils.getElementsPropertyValues(
+            product,
+            'span.jum-product-price__old-price span',
+            'textContent'
+          );
+
           const productData = {
             id: uuid.v4(),
             category: categoryId,
-            label: label.substring(0, 1000),
-            image: productImageSrc.substring(0, 1000),
+            label: label?.substring(0, 1000) || null,
+            image: productImageSrc.substring(0, 1000) || null,
             amount,
-            discount_type: discountType,
+            discount_type: discountType || null,
             availability_from: null,
             availability_till: null,
             store_name: 'jumbo',
-            link: link.substring(0, 10000),
+            link: link?.substring(0, 10000) || null,
             new_price: newPrice,
-            discounted: false,
+            old_price: oldPrice || null,
+            discounted: !!discountType,
           };
           productBuffer.push(productData);
         }
