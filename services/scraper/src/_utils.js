@@ -107,10 +107,6 @@ const writeToFile = async (filename, products) => {
   fs.writeFileSync(filename, products);
 };
 
-const waitForIdle = async (page) => {
-  await Promise.all([page.waitForNavigation({ waitUntil: 'networkidle0' })]);
-};
-
 module.exports = {
   configurePuppeteer,
   getBrowser,
@@ -120,5 +116,4 @@ module.exports = {
   createPage,
   writeToFile,
   flatten,
-  waitForIdle,
 };

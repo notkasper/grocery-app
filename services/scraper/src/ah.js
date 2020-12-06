@@ -7,6 +7,7 @@ const utils = require('./_utils');
 
 const BASE_URL = 'https://www.ah.nl/producten';
 const MAX_PAGES = 60;
+const STORE_NAME = 'albert_heijn';
 
 // const parseAvailabilityTill = (unparsed) => {
 //   if (!unparsed) {
@@ -49,6 +50,23 @@ const MAX_PAGES = 60;
 //   return parsed;
 // };
 
+const scrapePriceTag = async (container) => {
+  let price = null;
+  try {
+    const contens = await utils.getElementsPropertyValues(
+      container,
+      'span',
+      'textContent'
+    );
+    const priceString = contens.join('');
+    price = Number.parseFloat(priceString);
+  } catch (error) {
+    console.error(`Could not scrape price tag:\n${error}`);
+    return null;
+  }
+  return price;
+};
+
 const getTotalPages = async (page) => {
   const loadMoreText = await utils.getElementPropertyValue(
     page,
@@ -73,7 +91,7 @@ const getTotalPages = async (page) => {
     console.error('Load more regex did not return expected results');
     return null;
   }
-  let totalPages = Math.floor(total / perPage);
+  let totalPages = Math.ceil(total / perPage);
   if (totalPages > MAX_PAGES) {
     // more than MAX_PAGES appears to crash the webpage
     totalPages = MAX_PAGES;
@@ -92,7 +110,7 @@ const getProductsOnPage = async (page, categoryName) => {
     }
     const lastPageUrl = `${page.url()}?page=${totalPages}`;
     await page.goto(lastPageUrl);
-    await utils.waitForIdle();
+    await utils.sleep(5000);
 
     // scrape all products
     console.info('Scraping category page...');
@@ -109,37 +127,38 @@ const getProductsOnPage = async (page, categoryName) => {
         'img',
         'src'
       );
-      const amount = await utils.getElementPropertyValue(
-        productElement,
-        'span.price_unitSize__8gRVX',
-        'textContent'
-      );
-      const discountType = await utils.getElementPropertyValue(
-        productElement,
-        'span.shield_text__vz1k8',
-        'textContent'
-      );
       const link = await utils.getElementPropertyValue(
         productElement,
         'a.link_root__65rmW',
         'href'
       );
-      const price = 1;
+
+      // price related stuff
+      const amount = await utils.getElementPropertyValue(
+        productElement,
+        'span.price_unitSize__8gRVX',
+        'textContent'
+      );
+      const newPriceContainer = await productElement.$(
+        'div.price-amount_root__37xv2'
+      );
+      const newPrice = await scrapePriceTag(newPriceContainer);
+
+      // make product object
       const productInfo = {
         id: uuid.v4(),
         category: categoryMapper.albertHeijn[categoryName] || null,
         label: label?.substring(0, 1000) || null,
         image: productImageSrc?.substring(0, 1000) || null,
         amount,
-        discount_type: discountType,
         availability_from: null,
         availability_till: null,
-        store_name: 'albert_heijn',
+        store_name: STORE_NAME,
         link: link?.substring(0, 10000),
-        new_price: price,
-        // old_price: oldPrice,
-        discounted: true,
+        new_price: newPrice,
+        discounted: false,
       };
+
       productsInfo.push(productInfo);
     }
   } catch (error) {
@@ -200,20 +219,21 @@ const start = async (useProxy = false, useHeadless = false) => {
       );
       const categoryPage = await utils.createPage(browser, useProxy);
       await categoryPage.goto(categoryHref);
-      await utils.waitForIdle();
 
       const categoryProducts = await getProductsOnPage(
         categoryPage,
         categoryName
       );
-      products[categoryName] = categoryProducts;
-      await utils.sleep(1000);
+      utils.writeToFile(
+        `ahp_${categoryName}.json`,
+        JSON.stringify(categoryProducts)
+      );
       console.info(
         `Found: ${categoryProducts.length} products in category: ${categoryName}`
       );
+      await utils.sleep(1000);
       await categoryPage.close();
     }
-    utils.writeToFile('ah_products.json', JSON.stringify(products));
     console.info('Albert heijn scraper done...');
   } catch (error) {
     console.error(`Scraper crashed: ${error}`);
