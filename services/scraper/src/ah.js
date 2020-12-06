@@ -142,7 +142,16 @@ const getProductsOnPage = async (page, categoryName) => {
       const newPriceContainer = await productElement.$(
         'div.price-amount_root__37xv2'
       );
+      const oldPriceContainer = await productElement.$(
+        'div.price-amount_was__1PrUY '
+      );
       const newPrice = await scrapePriceTag(newPriceContainer);
+      let oldPrice;
+      let discounted = false;
+      if (oldPriceContainer) {
+        discounted = true;
+        oldPrice = await scrapePriceTag(oldPriceContainer);
+      }
 
       // make product object
       const productInfo = {
@@ -156,7 +165,8 @@ const getProductsOnPage = async (page, categoryName) => {
         store_name: STORE_NAME,
         link: link?.substring(0, 10000),
         new_price: newPrice,
-        discounted: false,
+        old_price: oldPrice,
+        discounted,
       };
 
       productsInfo.push(productInfo);
@@ -202,7 +212,6 @@ const start = async (useProxy = false, useHeadless = false) => {
     );
     console.info(`Found ${categoryOverviews.length} categories...`);
 
-    const products = {};
     for (const categoryOverview of categoryOverviews) {
       const categoryName = await utils.getElementPropertyValue(
         categoryOverview,
