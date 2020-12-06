@@ -6,6 +6,7 @@ const utils = require('./_utils');
 const BASE_URL = 'https://www.ah.nl/bonus';
 
 const scrapePriceTag = async (container) => {
+  let price = null;
   try {
     const contens = await utils.getElementsPropertyValues(
       container,
@@ -13,11 +14,12 @@ const scrapePriceTag = async (container) => {
       'textContent'
     );
     const priceString = contens.join('');
-    const price = Number.parseFloat(priceString);
-    return price;
+    price = Number.parseFloat(priceString);
   } catch (error) {
     console.error(`Could not scrape price tag:\n${error}`);
+    return null;
   }
+  return price;
 };
 
 // TODO: press load more button when available

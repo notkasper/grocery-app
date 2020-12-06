@@ -73,7 +73,6 @@ const getTotalPages = async (page) => {
     console.error('Load more regex did not return expected results');
     return null;
   }
-  console.log({ perPage, total });
   let totalPages = Math.floor(total / perPage);
   if (totalPages > MAX_PAGES) {
     // more than MAX_PAGES appears to crash the webpage
@@ -85,10 +84,17 @@ const getTotalPages = async (page) => {
 const getProductsOnPage = async (page, categoryName) => {
   const productsInfo = [];
   try {
+    // navigate to page that contains all products
+    console.info('Navigating to final page...');
     const totalPages = await getTotalPages(page);
-    if (!totalPages){
-       return null;
+    if (!totalPages) {
+      return null;
     }
+    const lastPageUrl = `${page.url()}?page=${totalPages}`;
+    await page.goto(lastPageUrl);
+    await utils.waitForIdle();
+
+    // scrape all products
     console.info('Scraping category page...');
     const productElements = await page.$$('article');
     console.info(`Found ${productElements.length} products...`);
@@ -194,20 +200,14 @@ const start = async (useProxy = false, useHeadless = false) => {
       );
       const categoryPage = await utils.createPage(browser, useProxy);
       await categoryPage.goto(categoryHref);
-      // await page.waitForNavigation({
-      //   waitUntil: 'networkidle0',
-      // });
-      // TODO: maybe use this
-      // await page.waitForSelector('#example', {
-      //   visible: true,
-      // });
+      await utils.waitForIdle();
 
       const categoryProducts = await getProductsOnPage(
         categoryPage,
         categoryName
       );
       products[categoryName] = categoryProducts;
-      await utils.sleep(10000);
+      await utils.sleep(1000);
       console.info(
         `Found: ${categoryProducts.length} products in category: ${categoryName}`
       );
