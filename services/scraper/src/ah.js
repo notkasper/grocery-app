@@ -152,9 +152,9 @@ const start = async (useProxy = false, useHeadless = false) => {
       );
       const categoryPage = await utils.createPage(browser, useProxy);
       await categoryPage.goto(categoryHref);
-      await page.waitForNavigation({
-        waitUntil: 'networkidle0',
-      });
+      // await page.waitForNavigation({
+      //   waitUntil: 'networkidle0',
+      // });
       // TODO: maybe use this
       // await page.waitForSelector('#example', {
       //   visible: true,
@@ -165,10 +165,11 @@ const start = async (useProxy = false, useHeadless = false) => {
         categoryName
       );
       products[categoryName] = categoryProducts;
-      await categoryPage.close();
+      await utils.sleep(120000)
       console.info(
         `Found: ${categoryProducts.length} products in category: ${categoryName}`
       );
+      await categoryPage.close();
     }
     utils.writeToFile('ah_products.json', JSON.stringify(products));
     console.info('Albert heijn scraper done...');
