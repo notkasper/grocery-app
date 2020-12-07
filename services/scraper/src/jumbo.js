@@ -149,10 +149,12 @@ const scrapeCategory = async (page, categoryId) => {
           );
           const newPrice = await scrapePriceTag(newPriceContainer);
 
-          const [, oldPrice] = await utils.getElementsPropertyValues(
-            product,
-            'span.jum-product-price__old-price span',
-            'textContent'
+          const [, oldPrice] = await Number.parseFloat(
+            utils.getElementsPropertyValues(
+              product,
+              'span.jum-product-price__old-price span',
+              'textContent'
+            )
           );
 
           const productData = {
