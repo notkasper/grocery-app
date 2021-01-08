@@ -1,28 +1,35 @@
 const { Product } = require('../models');
 
-const PAGE_SIZE = 20;
-
 exports.getProducts = async (req, res) => {
   try {
-    const { store, category, page: pageString } = req.query;
+    const {
+      stores: storesString,
+      category,
+      limit: limitString,
+      offset: offsetString,
+    } = req.query;
     const where = {};
-    let offset = 0;
-    if (store) {
-      where.store_name = store;
+    if (storesString) {
+      // comma seperated stores
+      const stores = storesString.split(',');
+      where.store_name = stores;
     }
     if (category) {
       where.category = category;
     }
-    if (pageString) {
-      const page = Number.parseInt(pageString, 10);
-      offset = page * PAGE_SIZE;
-    }
-    const productsAndCount = await Product.findAndCountAll({
+    const conditions = {
       where,
-      limit: PAGE_SIZE,
-      offset,
       raw: true,
-    });
+    };
+    if (offsetString) {
+      const offset = Number.parseInt(offsetString, 10);
+      conditions.offset = offset;
+    }
+    if (limitString) {
+      const limit = Number.parseInt(limitString, 10);
+      conditions.limit = limit;
+    }
+    const productsAndCount = await Product.findAndCountAll(conditions);
     res.status(200).send({ data: productsAndCount });
   } catch (error) {
     console.error(error);
@@ -41,11 +48,24 @@ exports.getProduct = async (req, res) => {
   }
 };
 
+/* >>>>>> ADMIN <<<<<< */
+
 exports.createProduct = async (req, res) => {
   try {
     const { product } = req.body;
     const newProduct = await Product.create(product);
     res.status(200).send({ data: newProduct });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ error });
+  }
+};
+
+exports.deleteProduct = async (req, res) => {
+  try {
+    const { id } = req.params;
+    await Product.destroy({ where: { id } });
+    res.status(204).send({ message: 'DELETED' });
   } catch (error) {
     console.error(error);
     res.status(500).send({ error });
@@ -63,7 +83,7 @@ exports.createProducts = async (req, res) => {
   }
 };
 
-exports.deleteProducts = async (req, res) => {
+exports.deleteAllProducts = async (req, res) => {
   try {
     const where = {};
     if (req.query.store) {
@@ -81,6 +101,123 @@ exports.deleteProduct = async (req, res) => {
   try {
     await Product.destroy({ where: { id: req.params.id } });
     res.status(200).send({ data: {} });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ error });
+  }
+};
+
+exports.compareStoreProducts = async (req, res) => {
+  try {
+    const { products: compareProducts, store } = req.body;
+
+    // must contain at least one product and a store name
+    if (!compareProducts.length || !store) {
+      res
+        .status(400)
+        .send({ error: 'No products or store found in request body' });
+      return;
+    }
+
+    // Check if all new products belong to the same store
+    let sameStore = true;
+    compareProducts.forEach((product) => {
+      if (product.store_name !== store) {
+        sameStore = false;
+      }
+    });
+    if (!sameStore) {
+      res
+        .status(400)
+        .send({ error: 'All products must belong to the same store' });
+      return;
+    }
+    const products = await Product.findAll({ where: { store_name: store } });
+
+    // Make a dictionary with product labels (those are unique) as indices
+    const productsLabelMap = {};
+    products.forEach((product) => {
+      productsLabelMap[product.label] = product;
+    });
+
+    const compareProductsLabelMap = {};
+    compareProducts.forEach((product) => {
+      compareProductsLabelMap[product.label] = product;
+    });
+
+    // compare dictionaries
+    const duplicateProducts = [];
+    const newProducts = [];
+    const removedProducts = [];
+
+    Object.keys(compareProductsLabelMap).forEach((compLabel) => {
+      if (!productsLabelMap[compLabel]) {
+        newProducts.push(compareProductsLabelMap[compLabel]);
+      } else {
+        duplicateProducts.push(compareProductsLabelMap[compLabel]);
+      }
+    });
+
+    Object.keys(productsLabelMap).forEach((compLabel) => {
+      if (!compareProductsLabelMap[compLabel]) {
+        removedProducts.push(productsLabelMap[compLabel]);
+      }
+    });
+
+    res.status(200).send({
+      data: {
+        duplicate_products_count: duplicateProducts.length,
+        new_products_count: newProducts.length,
+        removed_products_count: removedProducts.length,
+        duplicate_products: duplicateProducts,
+        new_products: newProducts,
+        removed_products: removedProducts,
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ error });
+  }
+};
+
+exports.deleteProducts = async (req, res) => {
+  try {
+    const ids = req.body;
+    await Product.destroy({ where: { id: ids } });
+    res.status(200).send({ message: 'DELETED' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ error });
+  }
+};
+
+exports.deleteProductsFromStore = async (req, res) => {
+  try {
+    const { store } = req.query;
+    await Product.destroy({ where: { store_name: store } });
+    res.status(200).send({ message: 'DELETED' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ error });
+  }
+};
+
+exports.updateProduct = async (req, res) => {
+  try {
+    const {
+      params: { id },
+      body,
+    } = req;
+    const product = await Product.findByPk(id);
+    if (!product) {
+      res.status(404).send();
+      return;
+    }
+    Object.keys(body).forEach((key) => {
+      product[key] = body[key];
+    });
+    await product.save();
+    res.status(200).send({ data: product });
   } catch (error) {
     console.error(error);
     res.status(500).send({ error });

@@ -1,193 +1,271 @@
+/* eslint-disable object-curly-newline */
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-await-in-loop */
-const puppeteer = require('puppeteer-extra');
 const uuid = require('uuid');
-const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 const categoryMapper = require('./categoryMapper');
-const { createPage, createProduct, wait } = require('./_utils');
+const utils = require('./_utils');
 
-// add stealth plugin and use defaults (all evasion techniques)
-puppeteer.use(StealthPlugin());
+const BASE_URL = 'https://www.ah.nl/producten';
+const MAX_PAGES = 60;
+const STORE_NAME = 'albert_heijn';
 
-const parseAvailabilityTill = (unparsed) => {
-  if (!unparsed) {
+// const parseAvailabilityTill = (unparsed) => {
+//   if (!unparsed) {
+//     return null;
+//   }
+//   const daynameMap = {
+//     maandag: 'mon',
+//     dinsdag: 'tue',
+//     woensdag: 'wed',
+//     donderdag: 'thu',
+//     vrijdag: 'fri',
+//     zaterdag: 'sat',
+//     zondag: 'sun',
+//   };
+//   const getNextDayOfTheWeek = (
+//     dayName,
+//     excludeToday = true,
+//     refDate = new Date()
+//   ) => {
+//     if (!dayName) {
+//       return null;
+//     }
+//     const dayOfWeek = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'].indexOf(
+//       dayName.slice(0, 3).toLowerCase()
+//     );
+//     if (dayOfWeek < 0) return null;
+//     refDate.setHours(0, 0, 0, 0);
+//     // eslint-disable-next-line max-len
+//     refDate.setDate(
+//       refDate.getDate() +
+//         !!excludeToday +
+//         (((dayOfWeek + 7 - refDate.getDay() - !!excludeToday) % 7) + 1)
+//     );
+//     return refDate;
+//   };
+
+//   const trimmed = unparsed.replace('t/m', '').trim().toLowerCase();
+//   const parsed = getNextDayOfTheWeek(daynameMap[trimmed], false);
+
+//   return parsed;
+// };
+
+const scrapePriceTag = async (container) => {
+  let price = null;
+  try {
+    const contens = await utils.getElementsPropertyValues(
+      container,
+      'span',
+      'textContent'
+    );
+    const priceString = contens.join('');
+    price = Number.parseFloat(priceString);
+  } catch (error) {
+    console.error(`Could not scrape price tag:\n${error}`);
     return null;
   }
-  const daynameMap = {
-    maandag: 'mon',
-    dinsdag: 'tue',
-    woensdag: 'wed',
-    donderdag: 'thu',
-    vrijdag: 'fri',
-    zaterdag: 'sat',
-    zondag: 'sun',
-  };
-  const getNextDayOfTheWeek = (
-    dayName,
-    excludeToday = true,
-    refDate = new Date()
-  ) => {
-    if (!dayName) {
+  return price;
+};
+
+const getTotalPages = async (page) => {
+  const loadMoreText = await utils.getElementPropertyValue(
+    page,
+    'div.load-more_root__9MiHC span',
+    'textContent'
+  );
+  if (!loadMoreText) {
+    console.error('Could not find load more text on this page');
+    return null;
+  }
+
+  const loadMoreRegex = /^(?<perPage>\d+)\svan\sde\s((?<total>\d+))\sresultaten\sweergegeven$/;
+  const match = loadMoreText.match(loadMoreRegex);
+  if (!match) {
+    console.error('Load more regex did not return expected results');
+    return null;
+  }
+  const {
+    groups: { perPage, total },
+  } = match;
+  if (!perPage || !total) {
+    console.error('Load more regex did not return expected results');
+    return null;
+  }
+  let totalPages = Math.ceil(total / perPage);
+  if (totalPages > MAX_PAGES) {
+    // more than MAX_PAGES appears to crash the webpage
+    totalPages = MAX_PAGES;
+  }
+  return totalPages;
+};
+
+const getProductsOnPage = async (page, categoryName) => {
+  const productsInfo = [];
+  try {
+    // navigate to page that contains all products
+    console.info('Navigating to final page...');
+    const totalPages = await getTotalPages(page);
+    if (!totalPages) {
       return null;
     }
-    const dayOfWeek = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'].indexOf(
-      dayName.slice(0, 3).toLowerCase()
-    );
-    if (dayOfWeek < 0) return null;
-    refDate.setHours(0, 0, 0, 0);
-    // eslint-disable-next-line max-len
-    refDate.setDate(
-      refDate.getDate() +
-        !!excludeToday +
-        (((dayOfWeek + 7 - refDate.getDay() - !!excludeToday) % 7) + 1)
-    );
-    return refDate;
-  };
+    const lastPageUrl = `${page.url()}?page=${totalPages}`;
+    await page.goto(lastPageUrl);
+    await utils.sleep(5000);
 
-  const trimmed = unparsed.replace('t/m', '').trim().toLowerCase();
-  const parsed = getNextDayOfTheWeek(daynameMap[trimmed], false);
+    // scrape all products
+    console.info('Scraping category page...');
+    const productElements = await page.$$('article');
+    console.info(`Found ${productElements.length} products...`);
+    for (const productElement of productElements) {
+      const label = await utils.getElementPropertyValue(
+        productElement,
+        'a strong span',
+        'textContent'
+      );
+      const productImageSrc = await utils.getElementPropertyValue(
+        productElement,
+        'img',
+        'src'
+      );
+      const link = await utils.getElementPropertyValue(
+        productElement,
+        'a.link_root__65rmW',
+        'href'
+      );
 
-  return parsed;
-};
+      // price related stuff
+      const amount = await utils.getElementPropertyValue(
+        productElement,
+        'span.price_unitSize__8gRVX',
+        'textContent'
+      );
+      const newPriceContainer = await productElement.$(
+        'div.price-amount_root__37xv2'
+      );
+      const oldPriceContainer = await productElement.$(
+        'div.price-amount_was__1PrUY '
+      );
+      const newPrice = await scrapePriceTag(newPriceContainer);
+      let oldPrice;
+      let discounted = false;
+      if (oldPriceContainer) {
+        discounted = true;
+        oldPrice = await scrapePriceTag(oldPriceContainer);
+      }
 
-let browser = null;
-
-const start = async (useProxy = false, useHeadless = true) => {
-  try {
-    console.info('Starting scraper...');
-    const args = [
-      '--start-maximized',
-      '--no-sandbox',
-      '--disable-setuid-sandbox',
-    ];
-    if (useProxy) {
-      args.push(`--proxy-server=${process.env.LUMINATI_PROXY_IP}`);
-    }
-    browser = await puppeteer.launch({
-      headless: useHeadless,
-      args,
-    });
-    console.info('Browser started...');
-    const page = await createPage(browser, useProxy);
-    await page.goto('https://www.ah.nl/producten');
-    console.info('Directed to homepage...');
-    await wait(2000);
-
-    const categoryOverviews = await page.$$(
-      'div.product-category-overview_category__E6EMG'
-    );
-    console.info(`Found ${categoryOverviews.length} categories...`);
-    for (const categoryOverview of categoryOverviews) {
-      const categoryName = await categoryOverview
-        .$('a.taxonomy-card_titleLink__1Dgai')
-        .then((e) => e.getProperty('textContent'))
-        .then((e) => e.jsonValue());
-      const categoryHref = await categoryOverview
-        .$('a.taxonomy-card_titleLink__1Dgai')
-        .then((e) => e.getProperty('href'))
-        .then((e) => e.jsonValue());
-      const categoryPage = await createPage(browser, useProxy);
-      const pageUrl = `${categoryHref}?kenmerk=bonus&page=100`;
-      try {
-        await categoryPage.goto(pageUrl);
-        console.info('Going to new category page...');
-        // await autoScroll(categoryPage); // TODO: FIX THIS
-        const bonusProducts = await categoryPage.$$('article');
-        console.info(`Found ${bonusProducts.length} products in Bonus...`);
-        for (const product of bonusProducts) {
-          const label = await product
-            .$('span.line-clamp')
-            .then((e) => e.getProperty('textContent'))
-            .then((e) => e.jsonValue());
-          const productImageSrc = await product
-            .$('img')
-            .then((e) => e.getProperty('src'))
-            .then((e) => e.jsonValue());
-          const amount = await product
-            .$('span.price_unitSize__2pujV')
-            .then((e) => e.getProperty('textContent'))
-            .then((e) => e.jsonValue());
-          const discountType = await product
-            .$('span.shield_text__iFLQN')
-            .then((e) => e.getProperty('textContent'))
-            .then((e) => e.jsonValue());
-          const availableTill = await product
-            .$('p.smart-label_bonus__27_aC span.line-clamp')
-            .then((e) => (e ? e.getProperty('textContent') : null))
-            .then((e) => (e ? e.jsonValue() : null));
-          const link = await product
-            .$('div a.link_root__1r7dk')
-            .then((e) => e.getProperty('href'))
-            .then((e) => e.jsonValue());
-          let newPrice = '';
-          await product
-            .$$('div.price-amount_root__2jJz9')
-            .then((es) => (es.length > 1 ? es[1] : es[0]))
-            .then((e) => (e ? e.$$('span') : null))
-            .then(async (es) => {
-              if (!es) return;
-              for (const e of es) {
-                const value = await e
-                  .getProperty('textContent')
-                  .then((textContent) => textContent.jsonValue());
-                newPrice = `${newPrice}${value}`;
-              }
-            });
-          newPrice = Number.parseFloat(newPrice);
-          let oldPrice = '';
-          await product
-            .$$('div.price-amount_root__2jJz9')
-            .then((es) => (es.length > 1 ? es[0] : null))
-            .then((e) => (e ? e.$$('span') : null))
-            .then(async (es) => {
-              if (!es) return;
-              for (const e of es) {
-                const value = await e
-                  .getProperty('textContent')
-                  .then((textContent) => textContent.jsonValue());
-                oldPrice = `${oldPrice}${value}`;
-              }
-            });
-          oldPrice = Number.parseFloat(oldPrice) || null;
-          await createProduct({
-            id: uuid.v4(),
-            category: categoryMapper.albertHeijn[categoryName] || null,
-            label: label.substring(0, 1000),
-            image: productImageSrc.substring(0, 1000),
-            amount,
-            discount_type: discountType,
-            availability_from: null,
-            availability_till: availableTill
-              ? parseAvailabilityTill(availableTill)
-              : null,
-            store_name: 'albert_heijn',
-            link: link.substring(0, 10000),
-            new_price: newPrice,
-            old_price: oldPrice,
-            discounted: true,
-          });
-          console.info('Product created...');
-        }
-        await categoryPage.close();
-      } catch (error) {
-        console.error(
-          `Scraper encountered an error while scraping: ${pageUrl}: ${error}`
+      const discountTypeContainer = await productElement.$(
+        'div.shield_root__388LZ'
+      );
+      let discountType;
+      if (discountTypeContainer) {
+        discountType = await utils.getElementPropertyValue(
+          discountTypeContainer,
+          'span',
+          'textContent'
         );
       }
+
+      if (discounted) {
+        console.log({ newPrice, oldPrice, discountType });
+      }
+
+      // make product object
+      const productInfo = {
+        id: uuid.v4(),
+        category: categoryMapper.albertHeijn[categoryName] || null,
+        label: label?.substring(0, 1000) || null,
+        image: productImageSrc?.substring(0, 1000) || null,
+        amount,
+        availability_from: null,
+        availability_till: null,
+        store_name: STORE_NAME,
+        link: link?.substring(0, 10000),
+        new_price: newPrice,
+        old_price: oldPrice,
+        discounted,
+        discount_type: discountType,
+      };
+
+      productsInfo.push(productInfo);
+    }
+  } catch (error) {
+    console.error(`Scraper encountered an error while scraping category page`);
+    throw error;
+  }
+  return productsInfo;
+};
+
+const clearCookiePopup = async (page) => {
+  const cookieButton = await page.$('button#decline-cookies');
+
+  if (cookieButton) {
+    cookieButton.click();
+    await utils.sleep(2000);
+  }
+};
+
+const start = async (useProxy = false, useHeadless = false) => {
+  let browser;
+  try {
+    // setup basics
+    utils.configurePuppeteer();
+    console.info('Starting scraper...');
+
+    browser = await utils.getBrowser(useProxy, useHeadless);
+    console.info('Browser started...');
+
+    const page = await utils.createPage(browser, useProxy);
+    await page.goto(BASE_URL);
+    // TODO: Wait for element to load instead of hardcoded wait
+    await utils.sleep(2000);
+    console.info('At homepage...');
+
+    // Sometimes the cookie banner shows up, needs to be accepted in order to further navigate
+    await clearCookiePopup(page);
+
+    // Get all categories
+    const categoryOverviews = await page.$$(
+      'div.product-category-overview_category__1H99m'
+    );
+    console.info(`Found ${categoryOverviews.length} categories...`);
+
+    for (const categoryOverview of categoryOverviews) {
+      const categoryName = await utils.getElementPropertyValue(
+        categoryOverview,
+        'a.taxonomy-card_titleLink__7TTrF',
+        'textContent'
+      );
+      const categoryHref = await utils.getElementPropertyValue(
+        categoryOverview,
+        'a.taxonomy-card_titleLink__7TTrF',
+        'href'
+      );
+      console.info(
+        `Scraping category: ${categoryName} at url: ${categoryHref}`
+      );
+      const categoryPage = await utils.createPage(browser, useProxy);
+      await categoryPage.goto(categoryHref);
+
+      const categoryProducts = await getProductsOnPage(
+        categoryPage,
+        categoryName
+      );
+      utils.writeToFile(
+        `ahp_${categoryName}.json`,
+        JSON.stringify(categoryProducts)
+      );
+      console.info(
+        `Found: ${categoryProducts.length} products in category: ${categoryName}`
+      );
+      await utils.sleep(1000);
+      await categoryPage.close();
     }
     console.info('Albert heijn scraper done...');
-    await browser.close();
   } catch (error) {
     console.error(`Scraper crashed: ${error}`);
+  } finally {
+    browser.close();
   }
 };
 
-const stop = async () => {
-  if (!browser) {
-    return false;
-  }
-  await browser.close();
-  return true;
-};
-
-module.exports = { start, stop };
+start();

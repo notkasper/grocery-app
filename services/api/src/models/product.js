@@ -7,7 +7,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.UUID,
       },
       category: DataTypes.UUID,
-      label: DataTypes.STRING(1000),
+      label: {
+        type: DataTypes.STRING(1000),
+        unique: true,
+      },
       image: DataTypes.STRING(1000),
       amount: DataTypes.STRING,
       discount_type: DataTypes.STRING,

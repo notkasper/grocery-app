@@ -4,15 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "stop": "docker-compose down",
-    "prod": "npm run services:prod",
-    "dev": "concurrently \"npm run services:dev\" \"npm run front-end:dev\"",
+    "prod": "pm2 start ./services/api",
+    "dev": "docker stop dev-database && concurrently \"docker start dev-database\" \"npm run api:dev\" \"npm run front-end:dev\" \"npm run admin:dev\"",
+    "api:dev": "nodemon ./services/api/src",
+    "front-end:dev": "cd services/front-end && webpack-dev-server",
+    "admin:dev": "cd ./services/admin && npm start",
     "build:front-end": "cd services/front-end && webpack -p --mode production",
-    "build:dev": "docker-compose -f docker-compose.dev.yml build",
-    "build:prod": "docker-compose -f docker-compose.prod.yml build",
-    "services:dev": "docker-compose -f docker-compose.dev.yml up",
-    "services:prod": "docker-compose -f docker-compose.prod.yml up -d",
-    "front-end:dev": "cd services/front-end && webpack-dev-server"
+    "build-database:dev": "docker build -t database ./services/database && docker run -p 4000:5432 -d --name dev-database database"
   },
   "husky": {
     "hooks": {
@@ -28,10 +26,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "concurrently": "^5.1.0"
+    "concurrently": "^5.1.0",
+    "pm2": "^4.5.0"
   },
   "devDependencies": {
-    "eslint": "^6.8.0",
+    "eslint": "^7.11.0",
     "babel-eslint": "^10.1.0",
     "eslint-config-airbnb": "^18.1.0",
     "eslint-config-prettier": "^6.11.0",
