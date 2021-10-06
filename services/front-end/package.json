@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build:dev": "webpack-dev-server",
+    "build:dev": "webpack serve",
     "build:prod": "webpack -p --mode production"
   },
   "husky": {
@@ -21,6 +21,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@webpack-cli/serve": "^1.5.2",
     "babel-eslint": "^10.1.0",
     "cli-spinners": "^2.3.0",
     "firebase": "^7.14.2",
@@ -71,8 +72,8 @@
     "url-loader": "^4.1.0",
     "webpack": "^4.42.1",
     "webpack-bundle-analyzer": "^3.7.0",
-    "webpack-cli": "^3.3.11",
-    "webpack-dev-server": "^3.10.3",
+    "webpack-cli": "^4.3.11",
+    "webpack-dev-server": "^3.11.2",
     "workbox-webpack-plugin": "^5.1.3"
   }
 }

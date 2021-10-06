@@ -7,7 +7,7 @@
     "prod": "pm2 start ./services/api",
     "dev": "docker stop dev-database && concurrently \"docker start dev-database\" \"npm run api:dev\" \"npm run front-end:dev\" \"npm run admin:dev\"",
     "api:dev": "nodemon ./services/api/src",
-    "front-end:dev": "cd services/front-end && webpack-dev-server",
+    "front-end:dev": "cd services/front-end && webpack serve",
     "admin:dev": "cd ./services/admin && npm start",
     "build:front-end": "cd services/front-end && webpack -p --mode production",
     "build-database:dev": "docker build -t database ./services/database && docker run -p 4000:5432 -d --name dev-database database"
